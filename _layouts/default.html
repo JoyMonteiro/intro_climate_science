@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="{{ '/css/site.css' | relative_url }}">
+</head>
+<body>
+  <header>
+    <h1>{{ page.title | default: site.title }}</h1>
+    {% if page.subtitle %}<p class="subtitle">{{ page.subtitle }}</p>{% endif %}
+  </header>
+  <main>
+{{ content }}
+  </main>
+  {% if page.footer %}<footer>{{ page.footer | markdownify }}</footer>{% endif %}
+</body>
+</html>
