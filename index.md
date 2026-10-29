@@ -17,3 +17,9 @@ footer: |
 2. **Example: The greenhouse effect**
    *[date]* · [One-line summary.]
 {: .lectures}
+
+## Tutorials
+
+1. **[Daisyworld: land and ocean](tutorials/daisyworld-land-ocean/)**
+   *Ocean module* · How much can life steer the climate when most of a planet is ocean, and how fast does the planet respond when the sun changes?
+{: .lectures}

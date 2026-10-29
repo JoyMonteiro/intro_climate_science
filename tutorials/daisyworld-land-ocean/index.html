@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daisyworld: Land and Ocean</title>
+<meta name="description" content="An interactive one-box Daisyworld with land and ocean: daisies grow only on land, the ocean is dark and stores heat, and a sudden change of sun shows how fast each planet responds.">
+<style>
+:root{
+  --bg:#F7F8F6; --panel:#FFFFFF; --ink:#1C252D; --muted:#5A6670; --rule:#D5DBD8;
+  --heat:#C9531A; --cool:#00809A; --place:#4A55A2; --band:rgba(0,128,154,.08);
+  --ocean:#D3E6F0; --ground:#C9B48E; --white:#FFFFFF; --black:#1C252D; --grid:#E6EAE8; --bdaisy:#1C252D;
+  --accent:#00809A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943;
+    --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --band:rgba(63,184,204,.10);
+    --ocean:#264556; --ground:#8E7A55; --white:#F2F4F5; --black:#05080A; --grid:#252E36; --bdaisy:#7F8B96;
+    --accent:#3FB8CC;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943;
+  --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --band:rgba(63,184,204,.10);
+  --ocean:#264556; --ground:#8E7A55; --white:#F2F4F5; --black:#05080A; --grid:#252E36; --bdaisy:#7F8B96;
+  --accent:#3FB8CC;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:26px;line-height:1.2;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 18px;max-width:62em}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 14px 6px}
+fieldset{border:0;border-top:1px solid var(--rule);margin:0 0 6px;padding:10px 0 4px}
+fieldset:first-of-type{border-top:0;padding-top:0}
+legend{font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0}
+.row{margin:8px 0 10px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.row label output{font-variant-numeric:tabular-nums;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:2px 0 0}
+select,button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:7px 10px;min-height:38px}
+button{cursor:pointer}
+button:hover,select:hover{border-color:var(--muted)}
+button:disabled{opacity:.45;cursor:default}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.seg label{flex:1 1 auto;display:flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;font-size:13.5px;cursor:pointer;min-height:38px}
+.seg input{accent-color:var(--accent)}
+.seg.cols2,.seg.cols3{display:grid;gap:6px}
+.seg.cols2{grid-template-columns:1fr 1fr}
+.seg.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.seg.cols3 label{padding:6px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;min-height:32px}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+details{border-top:1px solid var(--rule);padding:10px 0 4px}
+details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink);padding:9px 10px;border:1px solid var(--rule);border-radius:8px;min-height:38px}
+details summary:hover{border-color:var(--muted)}
+details[open] summary{margin-bottom:6px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:0 0 12px}
+.toolbar .small{flex:1 1 16em}
+.inertia{font-size:14px;margin:4px 0 10px;padding:8px 10px;background:var(--bg);border:1px solid var(--rule);border-radius:8px}
+.inertia b{font-variant-numeric:tabular-nums}
+.dim{opacity:.45;pointer-events:none}
+.summary{font-size:15px;margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0}
+.summary b{font-variant-numeric:tabular-nums}
+.chartbox{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px 10px 4px;margin-bottom:14px}
+.charttitle{font-weight:700;font-size:14.5px;margin:2px 4px 2px}
+.keys{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin:2px 4px 4px}
+.key{display:inline-flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:22px;height:0;border-top:3px solid currentColor}
+.key i.dash{border-top-style:dashed}
+.key i.faint{opacity:.4}
+.key i.box{height:10px;border:0;border-radius:2px}
+canvas{display:block;width:100%;height:clamp(230px,30vh,340px);touch-action:pan-y}
+.planet{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px}
+.bar{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);margin:8px 0 6px}
+.bar div{height:100%;transition:width .15s}
+.barkeys{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted)}
+.barkeys span b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid var(--rule);vertical-align:-1px;margin-right:5px}
+.readout{font-size:14px;margin-top:6px;font-variant-numeric:tabular-nums}
+.notes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;margin-top:22px}
+.notes .sources{grid-column:1/-1}
+@media (max-width:860px){.notes{grid-template-columns:minmax(0,1fr)}}
+.notes section{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.notes h2{font-size:17px;margin:0 0 8px}
+.notes p,.notes li{font-size:14.5px}
+.notes ol{padding-left:20px;margin:0}
+.notes li{margin:0 0 8px}
+.eq{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;line-height:1.55}
+.eq div{display:grid;grid-template-columns:8.5ch minmax(0,1fr)}
+.eq span{color:var(--muted)}
+.small{font-size:12.5px;color:var(--muted)}
+a{color:var(--accent)}
+.dlrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:4px 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Daisyworld, land and ocean</h1>
+  <p class="lede">A planet of land and ocean. Black and white daisies grow only on the land, so they can change the colour of the land but not of the sea. The ocean is dark, and it stores far more heat than land. That changes how far the daisies can steer the climate, and how fast the planet responds when the sun changes. A bare planet with the same land and ocean runs alongside for comparison.</p>
+
+  <div class="grid">
+    <div class="panel" id="controls">
+      <fieldset>
+        <legend>The planet</legend>
+        <div class="seg cols3" role="radiogroup" aria-label="Planet">
+          <label><input type="radio" name="planet" value="0"> All land</label>
+          <label><input type="radio" name="planet" value="0.3"> 30% ocean</label>
+          <label><input type="radio" name="planet" value="0.7"> 70% ocean</label>
+        </div>
+        <div class="row"><label for="ocean">Ocean fraction <output id="ocean_o"></output></label><input type="range" id="ocean" min="0" max="0.95" step="0.01">
+        </div>
+        <div class="row" id="AoRow"><label for="Ao">Ocean albedo <output id="Ao_o"></output></label><input type="range" id="Ao" min="0.05" max="0.6" step="0.01"></div>
+        <div class="row" id="mldRow"><label for="mld">Ocean mixed-layer depth <output id="mld_o"></output></label><input type="range" id="mld" min="10" max="500" step="10">
+        <p class="hint">Water that warms and cools with the surface. Real mixed layers are 20–100 m; deeper values stand in for the deep ocean.</p></div>
+        <p class="inertia" id="inertia"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>The sun</legend>
+        <div class="seg cols2" role="radiogroup" aria-label="Experiment">
+          <label><input type="radio" name="mode" value="up"> Slow brightening</label>
+          <label><input type="radio" name="mode" value="updown"> Brighten, then dim</label>
+          <label><input type="radio" name="mode" value="step"> Sudden change</label>
+          <label><input type="radio" name="mode" value="fixed"> Steady</label>
+        </div>
+        <div id="sweepCtl">
+          <div class="row"><label for="Lmin">Starting brightness <output id="Lmin_o"></output></label><input type="range" id="Lmin" min="0.3" max="1.5" step="0.01"></div>
+          <div class="row"><label for="Lmax">Final brightness <output id="Lmax_o"></output></label><input type="range" id="Lmax" min="0.6" max="2.2" step="0.01"></div>
+          <div class="row"><label for="dur">Run length <output id="dur_o"></output></label><input type="range" id="dur" min="20" max="1500" step="10">
+          <p class="hint">A short run is a fast change of sun. Can the planet keep up?</p></div>
+        </div>
+        <div id="stepCtl">
+          <div class="row"><label for="Lb">Brightness before <output id="Lb_o"></output></label><input type="range" id="Lb" min="0.3" max="2.0" step="0.01"></div>
+          <div class="row"><label for="La">Brightness after <output id="La_o"></output></label><input type="range" id="La" min="0.3" max="2.0" step="0.01">
+          <p class="hint">The planet settles under the first sun, then at year 0 the sun jumps to the second.</p></div>
+          <label class="check"><input type="checkbox" id="logx"> Log time axis (days, months and decades side by side)</label>
+        </div>
+        <div id="fixedCtl">
+          <div class="row"><label for="Lfix">Brightness <output id="Lfix_o"></output></label><input type="range" id="Lfix" min="0.3" max="2.0" step="0.01">
+          <p class="hint">The daisies start from a few seeds and spread.</p></div>
+        </div>
+        <div class="row" id="yrsRow"><label for="yrs">Years to show <output id="yrs_o"></output></label><input type="range" id="yrs" min="2" max="200" step="1"></div>
+        <p class="hint">Brightness is relative to the classic model's reference sun (L = 1).</p>
+      </fieldset>
+
+      <details>
+        <summary>More settings: daisies and albedos</summary>
+        <div class="row"><label for="gamma">Daisy death rate γ <output id="gamma_o"></output></label><input type="range" id="gamma" min="0.05" max="0.8" step="0.01"></div>
+        <div class="row"><label for="qp">Heat sharing between patches q′ <output id="qp_o"></output></label><input type="range" id="qp" min="0" max="40" step="1">
+        <p class="hint">0 = every patch at the planet's temperature. Larger = dark patches stay warmer than light ones.</p></div>
+        <div class="row"><label for="Topt">Daisies' favourite temperature <output id="Topt_o"></output></label><input type="range" id="Topt" min="10" max="35" step="0.5"></div>
+        <div class="row"><label for="Aw">White daisy albedo <output id="Aw_o"></output></label><input type="range" id="Aw" min="0.5" max="0.95" step="0.01"></div>
+        <div class="row"><label for="Ab">Black daisy albedo <output id="Ab_o"></output></label><input type="range" id="Ab" min="0.05" max="0.45" step="0.01"></div>
+        <div class="row"><label for="Ag">Bare ground albedo <output id="Ag_o"></output></label><input type="range" id="Ag" min="0.2" max="0.7" step="0.01"></div>
+        <div class="row"><button type="button" id="reset">Reset everything</button></div>
+      </details>
+    </div>
+
+    <div>
+      <p class="summary" id="summary" aria-live="polite">&nbsp;</p>
+      <div class="toolbar">
+        <button type="button" id="keep">Keep this run to compare</button><button type="button" id="unkeep" disabled>Clear kept run</button>
+        <span class="small" id="keptNote">Keep a run, then change the planet: both show on the charts, the kept run faint.</span>
+      </div>
+
+      <div class="chartbox">
+        <div class="charttitle" id="t1">Planet temperature</div>
+        <div class="keys" id="k1"></div>
+        <canvas id="c1" aria-label="Temperature chart" role="img"></canvas>
+      </div>
+
+      <div class="chartbox">
+        <div class="charttitle" id="t2">Who covers the land</div>
+        <div class="keys" id="k2"></div>
+        <canvas id="c2" aria-label="Daisy cover chart" role="img"></canvas>
+      </div>
+
+      <div class="planet">
+        <div class="charttitle">The planet at the cursor <span class="small" id="atwhere"></span></div>
+        <div class="bar" id="bar">
+          <div id="b_ocean" style="background:var(--ocean)"></div>
+          <div id="b_ground" style="background:var(--ground)"></div>
+          <div id="b_white" style="background:var(--white)"></div>
+          <div id="b_black" style="background:var(--black)"></div>
+        </div>
+        <div class="barkeys">
+          <span><i class="sw" style="background:var(--ocean)"></i>ocean <b id="p_ocean"></b></span>
+          <span><i class="sw" style="background:var(--ground)"></i>bare ground <b id="p_ground"></b></span>
+          <span><i class="sw" style="background:var(--white)"></i>white daisies <b id="p_white"></b></span>
+          <span><i class="sw" style="background:var(--black)"></i>black daisies <b id="p_black"></b></span>
+        </div>
+        <div class="readout" id="readout"></div>
+        <p class="small">Move or tap on either chart to pick a moment. Without a pick, this shows the moment of most daisies (or the end of the run).</p>
+        <div class="dlrow"><button type="button" id="dlData">Download data (CSV)</button><a href="#" id="dlSettings" class="small">Download settings</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <section>
+      <h2>Things to try</h2>
+      <ol>
+        <li><b>All land, slow brightening.</b> Compare the daisy planet with the bare planet. Over what range of sun does the daisy planet stay near the daisies' favourite temperature?</li>
+        <li><b>Add ocean.</b> Switch to 30% ocean, then 70%. What happens to that range: does it get wider, narrower, or move? At 70% ocean, are the daisies still in control? Tap the chart where they are most common and compare the two planets.</li>
+        <li><b>Two reasons.</b> More ocean means less land for the daisies, and a darker planet. Set the ocean albedo to 0.5, the same as bare ground. Which change came from the darker ocean, and which from less land?</li>
+        <li><b>Sudden change, all land.</b> How long does the bare planet take to warm? What does the daisy planet do in the first months, and over the next ten years? Press "Keep this run to compare" above the charts.</li>
+        <li><b>Sudden change, 30% ocean.</b> Compare with the kept run. Turn on the log time axis. How much slower is the warming now, and why? Read the response time under the planet settings.</li>
+        <li><b>A deeper ocean.</b> Keep the 30% ocean run, then set the mixed layer to 200 m. Is the daisy planet's peak warming bigger or smaller? Who gets more time to react?</li>
+        <li><b>Sudden change, 70% ocean.</b> How long does the bare planet take to warm? And the daisy planet? When is its warming over?</li>
+        <li><b>Too fast to follow.</b> Brighten, then dim, with a 30-year run and a 300 m mixed layer. Does the planet keep up with the sun? Compare with a 600-year run.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>How the model works</h2>
+      <p>The whole planet is one box with one temperature <i>T</i>. Daisies cover fractions <i>a<sub>w</sub></i> (white) and <i>a<sub>b</sub></i> (black) of the land; the rest of the land, <i>x</i>, is bare. The ocean, a fraction 1 − f of the planet, has a fixed albedo.</p>
+<div class="eq"><div><span>albedo</span>A = f·(a_w A_w + a_b A_b + x A_g) + (1−f)·A_o</div><div><span>energy</span>C dT/dt = S·L·(1−A) − σT⁴</div><div><span>storage</span>C = f·C_land + (1−f)·ρc·h</div><div><span>patches</span>T_w = T + q′(A − A_w),   T_b = T + q′(A − A_b)</div><div><span>growth</span>β(T) = 1 − 0.003265 (T_opt − T)²   (zero outside ±17.5 °C)</div><div><span>daisies</span>da_i/dt = a_i [ x β(T_i) − γ ]</div></div>
+      <p>The heat capacity <i>C</i> decides how fast the planet responds. If the sun changes suddenly, the temperature moves most of the way to its new value in about τ = C / (4σT³). Land plus air has C_land = 10⁷ J m⁻² K⁻¹, so τ is about 3 weeks. A 50 m ocean mixed layer stores about 20 times as much, so τ is many months. The daisies take years to spread or die back.</p>
+      <p class="small">f = land fraction; h = mixed-layer depth; ρc = 4.1 × 10⁶ J m⁻³ K⁻¹ (sea water); S = 917 W m⁻²; time in years. The response time shown under the planet settings uses T = 15 °C. Daisy cover never falls below 1% of land (seeds). In this one-box model the land feels the same temperature as the ocean. On Earth the land warms faster than the ocean, but each is held back by the other through the air.</p>
+    </section>
+    <section class="sources">
+      <h2>Sources</h2>
+      <p>Watson, A. J. and Lovelock, J. E. (1983). Biological homeostasis of the global environment: the parable of Daisyworld. <i>Tellus</i> 35B, 284–289. The growth curve, albedos, S, γ = 0.3 and q′ = 20 K follow this paper.</p>
+      <p class="small">The ocean and the heat capacity here are simple teaching choices, not taken from that paper.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+// MODEL START
+const SIGMA = 5.670e-8, K0 = 273.15, S0 = 917, YEAR = 3.156e7;
+const RHO_C_WATER = 1025 * 3990, C_LAND = 1e7;
+
+function beta(T, Topt){ const b = 1 - 0.003265 * (Topt - T) * (Topt - T); return b > 0 ? b : 0; }
+function eqTemp(L, A){ return Math.pow(S0 * L * (1 - A) / SIGMA, 0.25) - K0; }
+function heatCapacity(P){ return (1 - P.ocean) * C_LAND + P.ocean * RHO_C_WATER * P.mld; }
+// e-folding time (years) of the bare planet's temperature after a small sudden change, at 15 °C
+function responseTime(P){ return heatCapacity(P) / (4 * SIGMA * Math.pow(15 + K0, 3)) / YEAR; }
+
+function simulate(P){
+  const dt = 0.002;
+  const f = 1 - P.ocean, fo = P.ocean;
+  const kT = YEAR / heatCapacity(P);
+  const step = P.mode === "step", fixed = P.mode === "fixed", sweep = !step && !fixed;
+  const D = sweep ? P.dur : P.yrs;
+  const Lof = (t) => {
+    if (fixed) return P.Lfix;
+    if (step) return t < 0 ? P.Lb : P.La;
+    t = Math.max(0, t);
+    if (P.mode === "up") return P.Lmin + (P.Lmax - P.Lmin) * t / D;
+    const h = D / 2; return t <= h ? P.Lmin + (P.Lmax - P.Lmin) * t / h : P.Lmax - (P.Lmax - P.Lmin) * (t - h) / h;
+  };
+  const FLOOR = 0.01;
+  let aw = FLOOR, ab = FLOOR;
+  const Aref = f * P.Ag + fo * P.Ao;
+  const albedo = (aw, ab) => f * (aw * P.Aw + ab * P.Ab + (1 - aw - ab) * P.Ag) + fo * P.Ao;
+  let T = eqTemp(Lof(-1), albedo(aw, ab)), Tref = eqTemp(Lof(-1), Aref);
+  // spin-up under the first sun; a step run also shows a short stretch before the change
+  const spin = fixed ? 0 : step ? 300 : 60;
+  const pre = step ? 0.15 * D : 0;
+  const nSteps = Math.round((spin + D) / dt);
+  const every = Math.max(1, Math.floor((pre + D) / dt / 2400));
+  const out = { t: [], L: [], T: [], Tref: [], aw: [], ab: [], A: [], Tw: [], Tb: [], leg: [] };
+  for (let k = 0; k <= nSteps; k++){
+    const time = k * dt - spin;
+    const L = Lof(time);
+    const x = 1 - aw - ab;
+    const A = albedo(aw, ab);
+    const Tw = T + P.qp * (A - P.Aw), Tb = T + P.qp * (A - P.Ab);
+    // record densely just after a sudden change, so the first days show on a log axis
+    const dense = step && time >= 0 && (time < 0.1 || (time < 1 && k % 5 === 0));
+    if (time >= -pre - 1e-9 && (k % every === 0 || dense)){
+      out.t.push(time); out.L.push(L); out.T.push(T); out.Tref.push(Tref);
+      out.aw.push(aw); out.ab.push(ab); out.A.push(A); out.Tw.push(Tw); out.Tb.push(Tb);
+      out.leg.push(P.mode === "updown" && time > D / 2 ? 1 : 0);
+    }
+    const daw = aw * (x * beta(Tw, P.Topt) - P.gamma);
+    const dab = ab * (x * beta(Tb, P.Topt) - P.gamma);
+    const dT = (S0 * L * (1 - A) - SIGMA * Math.pow(T + K0, 4)) * kT;
+    const dTr = (S0 * L * (1 - Aref) - SIGMA * Math.pow(Tref + K0, 4)) * kT;
+    aw = Math.max(FLOOR, aw + daw * dt); ab = Math.max(FLOOR, ab + dab * dt);
+    const s = aw + ab; if (s > 1){ aw /= s; ab /= s; }
+    T += dT * dt; Tref += dTr * dt;
+    if (!isFinite(T) || !isFinite(Tref)) break;
+  }
+  return out;
+}
+
+// Step run: how big and how fast each planet's change is
+function stepStats(P, o){
+  const n = o.t.length;
+  let i0 = 0; while (i0 + 1 < n && o.t[i0 + 1] < 0) i0++;
+  const T0 = o.T[i0], R0 = o.Tref[i0], Tend = o.T[n - 1], Rend = o.Tref[n - 1], dR = Rend - R0;
+  let t63 = null;
+  for (let i = i0 + 1; i < n; i++) if (Math.abs(dR) > 0.05 && (o.Tref[i] - R0) / dR >= 1 - Math.exp(-1)){ t63 = o.t[i]; break; }
+  let peak = 0, tPeak = 0;
+  for (let i = i0 + 1; i < n; i++){ const d = o.T[i] - T0; if (Math.abs(d) > Math.abs(peak)){ peak = d; tPeak = o.t[i]; } }
+  // settled: the last moment the daisy planet was more than 10% of its largest change (and 0.2 °C) from where it ends
+  const tol = Math.max(0.2, 0.1 * Math.abs(peak));
+  let tSettle = 0;
+  for (let i = n - 1; i > i0; i--) if (Math.abs(o.T[i] - Tend) > tol){ tSettle = o.t[i]; break; }
+  // still moving at the end: changed by more than the tolerance over the last tenth of the run
+  const D = o.t[n - 1]; let j = n - 1; while (j > i0 && o.t[j] > 0.9 * D) j--;
+  const moving = Math.abs(o.T[n - 1] - o.T[j]) > tol / 2;
+  return { T0, R0, dT: Tend - T0, dR, t63, peak, tPeak, tSettle, moving };
+}
+
+function summarise(P, o){
+  const n = o.t.length;
+  if (P.mode === "step") return { mode: "step", ...stepStats(P, o) };
+  if (P.mode === "fixed"){
+    const i0 = Math.floor(n / 2);
+    const mean = (a) => { let m = 0; for (let i = i0; i < n; i++) m += a[i]; return m / (n - i0); };
+    return { mode: "fixed", mT: mean(o.T), mR: mean(o.Tref), mw: mean(o.aw), mb: mean(o.ab), T0: o.T[0] };
+  }
+  const alive = [], hab = [], near = [], nearB = [];
+  for (let i = 0; i < n; i++){
+    if (o.leg[i] !== 0) continue;
+    if (o.aw[i] + o.ab[i] > 0.05) alive.push(o.L[i]);
+    if (Math.abs(o.Tref[i] - P.Topt) <= 17.5) hab.push(o.L[i]);
+    if (Math.abs(o.T[i] - P.Topt) <= 5) near.push(o.L[i]);
+    if (Math.abs(o.Tref[i] - P.Topt) <= 5) nearB.push(o.L[i]);
+  }
+  const rng = (a) => a.length ? [Math.min(...a), Math.max(...a)] : null;
+  let regain = null, topDead = false, low = null;
+  if (P.mode === "updown"){
+    // on the way down: were the daisies dead at the brightest sun, where do they come back,
+    // and how far down do they last
+    let first = true;
+    for (let i = 0; i < n; i++){
+      if (o.leg[i] !== 1) continue;
+      const live = o.aw[i] + o.ab[i] > 0.05;
+      if (first){ topDead = !live; first = false; }
+      if (live){ if (topDead && regain === null) regain = o.L[i]; low = o.L[i]; }
+    }
+  }
+  return { mode: P.mode, alive: rng(alive), hab: rng(hab), near: rng(near), nearB: rng(nearB), regain, topDead, low };
+}
+// ---- data export (CSV and settings) ----
+function exportTable(P, o){
+  const header = ["year","sun_L","leg","daisy_planet_T_degC","bare_planet_T_degC","white_cover","black_cover","bare_cover","planet_albedo","white_patch_T_degC","black_patch_T_degC","white_growth_per_year","black_growth_per_year"];
+  const f = (v, d) => v.toFixed(d);
+  const rows = [];
+  for (let i = 0; i < o.t.length; i++){
+    const leg = P.mode === "fixed" ? "steady" : P.mode === "step" ? (o.t[i] < 0 ? "before" : "after") : o.leg[i] ? "dimming" : "brightening";
+    rows.push([f(o.t[i], 4), f(o.L[i], 3), leg, f(o.T[i], 2), f(o.Tref[i], 2),
+      f(o.aw[i], 4), f(o.ab[i], 4), f(Math.max(0, 1 - o.aw[i] - o.ab[i]), 4),
+      f(o.A[i], 4), f(o.Tw[i], 2), f(o.Tb[i], 2),
+      String(+beta(o.Tw[i], P.Topt).toFixed(10)), String(+beta(o.Tb[i], P.Topt).toFixed(10))]);
+  }
+  return { header, rows };
+}
+function toCSV(header, rows){
+  const cell = (v) => v === null || v === undefined ? "" : String(v);
+  let s = header.join(",") + "\n";
+  for (const r of rows) s += r.map(cell).join(",") + "\n";
+  return s;
+}
+function settingsText(P, url, dateISO){
+  const lines = ["Daisyworld (land and ocean) - settings for this run", "date: " + dateISO, "page link (opens this run): " + url,
+    "response time of the bare planet: " + responseTime(P).toFixed(3) + " years", ""];
+  for (const k of Object.keys(P)) lines.push(k + " = " + (typeof P[k] === "boolean" ? (P[k] ? "on" : "off") : P[k]));
+  return lines.join("\n") + "\n";
+}
+function fileStem(P){ return `daisyworld-land-ocean_ocean${Math.round(P.ocean * 100)}_${P.mode}`; }
+// MODEL END
+
+/* ----------------------------------------------------------------- UI ---- */
+const DEFAULTS = { mode: "up", Lmin: 0.4, Lmax: 1.8, dur: 600, Lb: 0.78, La: 0.86, Lfix: 0.8, yrs: 40, logx: false,
+  ocean: 0, Ao: 0.1, mld: 50, gamma: 0.3, qp: 20, Topt: 22.5, Aw: 0.75, Ab: 0.25, Ag: 0.5 };
+const NUM = ["Lmin","Lmax","dur","Lb","La","Lfix","yrs","ocean","Ao","mld","gamma","qp","Topt","Aw","Ab","Ag"];
+const FMT = {
+  Lmin: v => v.toFixed(2), Lmax: v => v.toFixed(2), Lb: v => v.toFixed(2), La: v => v.toFixed(2), Lfix: v => v.toFixed(2),
+  dur: v => `${v} years`, yrs: v => `${v} years`,
+  ocean: v => `${Math.round(v * 100)}%`, Ao: v => v.toFixed(2), mld: v => `${v} m`,
+  gamma: v => `${v.toFixed(2)} /yr`, qp: v => `${v} K`, Topt: v => `${v.toFixed(1)} °C`,
+  Aw: v => v.toFixed(2), Ab: v => v.toFixed(2), Ag: v => v.toFixed(2),
+};
+const $ = (id) => document.getElementById(id);
+let state = { ...DEFAULTS }, result = null, cursor = -1, kept = null;
+
+function fmtTime(y){
+  const d = y * 365.25;
+  if (d < 1.5) return "1 day";
+  if (d < 45) return `${Math.round(d)} days`;
+  if (y < 2) return `${Math.round(y * 12)} months`;
+  return `${y < 10 ? y.toFixed(1) : Math.round(y)} years`;
+}
+function planetName(P){ return P.ocean < 0.005 ? "all land" : `${Math.round(P.ocean * 100)}% ocean`; }
+
+function readState(){
+  for (const k of NUM) state[k] = parseFloat($(k).value);
+  state.logx = $("logx").checked;
+  state.mode = document.querySelector('input[name=mode]:checked').value;
+  if (state.Lmax <= state.Lmin + 0.05){ state.Lmax = +(state.Lmin + 0.05).toFixed(2); $("Lmax").value = state.Lmax; }
+}
+function writeState(){
+  for (const k of NUM) $(k).value = state[k];
+  $("logx").checked = state.logx;
+  document.querySelector(`input[name=mode][value=${state.mode}]`).checked = true;
+}
+function refreshLabels(){
+  for (const k of NUM) $(k + "_o").textContent = FMT[k](state[k]);
+  const m = state.mode;
+  $("sweepCtl").style.display = m === "up" || m === "updown" ? "" : "none";
+  $("stepCtl").style.display = m === "step" ? "" : "none";
+  $("fixedCtl").style.display = m === "fixed" ? "" : "none";
+  $("yrsRow").style.display = m === "step" || m === "fixed" ? "" : "none";
+  $("AoRow").classList.toggle("dim", state.ocean < 0.005);
+  $("mldRow").classList.toggle("dim", state.ocean < 0.005);
+  document.querySelectorAll("input[name=planet]").forEach(r => { r.checked = Math.abs(+r.value - state.ocean) < 0.005; });
+  const tau = responseTime(state), C = heatCapacity(state);
+  $("inertia").innerHTML = `Heat stored: <b>${(C / C_LAND).toFixed(C < 10 * C_LAND ? 1 : 0)}×</b> an all-land planet. After a sudden change, the temperature goes two-thirds of the way in about <b>${fmtTime(tau)}</b>.`;
+}
+function hashOf(P){
+  const p = new URLSearchParams();
+  for (const k of NUM) p.set(k, P[k]);
+  p.set("mode", P.mode); p.set("logx", P.logx ? 1 : 0);
+  return "#" + p.toString();
+}
+function saveHash(){
+  try { history.replaceState(null, "", hashOf(state)); } catch (e) {}
+}
+function loadHash(){
+  try {
+    if (!location.hash || location.hash.length < 4) return false;
+    const p = new URLSearchParams(location.hash.slice(1));
+    for (const k of NUM) if (p.has(k)){ const v = parseFloat(p.get(k)); if (isFinite(v)) state[k] = v; }
+    if (["up","updown","step","fixed"].includes(p.get("mode"))) state.mode = p.get("mode");
+    if (p.has("logx")) state.logx = p.get("logx") === "1";
+    return true;
+  } catch (e) { return false; }
+}
+
+/* ---------------------------------------------------------------- charts -- */
+function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function niceTicks(lo, hi, n){
+  const span = hi - lo || 1, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => span / s <= n) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+const LOG_TICKS = [[1 / 365.25, "1 day"], [7 / 365.25, "1 week"], [1 / 12, "1 month"], [0.5, "6 months"], [1, "1 yr"], [2, "2 yr"], [5, "5 yr"], [10, "10 yr"], [20, "20 yr"], [50, "50 yr"], [100, "100 yr"], [200, "200 yr"]];
+const charts = {};
+function setupCanvas(cv){
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function drawChart(id, cfg){
+  const cv = $(id), { ctx, w, h } = setupCanvas(cv);
+  const M = { l: 48, r: 14, t: 10, b: 38 };
+  const pw = w - M.l - M.r, ph = h - M.t - M.b;
+  const [x0, x1] = cfg.xr, [y0, y1] = cfg.yr;
+  const tx = cfg.xlog ? (v) => Math.log10(Math.max(v, x0)) : (v) => v;
+  const X = v => M.l + (tx(v) - tx(x0)) / (tx(x1) - tx(x0)) * pw, Y = v => M.t + (1 - (v - y0) / (y1 - y0)) * ph;
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = "12px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif";
+  for (const b of cfg.bands || []){ ctx.fillStyle = b.color; ctx.fillRect(M.l, Y(Math.min(b.y1, y1)), pw, Y(Math.max(b.y0, y0)) - Y(Math.min(b.y1, y1))); }
+  ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1; ctx.fillStyle = css("--muted");
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (const v of niceTicks(y0, y1, 5)){ const y = Math.round(Y(v)) + .5; ctx.beginPath(); ctx.moveTo(M.l, y); ctx.lineTo(M.l + pw, y); ctx.stroke(); ctx.fillText(cfg.yfmt ? cfg.yfmt(v) : v, M.l - 6, y); }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  let xt = cfg.xlog ? LOG_TICKS.filter(t => t[0] >= x0 * 0.999 && t[0] <= x1 * 1.001) : niceTicks(x0, x1, Math.max(3, Math.floor(pw / 80))).map(v => [v, cfg.xfmt ? cfg.xfmt(v) : v]);
+  if (cfg.xlog){ let last = -1e9; xt = xt.filter(t => { const x = X(t[0]); if (x - last < 52) return false; last = x; return true; }); }
+  for (const [v, lab] of xt){ const x = Math.round(X(v)) + .5; ctx.beginPath(); ctx.moveTo(x, M.t); ctx.lineTo(x, M.t + ph); ctx.stroke(); ctx.fillText(lab, x, M.t + ph + 6); }
+  ctx.fillText(cfg.xlabel, M.l + pw / 2, M.t + ph + 21);
+  ctx.save(); ctx.translate(12, M.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "middle"; ctx.fillText(cfg.ylabel, 0, 0); ctx.restore();
+  for (const hl of cfg.hlines || []){ if (hl.y < y0 || hl.y > y1) continue; ctx.strokeStyle = hl.color; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(M.l, Y(hl.y)); ctx.lineTo(M.l + pw, Y(hl.y)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = hl.color; ctx.textAlign = "right"; ctx.textBaseline = "top"; ctx.fillText(hl.label, M.l + pw - 4, Y(hl.y) + 3); }
+  for (const vl of cfg.vlines || []){ if (vl.x < x0 || vl.x > x1) continue; const x = Math.round(X(vl.x)) + .5; ctx.strokeStyle = vl.color; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(x, M.t); ctx.lineTo(x, M.t + ph); ctx.stroke(); ctx.setLineDash([]); }
+  ctx.save(); ctx.beginPath(); ctx.rect(M.l, M.t, pw, ph); ctx.clip();
+  for (const s of cfg.series){
+    const xs = s.x || cfg.x;
+    ctx.globalAlpha = s.alpha || 1;
+    ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2; ctx.setLineDash(s.dash || []); ctx.lineJoin = "round";
+    ctx.beginPath(); let pen = false;
+    for (let i = 0; i < xs.length; i++){
+      if ((s.mask && !s.mask[i]) || (cfg.xlog && xs[i] < x0)){ pen = false; continue; }
+      const xv = X(xs[i]), yv = Y(Math.max(y0 - (y1 - y0), Math.min(y1 + (y1 - y0), s.y[i])));
+      if (!pen){ ctx.moveTo(xv, yv); pen = true; } else ctx.lineTo(xv, yv);
+    }
+    ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  if (cursor >= 0 && cursor < cfg.x.length && !(cfg.xlog && cfg.x[cursor] < x0)){
+    const cx = X(cfg.x[cursor]);
+    ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, M.t); ctx.lineTo(cx, M.t + ph); ctx.stroke();
+    for (const s of cfg.series){ if (s.x || (s.mask && !s.mask[cursor])) continue; const yv = s.y[cursor]; if (yv < y0 || yv > y1) continue; ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(cx, Y(yv), 3.5, 0, 2 * Math.PI); ctx.fill(); }
+  }
+  charts[id] = { X, Y, cfg, M, pw, ph };
+}
+function keyHTML(items){ return items.map(k => `<span class="key" style="color:${k.color}"><i class="${k.dash ? "dash" : ""} ${k.faint ? "faint" : ""}"></i><span style="color:var(--muted)">${k.label}</span></span>`).join(""); }
+
+function keptLabel(P){
+  let s = planetName(P);
+  if (P.ocean >= 0.005) s += `, ${P.mld} m`;
+  if (P.Ao !== DEFAULTS.Ao && P.ocean >= 0.005) s += `, ocean albedo ${P.Ao.toFixed(2)}`;
+  if (P.mode === "step") s += `, L ${P.Lb.toFixed(2)}→${P.La.toFixed(2)}`;
+  if (P.mode === "up" || P.mode === "updown") s += `, ${P.dur} years`;
+  return s;
+}
+
+function render(){
+  if (!result) return;
+  const o = result, P = runState, sweep = P.mode === "up" || P.mode === "updown", step = P.mode === "step";
+  const xlog = step && P.logx;
+  const x = sweep ? o.L : o.t;
+  const D = sweep ? P.dur : P.yrs;
+  const xr = sweep ? [Math.min(P.Lmin, P.Lmax), Math.max(P.Lmin, P.Lmax)] : xlog ? [1 / 365.25, D] : step ? [-0.15 * D, D] : [0, D];
+  const xlabel = sweep ? "brightness of the sun, L" : step ? (xlog ? "time since the sun changed (log scale)" : "years since the sun changed") : "time (years)";
+  const up = o.leg.map(l => l === 0), down = o.leg.map(l => l === 1);
+  const heat = css("--heat"), muted = css("--muted"), cool = css("--cool"), ink = css("--bdaisy");
+  const K = kept && kept.P.mode === P.mode ? kept : null;
+  const kx = K ? (sweep ? K.o.L : K.o.t) : null;
+  let lo = Infinity, hi = -Infinity;
+  for (const a of [o.T, o.Tref].concat(K ? [K.o.T, K.o.Tref] : [])) for (const v of a){ if (v < lo) lo = v; if (v > hi) hi = v; }
+  if (step){ lo = Math.floor((Math.min(lo, P.Topt) - 4) / 5) * 5; hi = Math.ceil((Math.max(hi, P.Topt) + 4) / 5) * 5; }
+  else { lo = Math.max(-60, Math.floor(Math.min(lo, 0) / 10) * 10); hi = Math.min(120, Math.ceil(Math.max(hi, 45) / 10) * 10); }
+  const tSeries = [], tKeys = [];
+  if (K){
+    const kd = K.P.mode === "updown" ? K.o.leg.map(l => l === 0) : null;
+    tSeries.push({ x: kx, y: K.o.Tref, color: muted, dash: [6, 4], width: 1.4, alpha: 0.4, mask: kd },
+                 { x: kx, y: K.o.T, color: heat, width: 2, alpha: 0.35, mask: kd });
+  }
+  if (P.mode === "updown"){
+    tSeries.push({ y: o.Tref, color: muted, dash: [6, 4], width: 1.6, mask: up }, { y: o.Tref, color: muted, dash: [2, 3], width: 1.6, mask: down },
+                 { y: o.T, color: heat, width: 2.2, mask: up }, { y: o.T, color: heat, dash: [2, 3], width: 2.2, mask: down });
+    tKeys.push({ color: heat, label: "daisy planet, brightening" }, { color: heat, dash: 1, label: "daisy planet, dimming (dotted)" }, { color: muted, dash: 1, label: "bare planet" });
+  } else {
+    tSeries.push({ y: o.Tref, color: muted, dash: [6, 4], width: 1.6 }, { y: o.T, color: heat, width: 2.2 });
+    tKeys.push({ color: heat, label: "daisy planet" }, { color: muted, dash: 1, label: "bare planet (same land and ocean)" });
+  }
+  if (K) tKeys.push({ color: heat, faint: 1, label: `kept: ${keptLabel(K.P)}${K.P.mode === "updown" ? " (brightening)" : ""}` }, { color: muted, dash: 1, faint: 1, label: "kept bare planet" });
+  $("k1").innerHTML = keyHTML(tKeys) + `<span class="key"><i class="box" style="background:${css("--band")};border:1px solid ${cool}"></i><span>daisies can grow (${(P.Topt - 17.5).toFixed(0)}–${(P.Topt + 17.5).toFixed(0)} °C)</span></span>`;
+  const xfmt = v => sweep ? v.toFixed(1) : v;
+  drawChart("c1", { x, xr, xlog, yr: [lo, hi], xlabel, ylabel: "temperature (°C)", series: tSeries,
+    bands: [{ y0: P.Topt - 17.5, y1: P.Topt + 17.5, color: css("--band") }],
+    hlines: [{ y: P.Topt, color: cool, label: `favourite ${P.Topt.toFixed(1)} °C` }],
+    vlines: step && !xlog ? [{ x: 0, color: muted }] : [], xfmt });
+  const cSeries = [], cKeys = [{ color: cool, label: "white daisies" }, { color: ink, label: "black daisies" }];
+  if (K){
+    const kd = K.P.mode === "updown" ? K.o.leg.map(l => l === 0) : null;
+    cSeries.push({ x: kx, y: K.o.aw, color: cool, width: 2, alpha: 0.35, mask: kd }, { x: kx, y: K.o.ab, color: ink, width: 2, alpha: 0.35, mask: kd });
+    cKeys.push({ color: muted, faint: 1, label: "kept run" });
+  }
+  const addCover = (mask, dash) => { cSeries.push({ y: o.aw, color: cool, width: 2.2, mask, dash }, { y: o.ab, color: ink, width: 2.2, mask, dash }); };
+  if (P.mode === "updown"){ addCover(up); addCover(down, [2, 3]); } else addCover(null);
+  $("k2").innerHTML = keyHTML(cKeys) + (P.mode === "updown" ? `<span class="key"><span>dotted = dimming</span></span>` : "");
+  drawChart("c2", { x, xr, xlog, yr: [0, 1], xlabel, ylabel: "fraction of land", series: cSeries,
+    vlines: step && !xlog ? [{ x: 0, color: muted }] : [], xfmt, yfmt: v => v.toFixed(1) });
+  updatePlanet();
+}
+
+function defaultIndex(o){
+  // a timed run: the last moment; a sweep: when the daisies covered the most land on the way up
+  if (runState.mode === "fixed" || runState.mode === "step") return o.t.length - 1;
+  let best = 0, bv = -1;
+  for (let i = 0; i < o.t.length; i++){ if (o.leg[i]) continue; const v = o.aw[i] + o.ab[i]; if (v > bv){ bv = v; best = i; } }
+  return best;
+}
+function updatePlanet(){
+  const o = result; if (!o || !o.t.length) return;
+  const P = runState, i = cursor >= 0 ? cursor : defaultIndex(o), f = 1 - P.ocean;
+  const ocean = P.ocean, white = f * o.aw[i], black = f * o.ab[i], ground = Math.max(0, f - white - black);
+  const pct = v => `${(v * 100).toFixed(v < 0.1 ? 1 : 0)}%`;
+  $("b_ocean").style.width = pct(ocean); $("b_ground").style.width = pct(ground); $("b_white").style.width = pct(white); $("b_black").style.width = pct(black);
+  $("p_ocean").textContent = pct(ocean); $("p_ground").textContent = pct(ground); $("p_white").textContent = pct(white); $("p_black").textContent = pct(black);
+  const t = o.t[i];
+  $("atwhere").textContent = P.mode === "fixed" ? `· year ${t.toFixed(0)}`
+    : P.mode === "step" ? (t < 0 ? `· ${fmtTime(-t)} before the change` : t < 1 / 365.25 ? "· the moment of the change" : `· ${fmtTime(t)} after the change`)
+    : `· L = ${o.L[i].toFixed(2)}${o.leg[i] ? " (dimming)" : ""}`;
+  $("readout").innerHTML = `Daisy planet <b>${o.T[i].toFixed(1)} °C</b> (white patches ${o.Tw[i].toFixed(1)}, black ${o.Tb[i].toFixed(1)}) · bare planet <b>${o.Tref[i].toFixed(1)} °C</b> · albedo ${o.A[i].toFixed(2)}`;
+}
+
+function writeSummary(){
+  const P = runState, s = summarise(P, result), el = $("summary");
+  const sg = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1);
+  if (s.mode === "step"){
+    const dir = (v) => v >= 0 ? "warms" : "cools";
+    let t = `The sun jumps from L = ${P.Lb.toFixed(2)} to ${P.La.toFixed(2)} at year 0. `;
+    t += `<b>Bare planet</b> ${dir(s.dR)} by <b>${Math.abs(s.dR).toFixed(1)} °C</b>` + (s.t63 !== null ? `, two-thirds of the way after <b>${fmtTime(s.t63)}</b>. ` : ". ");
+    const overshoot = Math.abs(s.peak) > Math.abs(s.dT) + 0.5;
+    if (overshoot) t += `<b>Daisy planet</b> peaks at <b>${sg(s.peak)} °C</b> after ${fmtTime(s.tPeak)}, then the daisies take it to <b>${sg(s.dT)} °C</b>`;
+    else t += `<b>Daisy planet</b> changes by <b>${sg(s.dT)} °C</b>`;
+    t += s.moving ? ", and it is still changing at the end of the run." : s.tSettle > 0 ? `, settled after about <b>${fmtTime(s.tSettle)}</b>.` : ".";
+    el.innerHTML = t; return;
+  }
+  if (s.mode === "fixed"){
+    el.innerHTML = `The daisies start from seeds with the planet at ${s.T0.toFixed(1)} °C. Second half of the run: daisy planet <b>${s.mT.toFixed(1)} °C</b>, bare planet <b>${s.mR.toFixed(1)} °C</b>. Daisies cover <b>${Math.round((s.mw + s.mb) * 100)}%</b> of the land (white ${Math.round(s.mw * 100)}%, black ${Math.round(s.mb * 100)}%).`;
+    return;
+  }
+  const r = (a) => a ? `L = ${a[0].toFixed(2)} to ${a[1].toFixed(2)}` : "nowhere in this range";
+  let t = `Brightening: daisies survive from <b>${r(s.alive)}</b>. Within 5 °C of their favourite: daisy planet <b>${r(s.near)}</b>, bare planet <b>${r(s.nearB)}</b>.`;
+  if (s.mode === "updown" && s.alive){
+    if (!s.topDead) t += " Dimming: the daisies are still alive at the brightest sun.";
+    else t += s.regain !== null ? ` Dimming: daisies return only at <b>L = ${s.regain.toFixed(2)}</b>.` : " Dimming: the daisies don't return within this range.";
+    if (s.low !== null && s.low < s.alive[0] - 0.02)
+      t += s.low <= Math.min(P.Lmin, P.Lmax) + 0.01
+        ? ` They are still alive at <b>L = ${s.low.toFixed(2)}</b>, below the L = ${s.alive[0].toFixed(2)} at which they first appeared.`
+        : ` They last down to <b>L = ${s.low.toFixed(2)}</b>, below the L = ${s.alive[0].toFixed(2)} at which they first appeared.`;
+  }
+  el.innerHTML = t;
+}
+
+let timer = null, runState = null;
+function run(){ runState = { ...state }; result = simulate(runState); cursor = -1; writeSummary(); render(); saveHash(); }
+function schedule(){ clearTimeout(timer); timer = setTimeout(run, 60); }
+function onInput(){ readState(); refreshLabels(); schedule(); }
+
+function pick(e){
+  const id = e.currentTarget.id, c = charts[id]; if (!c || !result) return;
+  const rect = e.currentTarget.getBoundingClientRect(), px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const xs = c.cfg.x, ys = c.cfg.series[c.cfg.series.length - 1].y;
+  let best = -1, bd = Infinity;
+  const step = Math.max(1, Math.floor(xs.length / 1200));
+  for (let i = 0; i < xs.length; i += step){
+    if (c.cfg.xlog && xs[i] < c.cfg.xr[0]) continue;
+    const dx = c.X(xs[i]) - px, dy = (c.Y(ys[i]) - py) * 0.15;
+    const d = dx * dx + dy * dy; if (d < bd){ bd = d; best = i; }
+  }
+  cursor = best; render();
+}
+
+function saveFile(name, text, type){
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function init(){
+  loadHash();
+  writeState(); refreshLabels();
+  for (const k of NUM) $(k).addEventListener("input", onInput);
+  $("logx").addEventListener("change", () => { readState(); runState.logx = state.logx; cursor = -1; render(); saveHash(); });
+  document.querySelectorAll("input[name=mode]").forEach(r => r.addEventListener("change", onInput));
+  document.querySelectorAll("input[name=planet]").forEach(r => r.addEventListener("change", () => { state.ocean = +r.value; writeState(); refreshLabels(); run(); }));
+  $("reset").addEventListener("click", () => { state = { ...DEFAULTS }; writeState(); refreshLabels(); run(); });
+  $("keep").addEventListener("click", () => { if (!result) return; kept = { o: result, P: { ...runState } }; $("unkeep").disabled = false; $("keptNote").textContent = `Kept: ${keptLabel(kept.P)}. It shows while the kind of sun is the same.`; render(); });
+  $("unkeep").addEventListener("click", () => { kept = null; $("unkeep").disabled = true; $("keptNote").textContent = "Keep a run, then change the planet: both show on the charts, the kept run faint."; render(); });
+  for (const id of ["c1", "c2"]){ $(id).addEventListener("pointermove", pick); $(id).addEventListener("pointerdown", pick); $(id).addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse"){ cursor = -1; render(); } }); }
+  $("dlData").addEventListener("click", () => { if (!result || !runState) return; const t = exportTable(runState, result); saveFile(fileStem(runState) + "_run.csv", toCSV(t.header, t.rows), "text/csv;charset=utf-8"); });
+  $("dlSettings").addEventListener("click", (e) => { e.preventDefault(); if (!runState) return; saveFile(fileStem(runState) + "_settings.txt", settingsText(runState, location.href.split("#")[0] + hashOf(runState), new Date().toISOString().slice(0, 10)), "text/plain;charset=utf-8"); });
+  window.addEventListener("resize", () => render());
+  try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => render()); } catch (e) {}
+  run();
+}
+init();
+</script>
+</body>
+</html>
