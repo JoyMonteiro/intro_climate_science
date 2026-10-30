@@ -1,14 +1,10 @@
 ---
 layout: default
 title: Introduction to Climate Science
-subtitle: "[COURSE CODE] · [Semester Year] · [Instructor name]"
+subtitle: "EC2113 · Semester 2 · Module 3 · Joy Monteiro"
 footer: |
-  Contact: [email or office hours]
-
   [License — e.g. slides © Instructor, CC BY 4.0]
 ---
-
-[Two-sentence course description. What the course covers and who it is for.]
 
 ## Lectures
 

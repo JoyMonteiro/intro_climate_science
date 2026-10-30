@@ -21,5 +21,5 @@ no theme. Edit `index.md` for the content. The look lives in
    An entry whose title has no link shows as upcoming (greyed out).
    Keep the `{: .lectures}` line directly under the list.
 
-Course details (code, semester, instructor, description, contact and license)
+Course details (code, semester, module, instructor and license)
 are in the front matter at the top of `index.md`.
