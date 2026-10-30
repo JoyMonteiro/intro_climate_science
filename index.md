@@ -8,10 +8,8 @@ footer: |
 
 ## Lectures
 
-1. **Example: Earth's energy balance**
-   *[date]* · [One-line summary. Add a link around the title once the lecture is published.]
-2. **Example: The greenhouse effect**
-   *[date]* · [One-line summary.]
+1. **O1 · Climate science is accounting**
+   *28 October 2026* · Why a planet's energy books must balance, why no single place on Earth is in balance, and how the atmosphere and ocean move energy, mass and momentum to keep them balanced. [Lecture notes (PDF)](lectures/notes/o1_lecture_notes.pdf)
 {: .lectures}
 
 ## Tutorials
