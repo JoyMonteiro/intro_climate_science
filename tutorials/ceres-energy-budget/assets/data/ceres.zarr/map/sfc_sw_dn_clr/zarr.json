@@ -1,0 +1,46 @@
+{
+  "shape": [
+    181,
+    90,
+    180
+  ],
+  "data_type": "int16",
+  "chunk_grid": {
+    "name": "regular",
+    "configuration": {
+      "chunk_shape": [
+        12,
+        90,
+        180
+      ]
+    }
+  },
+  "chunk_key_encoding": {
+    "name": "default",
+    "configuration": {
+      "separator": "/"
+    }
+  },
+  "fill_value": -32768,
+  "codecs": [
+    {
+      "name": "bytes",
+      "configuration": {
+        "endian": "little"
+      }
+    },
+    {
+      "name": "gzip",
+      "configuration": {
+        "level": 6
+      }
+    }
+  ],
+  "attributes": {
+    "scale": 0.1,
+    "units": "W m-2"
+  },
+  "zarr_format": 3,
+  "node_type": "array",
+  "storage_transformers": []
+}

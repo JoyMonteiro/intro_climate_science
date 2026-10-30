@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CERES energy budget explorer</title>
+<link rel="icon" href="data:,">
+<link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/app.css">
+<script type="module" src="assets/js/app.js"></script>
+</head>
+<body>
+<header class="top">
+  <h1>CERES energy budget explorer</h1>
+  <nav class="tabs" aria-label="Views"></nav>
+  <button id="aboutBtn" class="btn about-btn" type="button">About the data</button>
+</header>
+<main id="view" class="view"><p class="loading">Loading the data…</p></main>
+
+<dialog id="about" aria-labelledby="aboutTitle">
+  <h2 id="aboutTitle" tabindex="-1" autofocus>About the data</h2>
+  <p><b>Radiation:</b> CERES EBAF Edition 4.2.1 (NASA Langley), monthly means from January 2010 to January 2025.
+    Here the 1° grid is averaged onto a 2° grid, weighting each cell by its area.
+    DOI <a href="https://doi.org/10.5067/TERRA-AQUA-NOAA20/CERES/EBAF_L3B004.2.1" target="_blank" rel="noopener">10.5067/TERRA-AQUA-NOAA20/CERES/EBAF_L3B004.2.1</a>.</p>
+  <p><b>Sign convention:</b> positive means energy going into the system named: into the Earth at the top of the
+    atmosphere, into the surface at the surface, and into the atmosphere for the column.</p>
+  <p><b>Anomalies</b> are differences from the 2010–2024 average of the same calendar months.</p>
+  <p><b>Global means</b> are area-weighted over the whole Earth. For the two albedos they are the global reflected sunlight
+    divided by the global incoming sunlight, so polar-night cells, where an albedo has no value, still count through their fluxes.</p>
+  <p><b>El Niño and La Niña:</b> the NOAA CPC Niño-3.4 sea-surface temperature anomaly (ERSSTv5, 1991–2020 base).
+    Shading marks spells of at least five months when its 3-month mean is at or above +0.5 °C (El Niño) or at or below −0.5 °C (La Niña).</p>
+  <p><b>Coastlines:</b> Natural Earth 110 m (public domain). <b>Font:</b> Inter (SIL Open Font License).</p>
+  <p><a href="handout.pdf">The handout (PDF)</a> goes with this app.</p>
+  <form method="dialog"><button class="btn" type="submit">Close</button></form>
+</dialog>
+</body>
+</html>

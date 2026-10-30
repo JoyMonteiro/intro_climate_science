@@ -1,0 +1,899 @@
+{
+ "base": {
+  "toa_sw_all": "toa_sw_all_mon",
+  "toa_lw_all": "toa_lw_all_mon",
+  "toa_net_all": "toa_net_all_mon",
+  "toa_sw_clr": "toa_sw_clr_t_mon",
+  "toa_lw_clr": "toa_lw_clr_t_mon",
+  "sfc_sw_dn_all": "sfc_sw_down_all_mon",
+  "sfc_sw_up_all": "sfc_sw_up_all_mon",
+  "sfc_lw_dn_all": "sfc_lw_down_all_mon",
+  "sfc_lw_up_all": "sfc_lw_up_all_mon",
+  "sfc_sw_dn_clr": "sfc_sw_down_clr_t_mon",
+  "sfc_sw_up_clr": "sfc_sw_up_clr_t_mon",
+  "sfc_lw_dn_clr": "sfc_lw_down_clr_t_mon",
+  "sfc_lw_up_clr": "sfc_lw_up_clr_t_mon",
+  "cld_frac": "cldarea_total_daynight_mon",
+  "cld_temp": "cldtemp_total_daynight_mon"
+ },
+ "fields": [
+  {
+   "id": "solar",
+   "label": "Incoming sunlight",
+   "group": "TOA",
+   "units": "W m-2",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    0.0,
+    550.0
+   ],
+   "range_anom": 30.0,
+   "note": "Always positive: sunlight arriving at the top of the atmosphere."
+  },
+  {
+   "id": "asr",
+   "label": "Absorbed sunlight",
+   "group": "TOA",
+   "units": "W m-2",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    0.0,
+    400.0
+   ],
+   "range_anom": 40.0,
+   "note": "Always positive: sunlight taken in by the Earth."
+  },
+  {
+   "id": "olr",
+   "label": "Outgoing longwave",
+   "group": "TOA",
+   "units": "W m-2",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_lw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    100.0,
+    320.0
+   ],
+   "range_anom": 30.0,
+   "note": "Always positive: infrared energy the Earth sends to space (a loss)."
+  },
+  {
+   "id": "toa_net",
+   "label": "Net radiation (TOA)",
+   "group": "TOA",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the Earth gains energy by radiation at the top of the atmosphere."
+  },
+  {
+   "id": "albedo",
+   "label": "Planetary albedo",
+   "group": "TOA",
+   "units": "fraction",
+   "kind": "seq",
+   "formula": {
+    "ratio": {
+     "num": [
+      [
+       1.0,
+       "toa_sw_all"
+      ]
+     ],
+     "den": [
+      [
+       1.0,
+       "toa_net_all"
+      ],
+      [
+       1.0,
+       "toa_sw_all"
+      ],
+      [
+       1.0,
+       "toa_lw_all"
+      ]
+     ],
+     "min_den": 10.0
+    }
+   },
+   "range_mean": [
+    0.0,
+    0.8
+   ],
+   "range_anom": 0.1,
+   "note": "Fraction of incoming sunlight reflected to space; higher means more reflected."
+  },
+  {
+   "id": "asr_clr",
+   "label": "Absorbed sunlight, clear-sky",
+   "group": "TOA clear-sky",
+   "units": "W m-2",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "toa_sw_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    0.0,
+    400.0
+   ],
+   "range_anom": 40.0,
+   "note": "Always positive: sunlight the Earth would take in without clouds."
+  },
+  {
+   "id": "olr_clr",
+   "label": "Outgoing longwave, clear-sky",
+   "group": "TOA clear-sky",
+   "units": "W m-2",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_lw_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    100.0,
+    320.0
+   ],
+   "range_anom": 30.0,
+   "note": "Always positive: infrared the Earth would send to space without clouds (a loss)."
+  },
+  {
+   "id": "toa_net_clr",
+   "label": "Net radiation, clear-sky",
+   "group": "TOA clear-sky",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "toa_sw_clr"
+     ],
+     [
+      -1.0,
+      "toa_lw_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the Earth gains energy by radiation at the top of the atmosphere."
+  },
+  {
+   "id": "toa_cre_sw",
+   "label": "Cloud effect, shortwave",
+   "group": "Cloud effect (TOA)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_sw_clr"
+     ],
+     [
+      -1.0,
+      "toa_sw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -120.0,
+    120.0
+   ],
+   "range_anom": 30.0,
+   "note": "Positive: clouds make the Earth gain energy compared with clear skies."
+  },
+  {
+   "id": "toa_cre_lw",
+   "label": "Cloud effect, longwave",
+   "group": "Cloud effect (TOA)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_lw_clr"
+     ],
+     [
+      -1.0,
+      "toa_lw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -80.0,
+    80.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: clouds make the Earth gain energy compared with clear skies."
+  },
+  {
+   "id": "toa_cre_net",
+   "label": "Cloud effect, net",
+   "group": "Cloud effect (TOA)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_sw_clr"
+     ],
+     [
+      -1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_clr"
+     ],
+     [
+      -1.0,
+      "toa_lw_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -100.0,
+    100.0
+   ],
+   "range_anom": 30.0,
+   "note": "Positive: clouds make the Earth gain energy compared with clear skies."
+  },
+  {
+   "id": "sfc_sw_net",
+   "label": "Net shortwave (surface)",
+   "group": "Surface",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -300.0,
+    300.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_lw_net",
+   "label": "Net longwave (surface)",
+   "group": "Surface",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -150.0,
+    150.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_net",
+   "label": "Net radiation (surface)",
+   "group": "Surface",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_all"
+     ],
+     [
+      1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_albedo",
+   "label": "Surface albedo",
+   "group": "Surface",
+   "units": "fraction",
+   "kind": "seq",
+   "formula": {
+    "ratio": {
+     "num": [
+      [
+       1.0,
+       "sfc_sw_up_all"
+      ]
+     ],
+     "den": [
+      [
+       1.0,
+       "sfc_sw_dn_all"
+      ]
+     ],
+     "min_den": 10.0
+    }
+   },
+   "range_mean": [
+    0.0,
+    0.9
+   ],
+   "range_anom": 0.15,
+   "note": "Fraction of sunlight reaching the surface that it reflects; higher means more reflected."
+  },
+  {
+   "id": "sfc_sw_net_clr",
+   "label": "Net shortwave, clear-sky",
+   "group": "Surface clear-sky",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -300.0,
+    300.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_lw_net_clr",
+   "label": "Net longwave, clear-sky",
+   "group": "Surface clear-sky",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -150.0,
+    150.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_net_clr",
+   "label": "Net radiation, clear-sky",
+   "group": "Surface clear-sky",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_clr"
+     ],
+     [
+      1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 40.0,
+   "note": "Positive: the surface gains energy by radiation."
+  },
+  {
+   "id": "sfc_cre_sw",
+   "label": "Cloud effect, shortwave",
+   "group": "Cloud effect (surface)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -150.0,
+    150.0
+   ],
+   "range_anom": 30.0,
+   "note": "Positive: clouds make the surface gain energy compared with clear skies."
+  },
+  {
+   "id": "sfc_cre_lw",
+   "label": "Cloud effect, longwave",
+   "group": "Cloud effect (surface)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -80.0,
+    80.0
+   ],
+   "range_anom": 20.0,
+   "note": "Positive: clouds make the surface gain energy compared with clear skies."
+  },
+  {
+   "id": "sfc_cre_net",
+   "label": "Cloud effect, net",
+   "group": "Cloud effect (surface)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_clr"
+     ],
+     [
+      1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -120.0,
+    120.0
+   ],
+   "range_anom": 30.0,
+   "note": "Positive: clouds make the surface gain energy compared with clear skies."
+  },
+  {
+   "id": "col_sw",
+   "label": "Shortwave absorbed (column)",
+   "group": "Column (atmosphere)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -150.0,
+    150.0
+   ],
+   "range_anom": 15.0,
+   "note": "Positive: the atmosphere gains energy by radiation."
+  },
+  {
+   "id": "col_lw",
+   "label": "Longwave (column)",
+   "group": "Column (atmosphere)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      -1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -250.0,
+    250.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: the atmosphere gains energy by radiation."
+  },
+  {
+   "id": "col_net",
+   "label": "Net radiation (column)",
+   "group": "Column (atmosphere)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_all"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_all"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: the atmosphere gains energy by radiation."
+  },
+  {
+   "id": "col_net_clr",
+   "label": "Net radiation, clear-sky (column)",
+   "group": "Column (atmosphere)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_net_all"
+     ],
+     [
+      1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "toa_sw_clr"
+     ],
+     [
+      -1.0,
+      "toa_lw_clr"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_clr"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -200.0,
+    200.0
+   ],
+   "range_anom": 25.0,
+   "note": "Positive: the atmosphere gains energy by radiation."
+  },
+  {
+   "id": "col_cre_net",
+   "label": "Cloud effect, net (column)",
+   "group": "Column (atmosphere)",
+   "units": "W m-2",
+   "kind": "div",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "toa_sw_clr"
+     ],
+     [
+      -1.0,
+      "toa_sw_all"
+     ],
+     [
+      1.0,
+      "toa_lw_clr"
+     ],
+     [
+      -1.0,
+      "toa_lw_all"
+     ],
+     [
+      -1.0,
+      "sfc_sw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_sw_up_all"
+     ],
+     [
+      1.0,
+      "sfc_sw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_sw_up_clr"
+     ],
+     [
+      -1.0,
+      "sfc_lw_dn_all"
+     ],
+     [
+      1.0,
+      "sfc_lw_up_all"
+     ],
+     [
+      1.0,
+      "sfc_lw_dn_clr"
+     ],
+     [
+      -1.0,
+      "sfc_lw_up_clr"
+     ]
+    ]
+   },
+   "range_mean": [
+    -60.0,
+    60.0
+   ],
+   "range_anom": 20.0,
+   "note": "Positive: clouds make the atmosphere gain energy compared with clear skies."
+  },
+  {
+   "id": "cld_frac",
+   "label": "Cloud fraction",
+   "group": "Clouds",
+   "units": "%",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "cld_frac"
+     ]
+    ]
+   },
+   "range_mean": [
+    0.0,
+    100.0
+   ],
+   "range_anom": 20.0,
+   "note": "Share of the area covered by cloud; higher means cloudier."
+  },
+  {
+   "id": "cld_temp",
+   "label": "Cloud-top temperature",
+   "group": "Clouds",
+   "units": "K",
+   "kind": "seq",
+   "formula": {
+    "terms": [
+     [
+      1.0,
+      "cld_temp"
+     ]
+    ]
+   },
+   "range_mean": [
+    200.0,
+    290.0
+   ],
+   "range_anom": 10.0,
+   "note": "Temperature of the cloud tops; lower means higher, colder clouds."
+  }
+ ]
+}
