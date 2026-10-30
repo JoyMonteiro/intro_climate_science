@@ -8,8 +8,8 @@ footer: |
 
 ## Lectures
 
-1. **O1 · Climate science is accounting**
-   *28 October 2026* · Why a planet's energy books must balance, why no single place on Earth is in balance, and how the atmosphere and ocean move energy, mass and momentum to keep them balanced. [Lecture notes (PDF)](lectures/notes/o1_lecture_notes.pdf)
+1. **[O1 · Climate science is accounting](lectures/notes/o1/)**
+   *28 October 2026* · Why a planet's energy books must balance, why no single place on Earth is in balance, and how the atmosphere and ocean move energy, mass and momentum to keep them balanced.
 {: .lectures}
 
 ## Tutorials
