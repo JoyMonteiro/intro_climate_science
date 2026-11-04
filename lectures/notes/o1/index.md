@@ -16,6 +16,8 @@ In the last decade or so astronomers have found thousands of planets around othe
 
 Two things decide how much starlight a planet gets: how hot its star is, and how far away the planet is. A cool star with a close planet can give the same starlight as a hot star with a distant one. The **habitable zone** is the band around a star where a rocky planet can keep surface water liquid. Earth is in it; so, on current estimates, are Proxima b and some of the TRAPPIST-1 planets, and probably Mars. Venus is not.
 
+**A student's question: shouldn't the planets sit closer as the star gets cooler?** In distance, yes. TRAPPIST-1 e, f and g orbit at 0.029, 0.038 and 0.047 AU, and Proxima b at 0.049 AU. The habitable zone is about 0.025–0.050 AU around TRAPPIST-1, against about 0.98–1.69 AU around the Sun. But the diagram's x-axis is **starlight received**, not distance. On the Solar System row the two line up (S = 1/a², with a in AU), so that row reads like a distance diagram. Across rows it doesn't. What the diagram shows is a smaller effect: around cooler stars the zone needs *less* starlight (its inner edge moves from 1.04 to 0.86 times Earth's, its outer edge from 0.35 to 0.22), because redder light warms a planet more per W/m². There is less Rayleigh scattering, more near-infrared absorption by water vapour and CO₂, and ice and snow are darker in the near-infrared. Read as distance, that lean looks like "further out". The orbits are now marked beside each planet on the slide.
+
 ## 2. A planet as one dot: the books must balance
 
 The simplest climate model treats a planet as a single dot: sunlight in, infrared out.

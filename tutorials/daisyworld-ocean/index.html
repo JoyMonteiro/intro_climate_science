@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daisyworld with an Ocean</title>
+<style>
+/* Daisyworld with an Ocean: tokens and layout copied from app 1 (daisyworld_1box.html). */
+:root{
+  --bg:#F7F8F6; --panel:#FFFFFF; --ink:#1C252D; --muted:#5A6670; --rule:#D5DBD8;
+  --heat:#C9531A; --cool:#00809A; --place:#4A55A2; --band:rgba(0,128,154,.08);
+  --ocean:#D3E6F0; --ground:#C9B48E; --white:#FFFFFF; --black:#1C252D; --grid:#E6EAE8; --bdaisy:#1C252D;
+  --accent:#00809A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943;
+    --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --band:rgba(63,184,204,.10);
+    --ocean:#264556; --ground:#8E7A55; --white:#F2F4F5; --black:#05080A; --grid:#252E36; --bdaisy:#7F8B96;
+    --accent:#3FB8CC;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943;
+  --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --band:rgba(63,184,204,.10);
+  --ocean:#264556; --ground:#8E7A55; --white:#F2F4F5; --black:#05080A; --grid:#252E36; --bdaisy:#7F8B96;
+  --accent:#3FB8CC;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-padding-top:calc(var(--headh,0px) + 8px)}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:26px;line-height:1.2;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 18px;max-width:62em}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:861px){#controls{position:sticky;top:calc(var(--headh,0px) + 12px);max-height:calc(100vh - var(--headh,0px) - 24px);overflow-y:auto}}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 14px 6px}
+fieldset{border:0;border-top:1px solid var(--rule);margin:0 0 6px;padding:10px 0 4px}
+fieldset:first-of-type{border-top:0;padding-top:0}
+legend{font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0}
+.row{margin:8px 0 10px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.row label output{font-variant-numeric:tabular-nums;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:2px 0 0}
+select,button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:7px 10px;min-height:38px}
+button{cursor:pointer}
+button:hover,select:hover{border-color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.seg label{flex:1 1 auto;display:flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;font-size:13.5px;cursor:pointer;min-height:38px}
+.seg input{accent-color:var(--accent)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;min-height:32px}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+details summary{cursor:pointer;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:10px 0;border-top:1px solid var(--rule)}
+.seedrow{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+.dim{opacity:.45;pointer-events:none}
+.summary{font-size:15px;margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0}
+.summary b{font-variant-numeric:tabular-nums}
+.chartbox{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px 10px 4px;margin-bottom:14px}
+.charttitle{font-weight:700;font-size:14.5px;margin:2px 4px 2px}
+.keys{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin:2px 4px 4px}
+.key{display:inline-flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:22px;height:0;border-top:3px solid currentColor}
+.key i.dash{border-top-style:dashed}
+.key i.box{height:10px;border:0;border-radius:2px}
+canvas{display:block;width:100%;height:clamp(230px,30vh,340px);touch-action:pan-y}
+.planet{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px}
+.bar{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);margin:8px 0 6px}
+.bar div{height:100%;transition:width .15s}
+.barkeys{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted)}
+.barkeys span b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid var(--rule);vertical-align:-1px;margin-right:5px}
+.readout{font-size:14px;margin-top:6px;font-variant-numeric:tabular-nums}
+.notes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;margin-top:22px}
+.notes .sources{grid-column:1/-1}
+@media (max-width:860px){.notes{grid-template-columns:minmax(0,1fr)}}
+.notes section{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.notes h2{font-size:17px;margin:0 0 8px}
+.notes p,.notes li{font-size:14.5px}
+.notes ol{padding-left:20px;margin:0}
+.notes li{margin:0 0 8px}
+.eq{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;line-height:1.55}
+.eq div{display:grid;grid-template-columns:8.5ch minmax(0,1fr)}
+.eq span{color:var(--muted)}
+.small{font-size:12.5px;color:var(--muted)}
+a{color:var(--accent)}
+.dlrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:4px 0 10px}
+/* App 2 additions: tabs, preset bar, progress, things to try. */
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--rule);margin:0 0 16px}
+.tabs button{border:1px solid var(--rule);border-bottom:0;border-radius:8px 8px 0 0;background:var(--bg);margin-bottom:-1px}
+.tabs button[aria-selected="true"]{background:var(--panel);font-weight:700}
+.tabpanel[hidden]{display:none}
+/* Tabs and presets stay at the top of the screen while the page scrolls. */
+.stickyhead{position:sticky;top:0;z-index:10;background:var(--bg);margin:0 -16px 14px;padding:8px 16px 0;border-bottom:1px solid var(--rule)}
+.stickyhead .tabs{margin:0 0 10px}
+.stickyhead .presetbar{margin:0 0 10px}
+@media (max-width:700px){.stickyhead .presetbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}.stickyhead .presetbar button{flex:0 0 auto}}
+.presetbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.presetbar button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.progress{height:6px;background:var(--grid);border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.progress div{height:100%;width:0;background:var(--accent);transition:width .1s}
+.try{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-top:14px}
+.try h2,.exportbox h2{font-size:17px;margin:0 0 8px}
+.exportbox{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-top:14px}
+/* Task 7: Model tab. */
+.presetinfo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 18px;margin:-4px 0 12px}
+.blurb{color:var(--muted);margin:0;flex:1 1 28em;max-width:62em}
+.check.keep{margin:0;flex:0 1 auto}
+.check.keep .why{margin-left:4px}
+.checks{display:flex;flex-wrap:wrap;gap:0 22px}
+.presetbar button .num{font-weight:700;color:var(--muted);margin-right:6px;font-variant-numeric:tabular-nums}
+.presetbar button[aria-pressed="true"] .num{color:var(--accent)}
+.status{display:flex;align-items:center;gap:10px;min-height:22px;margin:0 0 10px;font-size:13.5px;color:var(--muted)}
+.status .progress{flex:0 0 140px;margin:0}
+.status:not(.running) .progress{display:none}
+.notice{margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--heat);background:var(--panel);border-radius:0 8px 8px 0;font-size:14.5px}
+.note{margin:0 0 14px;padding:10px 14px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;color:var(--muted);font-size:14px}
+.note.inbox{margin:6px 4px 10px;border-style:dashed}
+#charts.running canvas{opacity:.55}
+canvas.short{height:clamp(150px,20vh,220px);margin-top:4px}
+[hidden]{display:none!important}
+.charthead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin:0 4px 2px 0}
+.segbtns{display:inline-flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.segbtns button{border:0;border-radius:0;min-height:30px;padding:3px 10px;font-size:13px;background:var(--panel)}
+.segbtns button+button{border-left:1px solid var(--rule)}
+.segbtns button[aria-pressed="true"]{background:var(--accent);color:var(--panel);font-weight:700}
+.key i.ghost{border-top:2px dashed currentColor;opacity:.8}
+.key i.dotted{border-top-style:dotted}
+.key i.box.gbox{border:1.5px dashed currentColor;background:transparent}
+.key i.dot{width:10px;height:10px;border:1.5px solid currentColor;border-radius:50%}
+.timebar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 12px;padding:8px 12px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;font-size:14px}
+.timebar select{min-height:34px;padding:4px 8px}
+.timebar .winstart{flex:1 1 220px;display:flex;flex-wrap:wrap;align-items:center;gap:0 10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.timebar .winstart input{flex:1 1 140px;width:auto;min-width:0}
+/* The planet panel floats beside the pointer as a tooltip over the time charts. */
+.planet.tip{position:fixed;left:0;top:0;z-index:20;width:min(320px,calc(100vw - 32px));padding:10px 12px;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.planet .bar{height:22px;margin:6px 0 5px}
+.planet .barkeys{font-size:12.5px;gap:2px 12px}
+.planet .readout{display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:1px 14px;font-size:13px;margin-top:8px;padding-top:6px;border-top:1px solid var(--rule)}
+.planet .readout span{color:var(--muted)}
+.planet .readout b{text-align:right}
+.pickhint{margin:-6px 4px 14px}
+.sunrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:6px 0 2px}
+.sunrow button[aria-pressed="true"]{border-color:var(--heat);color:var(--heat);font-weight:700}
+.sunyear{display:flex;align-items:center;gap:6px;font-size:14px}
+input[type=number]{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:5px 8px;width:5.5em;min-height:36px}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled:hover{border-color:var(--rule)}
+.why{font-size:12.5px;color:var(--muted)}
+.try ol{margin:0;padding-left:20px}
+.try li{margin:0 0 8px;font-size:14.5px}
+.linkbtn{border:0;background:none;padding:0;min-height:0;font:inherit;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-align:left}
+.exportbox .small{margin:0 0 8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* Task 8: How it works tab. */
+.how{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:860px){.how{grid-template-columns:minmax(0,1fr)}}
+.how-intro{margin:0 0 14px;color:var(--muted);max-width:62em}
+.how-main section{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 18px 6px;margin-bottom:14px}
+.how h2{font-size:18px;line-height:1.3;margin:0 0 8px}
+.how h3{font-size:15px;margin:16px 0 4px}
+.how p,.how li{font-size:14.5px}
+.how p{margin:0 0 10px}
+.how ul,.how ol{margin:0 0 10px;padding-left:20px}
+.how li{margin:0 0 6px}
+.how sub{font-size:.72em;line-height:0}
+.how .rule{font-weight:600;padding:6px 12px;border-left:3px solid var(--accent);background:var(--bg);border-radius:0 8px 8px 0}
+.how .words span{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-right:8px}
+.eqn{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:7px 12px;margin:0 0 10px;font-size:15.5px;line-height:1.75;font-family:"Cambria Math","STIX Two Math","Times New Roman",Times,serif}
+.eqn span{display:inline-block;white-space:nowrap}
+.eqn .eqnote{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--muted)}
+.how .symkey{list-style:none;padding-left:0}
+.how .symkey li{padding-left:1.2em;text-indent:-1.2em}
+.how .symkey b{margin-right:6px}
+.parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 12px}
+@media (max-width:700px),(min-width:861px) and (max-width:1040px){.parts{grid-template-columns:minmax(0,1fr)}}
+.part{background:var(--bg);border:1px solid var(--rule);border-top:4px solid var(--heat);border-radius:10px;padding:8px 12px 2px}
+.part.ml{border-top-color:var(--cool)}
+.part.deep{border-top-color:var(--place)}
+.part h3{margin:0 0 4px}
+.part p{font-size:14px;margin:0 0 6px}
+.part .forget{font-size:15px}
+.loopgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:8px 20px;align-items:start;margin:0 0 6px}
+.loopgrid .loopfig{grid-column:2;grid-row:1}
+.loopgrid .steps{grid-column:1;grid-row:1}
+@media (max-width:1110px){.loopgrid{grid-template-columns:minmax(0,1fr)}.loopgrid .loopfig,.loopgrid .steps{grid-column:1;grid-row:auto}}
+.loopfig{margin:0 auto;width:100%;max-width:360px}
+svg.loop{display:block;width:100%;height:auto}
+svg.loop .arc{fill:none;stroke:var(--muted);stroke-width:1.6}
+svg.loop .head{fill:var(--muted)}
+svg.loop rect{fill:var(--panel);stroke:var(--rule);stroke-width:1.5}
+svg.loop circle{fill:var(--muted)}
+svg.loop .warm rect{stroke:var(--heat)}
+svg.loop .warm circle{fill:var(--heat)}
+svg.loop .cold rect{stroke:var(--cool)}
+svg.loop .cold circle{fill:var(--cool)}
+svg.loop .num{fill:var(--panel);font-size:12px;font-weight:700}
+svg.loop .t{fill:var(--ink);font-size:13.5px;font-weight:700}
+svg.loop .s{fill:var(--muted);font-size:11.5px}
+svg.loop .mid{fill:var(--muted);font-size:12px}
+svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
+.loopkey{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.loopkey .sw{border:0;border-radius:50%}
+.loopkey .warm{background:var(--heat)}
+.loopkey .cold{background:var(--cool)}
+.loopkey .turn{background:var(--muted)}
+.how .steps li{margin-bottom:8px}
+.how .links{list-style:none;padding:10px 12px 4px;background:var(--bg);border:1px solid var(--rule);border-radius:8px}
+.how-nums{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px 6px}
+@media (min-width:861px){.how-nums{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto}}
+.how-nums h2{font-size:15.5px;margin:0 0 2px}
+.how-nums .small{margin:0 0 4px}
+.how-nums h3{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:10px 0 3px}
+.how-nums dl{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:1px 10px;margin:0 0 4px;font-size:13px;line-height:1.35}
+.how-nums dt{font-family:"Cambria Math","STIX Two Math","Times New Roman",Times,serif;font-size:14px;white-space:nowrap}
+.how-nums dd{margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.how-nums dd+dd{color:var(--muted);white-space:normal}
+.how .nw{white-space:nowrap}
+.eqn sub{margin-left:1px}
+.how-main section:last-child{margin-bottom:0}
+.how-nums dt.w{font-family:inherit;font-size:13px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Daisyworld with an Ocean</h1>
+<p class="lede">Build a planet one part at a time, from bare land to an ocean with daisies and grazers, and see how each part changes the way its temperature varies, from month to month and from century to century.</p>
+<div class="stickyhead" id="head">
+<div class="tabs" role="tablist" aria-label="Page sections">
+  <button type="button" role="tab" id="tabbtn-model" aria-controls="tab-model" aria-selected="true">Model</button>
+  <button type="button" role="tab" id="tabbtn-how" aria-controls="tab-how" aria-selected="false" tabindex="-1">How it works</button>
+</div>
+<div class="presetbar" id="presets" role="group" aria-label="Presets"></div>
+</div>
+<section class="tabpanel" id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model">
+  <div class="presetinfo"><p class="blurb" id="blurb"></p>
+    <label class="check keep"><input type="checkbox" id="keep"> <span><b>Keep this run</b> <span class="why">each run stays, dashed, under the next</span></span></label></div>
+  <div class="grid">
+    <aside class="panel" id="controls">
+      <fieldset>
+        <legend>Ocean</legend>
+        <div class="row"><label for="ctl-fo">Ocean fraction <output id="ctl-fo-o"></output></label><input type="range" id="ctl-fo" min="0" max="0.95" step="0.05"></div>
+        <div class="row" id="row-H"><label for="ctl-H">Mixed-layer depth <output id="ctl-H-o"></output></label><input type="range" id="ctl-H" min="10" max="300" step="5">
+        <p class="hint">Deeper = more heat stored, slower response.</p></div>
+        <label class="check" id="row-deep"><input type="checkbox" id="ctl-deep"> Deep ocean</label>
+      </fieldset>
+      <fieldset>
+        <legend>Life</legend>
+        <div class="checks"><label class="check"><input type="checkbox" id="ctl-life"> Daisies</label>
+        <label class="check" id="row-grazers"><input type="checkbox" id="ctl-grazers"> Grazers</label></div>
+      </fieldset>
+      <fieldset>
+        <legend>Weather</legend>
+        <div class="row"><label for="ctl-sigma">Weather size <output id="ctl-sigma-o"></output></label><input type="range" id="ctl-sigma" min="0" max="60" step="1">
+        <p class="hint">Random daily pushes, the same over land and ocean.</p></div>
+        <div class="seedrow"><button type="button" id="newWeather">New weather</button><span>weather no. <b id="seed-o"></b></span></div>
+      </fieldset>
+      <fieldset>
+        <legend>Sun and run</legend>
+        <div class="sunrow">
+          <button type="button" id="sunBtn" aria-pressed="false">Brighten the sun</button>
+          <label class="sunyear" for="sunYear">at year <input type="number" id="sunYear" min="0" max="3999" step="1" value="100"></label>
+        </div>
+        <p class="hint" id="sunHint">Makes the sun 5% brighter at that year.</p>
+        <div class="row"><label for="ctl-years">Run length <output id="ctl-years-o"></output></label><input type="range" id="ctl-years" min="500" max="4000" step="100">
+        <p class="hint">Shown after 1500 hidden years that let it settle.</p></div>
+      </fieldset>
+      <details>
+        <summary>More settings</summary>
+        <div class="row" id="row-p"><label for="ctl-p">Grazers' taste for white daisies <output id="ctl-p-o"></output></label><input type="range" id="ctl-p" min="0" max="1" step="0.05"></div>
+        <div class="row" id="row-Tg"><label for="ctl-Tg">Grazers' best temperature <output id="ctl-Tg-o"></output></label><input type="range" id="ctl-Tg" min="20" max="30" step="0.5"></div>
+        <div class="row" id="row-wg"><label for="ctl-wg">Grazers' tolerance <output id="ctl-wg-o"></output></label><input type="range" id="ctl-wg" min="2" max="10" step="0.5">
+        <p class="hint">How far from their best temperature grazers still eat well.</p></div>
+        <div class="row"><label for="ctl-L">Sun brightness <output id="ctl-L-o"></output></label><input type="range" id="ctl-L" min="0.9" max="1.2" step="0.01"></div>
+        <div class="row"><button type="button" id="reset">Reset this preset</button></div>
+      </details>
+    </aside>
+    <main>
+      <div class="status" id="status" aria-live="polite"><div class="progress" id="progress"><div></div></div><span id="statusText">Starting…</span></div>
+      <p class="notice" id="notice" hidden></p>
+      <div id="charts">
+        <div class="timebar" id="timebar">
+          <label for="winSize">Show</label>
+          <select id="winSize">
+            <option value="50">50 years</option>
+            <option value="300" selected>300 years</option>
+            <option value="1000">1000 years</option>
+            <option value="all">the whole run</option>
+          </select>
+          <label class="winstart" for="winStart"><span id="winText"></span><input type="range" id="winStart" min="0" max="1700" step="1" value="0" aria-label="Start of the years shown"></label>
+        </div>
+        <div class="chartbox" id="popBox">
+          <div class="charttitle">Populations over time</div>
+          <div class="keys" id="kPop"></div>
+          <canvas id="cZ" role="img" aria-label="Grazers over time, log scale"></canvas>
+          <canvas id="cCover" class="short" role="img" aria-label="White and black daisy cover over time"></canvas>
+        </div>
+        <p class="note" id="popNote" hidden></p>
+        <div class="chartbox" id="tempBox">
+          <div class="charthead"><div class="charttitle">Temperatures over time</div>
+            <div class="segbtns" role="group" aria-label="Temperature values"><button type="button" id="tAnnual" aria-pressed="true">Yearly averages</button><button type="button" id="tMonthly" aria-pressed="false">Monthly</button></div></div>
+          <div class="keys" id="kT"></div>
+          <canvas id="cT" role="img" aria-label="Temperatures over time"></canvas>
+        </div>
+        <div class="planet tip" id="planet" role="tooltip" hidden>
+          <div class="charttitle">The planet <span class="small" id="atwhere"></span></div>
+          <div class="bar" id="bar">
+            <div id="b_ocean" style="background:var(--ocean)"></div>
+            <div id="b_ground" style="background:var(--ground)"></div>
+            <div id="b_white" style="background:var(--white)"></div>
+            <div id="b_black" style="background:var(--black)"></div>
+          </div>
+          <div class="barkeys">
+            <span id="k_ocean"><i class="sw" style="background:var(--ocean)"></i>ocean <b id="p_ocean"></b></span>
+            <span><i class="sw" style="background:var(--ground)"></i>bare ground <b id="p_ground"></b></span>
+            <span id="k_white"><i class="sw" style="background:var(--white)"></i>white daisies <b id="p_white"></b></span>
+            <span id="k_black"><i class="sw" style="background:var(--black)"></i>black daisies <b id="p_black"></b></span>
+          </div>
+          <div class="readout" id="readout"></div>
+        </div>
+        <p class="small pickhint" id="pickHint">Move over or tap a chart to pick a moment.</p>
+        <div class="chartbox" id="varBox">
+          <div class="charthead"><div class="charttitle">How much does temperature vary at each timescale?</div>
+            <div class="segbtns" role="group" aria-label="View"><button type="button" id="vBars" aria-pressed="true">Bars</button><button type="button" id="vSpec" aria-pressed="false">Spectrum</button></div></div>
+          <div class="keys" id="kV"></div>
+          <canvas id="cBars" role="img" aria-label="Spread of whole-planet temperature averaged over a month, a year, a decade and a century"></canvas>
+          <canvas id="cSpec" role="img" aria-label="How much temperature varies at each timescale" hidden></canvas>
+          <p class="note inbox" id="varNote" hidden></p>
+          <p class="small" id="varHint"></p>
+        </div>
+      </div>
+      <section class="try" id="try"><h2>Things to try</h2>
+        <ol>
+          <li><button type="button" class="linkbtn" data-try="1">Land only.</button> Look at the month, year, decade and century bars. Do they follow the "weather alone" line? Why does averaging wash the weather out?</li>
+          <li><button type="button" class="linkbtn" data-try="2">Add a mixed layer.</button> The jitter disappears. Where did it go? Is the planet calmer at every timescale, or only at short ones?</li>
+          <li><button type="button" class="linkbtn" data-try="3">Add a deep ocean.</button> Press <b>Brighten the sun</b>. How long until the planet stops warming? Now turn the deep ocean off and try again. Why the difference?</li>
+          <li><button type="button" class="linkbtn" data-try="4">Add life.</button> Find three busts of different sizes. What was the ocean temperature doing just before each one?</li>
+          <li><button type="button" class="linkbtn" data-try="5">Compare: grazers, all land.</button> Same grazers, same weather, no ocean. Why are there no long busts?</li>
+          <li><button type="button" class="linkbtn" data-try="6">Compare: grazers, no weather.</button> Every bust is the same size. So where does the variety in step 4 come from?</li>
+          <li><button type="button" class="linkbtn" data-try="7">Clockwork cycle.</button> Change the mixed-layer depth. What happens to the time from one dip in the grazer chart to the next, and why? (Time the dips, not the circles: circles are kept at least 12 years apart, so here only every other dip gets one.)</li>
+        </ol>
+      </section>
+      <section class="exportbox" id="export"><h2>Download</h2>
+        <p class="small">CSV files open in Excel, Google Sheets or Python: one row per month, column names in row 1. Columns for parts that aren't in this run are left empty.</p>
+        <div class="dlrow"><button type="button" id="dlRun">Download whole run</button><span class="why" id="dlRunWhy"></span></div>
+        <div class="dlrow"><button type="button" id="dlBust">Download ±20 years around this bust</button><span class="why" id="dlBustWhy"></span></div>
+        <div class="dlrow"><button type="button" id="dlBusts">Download all busts (stacked)</button><span class="why" id="dlBustsWhy"></span></div>
+        <div class="dlrow"><a href="#" id="dlSettings">Download settings</a><span class="why">every setting and a link that reruns this run in the same browser (with daisies and grazers, another browser gives the same kind of run, with busts at different times)</span></div>
+      </section>
+    </main>
+  </div>
+</section>
+<section class="tabpanel notes-how" id="tab-how" role="tabpanel" aria-labelledby="tabbtn-how" hidden>
+<div class="how">
+<div class="how-main">
+<p class="how-intro">This page explains what the model on the Model tab does: what the planet is made of, the rules each part follows, how the computer turns those rules into a run, and how to read the charts. You need no maths beyond school algebra: every symbol is explained where it first appears, and every number the model uses is listed in the box alongside (at the end on a narrow screen).</p>
+
+<section id="how-parts">
+<h2>1. The planet's parts, and how fast each one forgets</h2>
+<p>Picture the planet as a few separate stores of heat, each with one temperature. A part that holds a lot of heat warms and cools slowly, so it remembers warm and cold spells for a long time. A part that holds little heat follows whatever is happening now, and soon forgets it.</p>
+<div class="parts">
+  <div class="part land"><h3>Land</h3><p>The ground and the air above it: 30% of the planet.</p><p>Heat capacity <i>C</i><sub>L</sub>&nbsp;=&nbsp;1×10⁷ J&nbsp;m⁻²&nbsp;K⁻¹</p><p class="forget">Forgets in about <b>2&nbsp;months</b></p></div>
+  <div class="part ml"><h3>Mixed layer</h3><p>The top 75&nbsp;m of the ocean, stirred by wind and waves so it warms as one: 70% of the planet.</p><p><i>C</i><sub>m</sub>&nbsp;=&nbsp;4.2×10⁶ × 75&nbsp;≈&nbsp;3.2×10⁸ J&nbsp;m⁻²&nbsp;K⁻¹, about 30 times the land</p><p class="forget">Forgets in about <b>5&nbsp;years</b></p></div>
+  <div class="part deep"><h3>Deep ocean</h3><p>About 1000&nbsp;m of water under the mixed layer. It swaps heat only with the mixed layer, and slowly.</p><p><i>C</i><sub>d</sub>&nbsp;=&nbsp;4.2×10⁹ J&nbsp;m⁻²&nbsp;K⁻¹, 420 times the land</p><p class="forget">Forgets in about <b>190&nbsp;years</b></p></div>
+</div>
+<p><b>Heat capacity</b> is how many joules it takes to warm one square metre of a part (the whole column, top to bottom) by one degree. <b>Response time</b> is how long a part takes to settle after something warms or cools it:</p>
+<p class="rule">response time&nbsp;=&nbsp;heat capacity ÷ how fast the part loses heat when it is warmer than usual</p>
+<ul class="sums">
+  <li><b>Land:</b> for each degree it is warmer, it sends <i>b</i>&nbsp;=&nbsp;2.09&nbsp;W&nbsp;m⁻² more heat to space. <span class="nw">1×10⁷ ÷ 2.09</span>&nbsp;≈&nbsp;4.8&nbsp;million seconds, about 2&nbsp;months. Next to an ocean it also loses 15&nbsp;W&nbsp;m⁻² per degree to the sea, so it is pulled along with the ocean within about a week.</li>
+  <li><b>Mixed layer:</b> <span class="nw">3.2×10⁸ ÷ 2.09</span>&nbsp;≈&nbsp;150&nbsp;million seconds, about 5&nbsp;years. A deeper mixed layer remembers longer: about 8&nbsp;months at 10&nbsp;m, about 19&nbsp;years at 300&nbsp;m.</li>
+  <li><b>Deep ocean:</b> it loses heat only to the mixed layer, at <i>γ</i><sub>o</sub>&nbsp;=&nbsp;0.7&nbsp;W&nbsp;m⁻² per degree. <span class="nw">4.2×10⁹ ÷ 0.7</span>&nbsp;=&nbsp;6×10⁹ seconds, about 190&nbsp;years.</li>
+</ul>
+<p>These three response times are the dotted lines on the Model tab's spectrum. The deep ocean shows itself most clearly when the sun brightens: about 80% of the warming arrives within 10&nbsp;years as the mixed layer catches up, and the rest creeps in over centuries as the deep ocean warms. Turn the deep ocean off and about 95% arrives within 10&nbsp;years.</p>
+</section>
+
+<section id="how-energy">
+<h2>2. The energy budget of each part</h2>
+<p>A part warms when more energy comes in than goes out, and cools when less comes in. How fast it warms depends on its heat capacity. So every part follows the same kind of budget:</p>
+<p class="rule">heat capacity × how fast the temperature changes&nbsp;=&nbsp;energy in − energy out</p>
+<p>Energy flows are measured per square metre, in W&nbsp;m⁻² (joules per second on each square metre). Two flows appear in both the land's and the mixed layer's budgets.</p>
+<h3>Sunlight in, heat out</h3>
+<ul class="terms">
+  <li><b>Sunlight.</b> The sun delivers <i>Q</i>&nbsp;=&nbsp;342 × <i>L</i> W&nbsp;m⁻², where <i>L</i>&nbsp;=&nbsp;1.05 is the sun's brightness, so <i>Q</i>&nbsp;≈&nbsp;359&nbsp;W&nbsp;m⁻². A surface reflects a fraction of it, called its <b>albedo</b> <i>A</i>, and absorbs the rest, <i>Q</i>(1 − <i>A</i>). Albedos (clouds above included): white daisies 0.50, bare ground 0.32, ocean 0.28, black daisies 0.15.</li>
+  <li><b>Heat to space.</b> A warmer surface sends out more heat: <i>a</i> + <i>b</i>·<i>T</i>, with <i>a</i>&nbsp;=&nbsp;203.3&nbsp;W&nbsp;m⁻², <i>b</i>&nbsp;=&nbsp;2.09&nbsp;W&nbsp;m⁻²&nbsp;K⁻¹ and <i>T</i> in °C. Each degree warmer sends 2.09&nbsp;W&nbsp;m⁻² more to space. At 19&nbsp;°C that is 243&nbsp;W&nbsp;m⁻², close to the 244&nbsp;W&nbsp;m⁻² that bare ground absorbs, which is why bare land on its own (<b>Land only</b>) settles near 19.5&nbsp;°C. Next to the darker ocean (albedo 0.28) the land settles warmer, near 24&nbsp;°C; with daisies it comes back to about 19&nbsp;°C.</li>
+</ul>
+<h3>Land</h3>
+<p class="words"><span>In words</span>The land's stored heat changes by the sunlight it absorbs, minus the heat it sends to space, minus the heat it passes to the ocean, plus whatever the weather adds.</p>
+<div class="eqn"><span><i>C</i><sub>L</sub> · d<i>T</i><sub>L</sub>/d<i>t</i></span> <span>= <i>Q</i>(1 − <i>A</i><sub>L</sub>)</span> <span>− (<i>a</i> + <i>b</i>·<i>T</i><sub>L</sub>)</span> <span>− <i>k</i>(<i>T</i><sub>L</sub> − <i>T</i><sub>m</sub>)</span> <span>+ weather</span></div>
+<ul class="symkey">
+  <li><b>d<i>T</i><sub>L</sub>/d<i>t</i></b> how fast the land temperature <i>T</i><sub>L</sub> is changing (kelvin per second)</li>
+  <li><b><i>A</i><sub>L</sub></b> the land's albedo, a mix of what covers it: <i>A</i><sub>L</sub>&nbsp;=&nbsp;<i>a</i><sub>w</sub>·<i>A</i><sub>w</sub> + <i>a</i><sub>b</sub>·<i>A</i><sub>b</sub> + <i>g</i>·<i>A</i><sub>g</sub>, where <i>a</i><sub>w</sub> and <i>a</i><sub>b</sub> are the fractions of land under white and black daisies and <i>g</i>&nbsp;=&nbsp;1 − <i>a</i><sub>w</sub> − <i>a</i><sub>b</sub> is bare</li>
+  <li><b><i>k</i>(<i>T</i><sub>L</sub> − <i>T</i><sub>m</sub>)</b> heat passed to the ocean, <i>k</i>&nbsp;=&nbsp;15&nbsp;W&nbsp;m⁻² for each degree the land is warmer than the mixed layer (<i>T</i><sub>m</sub>); with no ocean this term is left out</li>
+</ul>
+<h3>Mixed layer</h3>
+<p class="words"><span>In words</span>The same budget with the ocean's albedo, plus the heat that arrives from the land, minus the heat passed down to the deep ocean, plus the same weather as over the land.</p>
+<div class="eqn"><span><i>C</i><sub>m</sub> · d<i>T</i><sub>m</sub>/d<i>t</i></span> <span>= <i>Q</i>(1 − <i>A</i><sub>o</sub>)</span> <span>− (<i>a</i> + <i>b</i>·<i>T</i><sub>m</sub>)</span> <span>+ <i>k</i>·(1 − <i>f</i><sub>o</sub>)/<i>f</i><sub>o</sub>·(<i>T</i><sub>L</sub> − <i>T</i><sub>m</sub>)</span> <span>− <i>γ</i><sub>o</sub>(<i>T</i><sub>m</sub> − <i>T</i><sub>d</sub>)</span> <span>+ weather</span></div>
+<ul class="symkey">
+  <li><b>(1 − <i>f</i><sub>o</sub>)/<i>f</i><sub>o</sub></b> the ocean covers <i>f</i><sub>o</sub>&nbsp;=&nbsp;0.7 of the planet and the land 0.3, so the heat leaving each square metre of land is shared over 0.7/0.3&nbsp;≈&nbsp;2.3 square metres of ocean</li>
+  <li><b><i>γ</i><sub>o</sub>(<i>T</i><sub>m</sub> − <i>T</i><sub>d</sub>)</b> heat passed down to the deep ocean (<i>T</i><sub>d</sub>), <i>γ</i><sub>o</sub>&nbsp;=&nbsp;0.7&nbsp;W&nbsp;m⁻² per degree; with the deep ocean off, <i>γ</i><sub>o</sub>&nbsp;=&nbsp;0</li>
+</ul>
+<h3>Deep ocean</h3>
+<p class="words"><span>In words</span>The deep ocean gets no sunlight and sends nothing to space. It only swaps heat with the mixed layer above it.</p>
+<div class="eqn"><span><i>C</i><sub>d</sub> · d<i>T</i><sub>d</sub>/d<i>t</i></span> <span>= <i>γ</i><sub>o</sub>(<i>T</i><sub>m</sub> − <i>T</i><sub>d</sub>)</span></div>
+</section>
+
+<section id="how-life">
+<h2>3. Daisies and grazers</h2>
+<p>Life touches the climate in one way only: it changes the colour of the land. The climate touches life in one way only: temperature sets how fast daisies grow and how hungry the grazers are. Rates here are per day.</p>
+<h3>Colour and patch temperature</h3>
+<p>A patch of white daisies absorbs less sunlight than the land around it, so it is cooler; a patch of black daisies is warmer. With <i>q</i>&nbsp;=&nbsp;20&nbsp;K:</p>
+<div class="eqn"><span><i>T</i><sub>w</sub>&nbsp;=&nbsp;<i>T</i><sub>L</sub> + <i>q</i>(<i>A</i><sub>L</sub> − <i>A</i><sub>w</sub>)</span>&emsp;&emsp;<span class="gap"><i>T</i><sub>b</sub>&nbsp;=&nbsp;<i>T</i><sub>L</sub> + <i>q</i>(<i>A</i><sub>L</sub> − <i>A</i><sub>b</sub>)</span></div>
+<p>On mostly bare land (<i>A</i><sub>L</sub>&nbsp;≈&nbsp;0.32), white patches are 3.6&nbsp;K cooler than the land and black patches 3.4&nbsp;K warmer.</p>
+<h3>Growth and crowding</h3>
+<p>Daisies grow best at <i>T</i><sub>opt</sub>&nbsp;=&nbsp;22.5&nbsp;°C, more slowly either side, and not at all below 5&nbsp;°C or above 40&nbsp;°C (<i>w</i><sub>d</sub>&nbsp;=&nbsp;17.5&nbsp;K either side of the best). Each patch uses its own temperature:</p>
+<div class="eqn"><span><i>β</i>(<i>T</i>)&nbsp;=&nbsp;1 − ((<i>T</i> − <i>T</i><sub>opt</sub>)/<i>w</i><sub>d</sub>)²</span>&emsp;&emsp;<span class="gap eqnote">(zero when this is below 0)</span></div>
+<p>Daisies can only spread onto bare ground, so growth is multiplied by the bare fraction <i>g</i>: as the land fills up, growth stops. Daisies also die at a steady rate, and grazers eat some (<i>G</i><sub>w</sub>, <i>G</i><sub>b</sub>, below):</p>
+<div class="eqn"><span>d<i>a</i><sub>w</sub>/d<i>t</i>&nbsp;=&nbsp;<i>a</i><sub>w</sub>(<i>r</i>·<i>β</i>(<i>T</i><sub>w</sub>)·<i>g</i> − <i>γ</i>)</span> <span>− <i>G</i><sub>w</sub></span>&emsp;&emsp;<span class="gap eqnote">and the same for black daisies</span></div>
+<p><i>r</i>&nbsp;=&nbsp;0.1&nbsp;per day is the fastest growth and <i>γ</i>&nbsp;=&nbsp;0.03&nbsp;per day the death rate. At the best temperature on half-bare land, cover grows by 0.1 × 0.5 − 0.03&nbsp;=&nbsp;0.02 of itself per day. With life switched off (the first three presets), <i>r</i>&nbsp;=&nbsp;0 and the land is bare ground.</p>
+<h3>Grazers' appetite</h3>
+<p>Grazers (<i>Z</i>, a relative amount) eat fastest at their favourite land temperature, <i>T</i><sub>g</sub>&nbsp;=&nbsp;25&nbsp;°C, and less when the land is colder or warmer:</p>
+<div class="eqn"><span><i>g</i><sub>max</sub>&nbsp;=&nbsp;<i>g</i><sub>0</sub>·exp(−((<i>T</i><sub>L</sub> − <i>T</i><sub>g</sub>)/<i>w</i><sub>g</sub>)²)</span></div>
+<p><i>g</i><sub>0</sub>&nbsp;=&nbsp;0.12&nbsp;per day is the top appetite and <i>w</i><sub>g</sub>&nbsp;=&nbsp;6&nbsp;K sets how quickly it falls away. The land usually sits near 19&nbsp;°C, 6&nbsp;K below their best, where the appetite is 0.044&nbsp;per day, and colder land means they eat even less.</p>
+<h3>Grazing</h3>
+<p>Grazers eat more when there is more food, but they can only eat so fast. When daisies are scarce, eating rises with the amount of daisies; when daisies are plentiful, each grazer eats at its top speed.</p>
+<div class="eqn"><span><i>G</i><sub>w</sub>&nbsp;=&nbsp;<i>g</i><sub>max</sub>·<i>s</i><sub>w</sub>·<i>a</i><sub>w</sub>·<i>Z</i></span> <span>/ (<i>K</i> + <i>s</i><sub>w</sub>·<i>a</i><sub>w</sub> + <i>s</i><sub>b</sub>·<i>a</i><sub>b</sub>)</span>&emsp;&emsp;<span class="gap eqnote">and the same for black daisies</span></div>
+<p><i>K</i>&nbsp;=&nbsp;0.08 sets where "plentiful" begins. The taste for each colour is <i>s</i><sub>w</sub>&nbsp;=&nbsp;2<i>p</i> and <i>s</i><sub>b</sub>&nbsp;=&nbsp;<span class="nw">2(1 − <i>p</i>)</span>. With <i>p</i>&nbsp;=&nbsp;0.3 the grazers prefer black daisies: <i>s</i><sub>b</sub>&nbsp;=&nbsp;1.4 against <i>s</i><sub>w</sub>&nbsp;=&nbsp;0.6.</p>
+<h3>Eating and starving</h3>
+<p>Grazers multiply on what they eat and die off at a steady rate:</p>
+<div class="eqn"><span>d<i>Z</i>/d<i>t</i>&nbsp;=&nbsp;<i>e</i>(<i>G</i><sub>w</sub> + <i>G</i><sub>b</sub>)</span> <span>− <i>m</i>·<i>Z</i></span></div>
+<p>Half of what grazers eat becomes new grazers (<i>e</i>&nbsp;=&nbsp;0.5), and grazers die at <i>m</i>&nbsp;=&nbsp;0.015&nbsp;per day. With no food, half of them are gone in about 46&nbsp;days.</p>
+</section>
+
+<section id="how-loop">
+<h2>4. The loop: how the boom–bust and the climate drive each other</h2>
+<p>Put sections 2 and 3 together and the daisies, the grazers and the temperature push each other round in a loop. Take the <b>Add life</b> preset: grazers prefer black daisies (<i>p</i>&nbsp;=&nbsp;0.3) and grow best at 25&nbsp;°C, warmer than the land's usual 19&nbsp;°C. With the weather switched off (<b>Compare: grazers, no weather</b>), the loop repeats every 8&nbsp;years. One turn:</p>
+<div class="loopgrid">
+<figure class="loopfig">
+<svg class="loop" viewBox="0 0 340 346" role="img" aria-labelledby="loopTitle">
+<title id="loopTitle">The loop: boom, bust, white bloom, slow cooling, black daisies spread, rewarming, and back to boom. One turn takes about 8&nbsp;years without weather.</title>
+<path class="arc" d="M236,34 Q262,38 268,90"/><polygon class="head" points="268.2,92 262.8,84.6 271.8,83.5"/>
+<path class="arc" d="M270,141 L270,203"/><polygon class="head" points="270,205 265.5,197 274.5,197"/>
+<path class="arc" d="M268,256 Q262,308 237,312"/><polygon class="head" points="235,312.3 242.2,306.6 243.6,315.5"/>
+<path class="arc" d="M103,312 Q78,308 72,256"/><polygon class="head" points="71.8,254 77.2,261.4 68.2,262.5"/>
+<path class="arc" d="M70,205 L70,143"/><polygon class="head" points="70,141 74.5,149 65.5,149"/>
+<path class="arc" d="M72,90 Q78,38 103,34"/><polygon class="head" points="105,33.7 97.8,39.4 96.4,30.5"/>
+<text class="mid" x="170" y="158" text-anchor="middle">one turn</text>
+<text class="midbig" x="170" y="176" text-anchor="middle">about 8&nbsp;years</text>
+<text class="mid" x="170" y="192" text-anchor="middle">without weather</text>
+<g class="stop warm"><rect x="106" y="11" width="128" height="46" rx="10"/><circle cx="112" cy="13" r="10"/><text class="num" x="112" y="17" text-anchor="middle">1</text><text class="t" x="174" y="31" text-anchor="middle">Boom</text><text class="s" x="174" y="47" text-anchor="middle">planet warmest</text></g>
+<g class="stop warm"><rect x="206" y="93" width="128" height="46" rx="10"/><circle cx="212" cy="95" r="10"/><text class="num" x="212" y="99" text-anchor="middle">2</text><text class="t" x="274" y="113" text-anchor="middle">Bust</text><text class="s" x="274" y="129" text-anchor="middle">grazers starve</text></g>
+<g class="stop turn"><rect x="206" y="207" width="128" height="46" rx="10"/><circle cx="212" cy="209" r="10"/><text class="num" x="212" y="213" text-anchor="middle">3</text><text class="t" x="274" y="227" text-anchor="middle">White bloom</text><text class="s" x="274" y="243" text-anchor="middle">planet brightest</text></g>
+<g class="stop cold"><rect x="106" y="289" width="128" height="46" rx="10"/><circle cx="112" cy="291" r="10"/><text class="num" x="112" y="295" text-anchor="middle">4</text><text class="t" x="174" y="309" text-anchor="middle">Slow cooling</text><text class="s" x="174" y="325" text-anchor="middle">ocean slows it</text></g>
+<g class="stop cold"><rect x="6" y="207" width="128" height="46" rx="10"/><circle cx="12" cy="209" r="10"/><text class="num" x="12" y="213" text-anchor="middle">5</text><text class="t" x="74" y="227" text-anchor="middle">Black daisies</text><text class="s" x="74" y="243" text-anchor="middle">spread in the cold</text></g>
+<g class="stop turn"><rect x="6" y="93" width="128" height="46" rx="10"/><circle cx="12" cy="95" r="10"/><text class="num" x="12" y="99" text-anchor="middle">6</text><text class="t" x="74" y="113" text-anchor="middle">Rewarming</text><text class="s" x="74" y="129" text-anchor="middle">land darkens</text></g>
+</svg>
+<figcaption class="loopkey"><span><i class="sw warm"></i>planet warm</span><span><i class="sw cold"></i>planet cold</span><span><i class="sw turn"></i>turning</span></figcaption>
+</figure>
+<ol class="steps">
+  <li><b>Boom.</b> Grazers peak and strip the land of daisies, black ones first (their favourite). Bare ground (albedo 0.32) is darker than white daisies, so the land is dark and the planet is at its warmest.</li>
+  <li><b>Bust.</b> With the food gone, grazers starve and crash within about 8&nbsp;months.</li>
+  <li><b>White bloom.</b> Free of grazing, white daisies spread over the empty land (up to 64% cover about a year after the grazer peak). The planet is at its brightest.</li>
+  <li><b>Slow cooling.</b> The planet cools, but the ocean holds its heat, so the coldest point comes 2.5–3.5&nbsp;years after the brightest. This delay is the ocean's memory.</li>
+  <li><b>Cold suits black daisies, not grazers.</b> On cold land, black-daisy patches stay near the daisies' favourite temperature, so black daisies spread. Grazers eat less in the cold, because 19&nbsp;°C is below their 25&nbsp;°C best.</li>
+  <li><b>Rewarming and the next boom.</b> More black daisies darken the land, and the planet warms. Warmth and plenty of their favourite food let the grazers boom again.</li>
+</ol>
+</div>
+<ul class="links">
+  <li><b>Biology → climate:</b> who covers the land sets how much sunlight is reflected.</li>
+  <li><b>Climate → biology:</b> temperature sets how fast each daisy grows and how hungry the grazers are.</li>
+  <li><b>The ocean:</b> delays the temperature response by years, so the loop overshoots and keeps cycling instead of settling down.</li>
+</ul>
+</section>
+
+<section id="how-weather">
+<h2>5. Weather as random pushes, and why the ocean adds them up</h2>
+<p>Real weather brings sunny spells and cloudy ones, warm winds and cold ones. The model has no storms or clouds of its own. Instead, every quarter-day the weather adds a random push of energy, sometimes in and sometimes out. Each push is drawn fresh, like a roll of dice, with no link to the one before, so the weather on its own has no slow swings at all. The pushes are sized so that a day's average push has a spread of <i>σ</i>&nbsp;=&nbsp;30&nbsp;W&nbsp;m⁻² (the <b>Weather size</b> slider). Land and ocean share one atmosphere, so both get the same push at the same moment.</p>
+<h3>Why the ocean adds them up</h3>
+<p>The same push moves the land about 30 times more than the mixed layer, because the land holds 30 times less heat: a typical quarter-day push warms or cools the land by about 0.13&nbsp;K, the mixed layer by only 0.004&nbsp;K. But the land forgets each push within weeks, while the mixed layer keeps it for about 5&nbsp;years. Over those years warm and cold pushes mostly cancel, but never exactly. A spell with a few more cold pushes than warm ones leaves a colder ocean, and the ocean then wanders slowly, warm for some years and cool for others, though nothing in the weather swings slowly.</p>
+<p>Think of a bath with a slow leak, with cupfuls of water tipped in or scooped out at random: the level wanders slowly. A cup with the same random splashes would only jitter.</p>
+<p>So the ocean does not make the planet more variable. It makes the variability <b>slower</b>. From <b>Land only</b> to <b>Add a mixed layer</b>, the year-to-year spread falls from about 0.7&nbsp;K to about 0.3&nbsp;K, while the spread of 100-year averages stays about the same.</p>
+<h3>With life: busts of every size</h3>
+<p>Weather adds random warm and cold spells to the loop in section 4. The land forgets them within weeks; the ocean adds them up, so a run of cold years leaves a cold ocean. A colder ocean going into a bust means a deeper, longer bust: across many busts, the colder the ocean in the three years before, the deeper the bust (a correlation of about −0.8, where −1 would be a perfect match). So busts come in every size. In a typical bust the grazers fall about 10 times; in the largest tenth they fall about 200 times or more. Temperature then varies over decades and centuries, though nothing in the weather or in the biology alone has those timescales.</p>
+<p>On the grazer chart a circle marks each bust, bigger for a deeper one. Circles are kept at least 12 years apart, so when the grazers cycle faster than that, as in <b>Compare: grazers, no weather</b> and <b>Clockwork cycle</b>, only every other dip gets a circle. To time the cycle, measure from dip to dip.</p>
+</section>
+
+<section id="how-solve">
+<h2>6. How the computer solves it</h2>
+<p>The equations say how fast each quantity is changing right now, not where it will be in a hundred years. The computer gets there by taking many small steps.</p>
+<h3>Small steps, adding up changes</h3>
+<p>At each step the computer works out every rate of change from the current values, then moves each quantity on by its rate times the step:</p>
+<div class="eqn"><span>new value</span> <span>= old value</span> <span>+ rate of change × time step</span></div>
+<p>If the land is warming at 0.1&nbsp;K per day, a quarter-day later it is 0.025&nbsp;K warmer. Then the rates are worked out again from the new values, and so on.</p>
+<h3>Why a quarter-day</h3>
+<p>Each step pretends the rates stay fixed for the whole step. That is only fair if the step is short compared with the fastest change in the model: the land, tied to the ocean, settles in about a week, and daisies and grazers change by a few percent a day. A step of a quarter-day (6&nbsp;hours) is short enough for both; much longer steps would make the land temperature overshoot back and forth. That makes 1460 steps per year: a 2000-year run with its hidden start is about 5&nbsp;million steps, done in the background while the progress bar fills.</p>
+<h3>One weather push per step, shared</h3>
+<p>At each step the computer draws one random number. That single number gives the same push, in W&nbsp;m⁻², to the land and to the mixed layer; each temperature then moves by push × time step ÷ its heat capacity. The push for one step has a spread of 2<i>σ</i>&nbsp;=&nbsp;60&nbsp;W&nbsp;m⁻²: four independent pushes averaged over a day have a spread √4&nbsp;=&nbsp;2 times smaller, which is <i>σ</i>. (The same square-root rule comes back in section 7.) <b>New weather</b> picks a new random sequence; the same weather number always gives the same run in the same browser. With daisies and grazers, another browser or device can give a run that behaves the same overall but has its busts at different times, because different browsers can work out the same maths very slightly differently in the last digit, and the busts magnify those tiny differences.</p>
+<h3>The hidden start</h3>
+<p>Every run starts from a made-up state: all temperatures 20&nbsp;°C, 30% white and 30% black daisies, grazers 0.05. The deep ocean needs several of its 190-year response times to forget that start. So the computer first runs 1500 hidden years, about eight deep-ocean response times, and shows only what comes after. The run you see starts settled, with no drift left over from the start.</p>
+<h3>Floors</h3>
+<p>Daisy cover never falls below 0.0001 of the land (a seed bank), and grazers never fall below 0.00001 (a few wanderers arrive from elsewhere). Without these floors, nothing can come back after a bust.</p>
+<h3>Why runs must be long</h3>
+<p>To see how much 100-year averages vary, you need many 100-year averages. A 2000-year run holds only 20 of them, and with daisies and grazers the century bar can move by a sixth or more when you change the weather; a 500-year run holds only 5. Busts come about once every 25&nbsp;years on average and the deep ones are rare, so a short run may not show them. That is why the default run is 2000&nbsp;years, and you can go up to 4000.</p>
+</section>
+
+<section id="how-read">
+<h2>7. How to read the timescale bars and the spectrum</h2>
+<p>The temperature chart shows wiggles of every length at once. The bars pull them apart by asking: after averaging over a month, a year, a decade or a century, how much do those averages still vary?</p>
+<h3>The timescale bars</h3>
+<p>Take the whole planet's temperature, one value per month. With an ocean that is 30% land and 70% mixed layer, <span class="nw">(1 − <i>f</i><sub>o</sub>)·<i>T</i><sub>L</sub> + <i>f</i><sub>o</sub>·<i>T</i><sub>m</sub></span>; with no ocean it is the land. Cut the run into blocks of 1&nbsp;month, 1&nbsp;year, 10&nbsp;years or 100&nbsp;years and average each block. A bar's height is the spread of those block averages: roughly how far a typical block sits from the run's overall average (the standard deviation). The scale goes up 10 times per step.</p>
+<h3>The weather-alone line</h3>
+<p>Averaging washes out values that are independent of each other: average <i>N</i> independent values and the spread shrinks by √<i>N</i>. The dashed line starts at this run's 1-month bar, then shrinks by √12&nbsp;≈&nbsp;3.5 from month to year (12&nbsp;months), by √10&nbsp;≈&nbsp;3.2 from year to decade, and by √10 again to the century. It is what the bars would be if each month were independent of the last, like the weather.</p>
+<ul class="terms">
+  <li><b>A bar on the line:</b> the months behave like the weather, with no memory beyond a month.</li>
+  <li><b>A bar above the line:</b> the planet carries warmth or cold from month to month, so averaging washes out less.</li>
+  <li><b>A bar below the line:</b> something pulls the temperature back towards its usual value, as daisies do when they regulate.</li>
+</ul>
+<p>On <b>Land only</b> the bars fall about as fast as the line. With a mixed layer the year bar barely drops from the month bar, because the ocean keeps a month's warmth for years. With grazers as well, the decade and century bars sit far above the line.</p>
+<h3>The spectrum</h3>
+<p>The <b>Spectrum</b> button shows the same idea in finer detail. It splits the temperature record into swings of different lengths (periods) and shows how much of the variation sits in each band of periods: fast swings on the left, slow ones on the right, both axes 10 times per gridline. The dashed line is weather alone again. Independent months spread their variation evenly over all frequencies, and a band of long periods covers fewer frequencies than a band of short ones, so the line falls 10 times for every period 10 times longer: the same falling-off as the bars' dashed line. Where the curve sits above the line, averaging over that period washes out less than it would for the weather, just as with a bar above its line. Each part of the planet smooths away swings that are fast compared with its response time and passes slower ones on, so the curve sits below the line on the left, rises above it near that part's dotted line, and falls off again at much longer periods. The dotted lines are the response times from section 1, and they move when you change the mixed-layer depth. A sharp peak is a regular cycle: with no weather, the grazers give a peak at 8&nbsp;years.</p>
+</section>
+
+<section id="how-out">
+<h2>8. What the model leaves out</h2>
+<ul class="terms">
+  <li><b>Geography.</b> One land box and one ocean box: no continents, no equator or poles, no currents carrying heat from place to place.</li>
+  <li><b>Days and seasons.</b> The sun shines steadily; the only ups and downs come from the weather pushes and the <b>Brighten the sun</b> button.</li>
+  <li><b>Real weather.</b> Storms, clouds and winds are replaced by random pushes with no memory of their own.</li>
+  <li><b>Climate feedbacks.</b> Ice, snow, clouds, water vapour and carbon dioxide do not change with temperature; the straight line <i>a</i> + <i>b</i>·<i>T</i> stands in for all of them.</li>
+  <li><b>Richer life.</b> Two kinds of daisy and one kind of grazer, living only on land, and nothing evolves.</li>
+  <li><b>Earth's real numbers.</b> The numbers are chosen to show the ideas clearly, not to match Earth.</li>
+</ul>
+<p>So the model is not a forecast. It shows one idea clearly: a planet made of parts with different memories can swing slowly, over decades and centuries, even when nothing pushing it swings slowly.</p>
+</section>
+</div>
+
+<aside class="how-nums" aria-labelledby="numsTitle">
+<h2 id="numsTitle">Numbers the model uses</h2>
+<p class="small">Defaults; presets and sliders change some of them.</p>
+<h3>Sun and heat</h3>
+<dl>
+  <dt><i>L</i></dt><dd>1.05</dd><dd>sun brightness</dd>
+  <dt><i>Q</i></dt><dd>342<i>L</i>&nbsp;≈&nbsp;359</dd><dd>sunlight, W&nbsp;m⁻²</dd>
+  <dt><i>A</i><sub>w</sub>, <i>A</i><sub>b</sub></dt><dd>0.50, 0.15</dd><dd>albedo of white, black daisies</dd>
+  <dt><i>A</i><sub>g</sub>, <i>A</i><sub>o</sub></dt><dd>0.32, 0.28</dd><dd>albedo of bare ground, ocean</dd>
+  <dt><i>a</i>, <i>b</i></dt><dd>203.3, 2.09</dd><dd>heat to space</dd>
+</dl>
+<h3>Heat stores</h3>
+<dl>
+  <dt><i>C</i><sub>L</sub></dt><dd>1×10⁷</dd><dd>land, J&nbsp;m⁻²&nbsp;K⁻¹</dd>
+  <dt><i>C</i><sub>m</sub></dt><dd>4.2×10⁶·<i>H</i></dd><dd>mixed layer, depth <i>H</i>&nbsp;=&nbsp;75&nbsp;m</dd>
+  <dt><i>C</i><sub>d</sub></dt><dd>4.2×10⁹</dd><dd>deep ocean, about 1000&nbsp;m</dd>
+  <dt><i>k</i></dt><dd>15</dd><dd>land–ocean exchange, W&nbsp;m⁻²&nbsp;K⁻¹</dd>
+  <dt><i>γ</i><sub>o</sub></dt><dd>0.7</dd><dd>mixed layer–deep exchange</dd>
+  <dt><i>f</i><sub>o</sub></dt><dd>0.7</dd><dd>ocean share of the planet</dd>
+</dl>
+<h3>Daisies and grazers (rates per day)</h3>
+<dl>
+  <dt><i>r</i>, <i>γ</i></dt><dd>0.1, 0.03</dd><dd>daisy growth, death</dd>
+  <dt><i>T</i><sub>opt</sub>, <i>w</i><sub>d</sub></dt><dd>22.5&nbsp;°C, 17.5&nbsp;K</dd><dd>daisies' best, width</dd>
+  <dt><i>q</i></dt><dd>20&nbsp;K</dd><dd>patch contrast</dd>
+  <dt><i>g</i><sub>0</sub></dt><dd>0.12</dd><dd>grazers' top appetite</dd>
+  <dt><i>T</i><sub>g</sub>, <i>w</i><sub>g</sub></dt><dd>25&nbsp;°C, 6&nbsp;K</dd><dd>grazers' best, tolerance</dd>
+  <dt><i>p</i></dt><dd>0.3</dd><dd>taste for white daisies</dd>
+  <dt><i>K</i></dt><dd>0.08</dd><dd>where eating levels off</dd>
+  <dt><i>e</i></dt><dd>0.5</dd><dd>food made into grazers</dd>
+  <dt><i>m</i></dt><dd>0.015</dd><dd>grazer death rate</dd>
+</dl>
+<h3>Weather and method</h3>
+<dl>
+  <dt><i>σ</i></dt><dd>30&nbsp;W&nbsp;m⁻²</dd><dd>weather size, daily</dd>
+  <dt class="w">step</dt><dd>0.25&nbsp;day</dd><dd>one weather push per step</dd>
+  <dt class="w">start</dt><dd>1500&nbsp;years</dd><dd>hidden, then 2000 shown</dd>
+  <dt class="w">floors</dt><dd>10⁻⁴, 10⁻⁵</dd><dd>daisy cover, grazers</dd>
+</dl>
+</aside>
+</div>
+</section>
+</div>
+<script type="text/plain" id="worker-src">
+// ---- model.js ----
+// Daisyworld with an ocean: land + mixed layer + deep ocean + daisies + grazers + shared random weather.
+// Port of run() in box-model/daisy_box.py (sigO = sigF, shareW = 1). Time in days, temperatures in deg C.
+
+const OCEAN_DEFAULTS = {
+  L: 1.05,          // sun brightness relative to today; Q = 342 L W m-2
+  Aw: 0.50,         // albedo of white daisies
+  Ab: 0.15,         // albedo of black daisies
+  Ag: 0.32,         // albedo of bare ground
+  Ao: 0.28,         // albedo of the ocean
+  a: 203.3,         // outgoing longwave intercept, W m-2
+  b: 2.09,          // outgoing longwave slope, W m-2 K-1
+  q: 20,            // patch temperature contrast, K
+  r: 0.1,           // daisy maximum growth rate, per day
+  gam: 0.03,        // daisy death rate, per day
+  Topt: 22.5,       // daisy optimum temperature, deg C
+  wd: 17.5,         // daisy growth half-width, K
+  g0: 0.12,         // grazer maximum appetite, per day
+  Tg: 25,           // grazer favourite land temperature, deg C
+  wg: 6,            // grazer temperature tolerance, K
+  p: 0.3,           // grazer preference for white daisies (0-1)
+  K: 0.08,          // grazing half-saturation
+  e: 0.5,           // grazer conversion efficiency
+  m: 0.015,         // grazer death rate, per day
+  CL: 1e7,          // land heat capacity, J m-2 K-1
+  H: 75,            // mixed-layer depth, m (C_m = 4.2e6 H)
+  Cd: 4.2e9,        // deep-ocean heat capacity, J m-2 K-1
+  k: 15,            // land-ocean heat exchange, W m-2 K-1
+  gamO: 0.7,        // mixed layer to deep ocean exchange, W m-2 K-1
+  fo: 0.7,          // ocean fraction of the planet
+  sigma: 30,        // weather size: spread of daily-mean weather flux, W m-2
+  life: true,       // daisies and grazers on
+  grazers: true,    // grazers on (needs life)
+  deep: true,       // deep ocean on
+  years: 2000,      // years shown after the spin-up
+  spinYears: 1500,  // hidden spin-up, years
+  seed: 1,          // random seed for the weather
+  sunStepYear: null,// year (after spin-up) the sun brightens; null = never
+  sunStepDL: 0.05,  // how much L rises at the sun step
+  sampling: "monthly", // "monthly" (12 per year) or "daily" (365 per year)
+};
+
+const DAY = 86400.0;
+const STEPS_PER_YEAR = 1460; // dt = 0.25 day, 365-day years
+
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gaussFactory(rng){ let spare = null; return function(){ if (spare !== null){ const s = spare; spare = null; return s; } let u = 0, v = 0; while (u === 0) u = rng(); v = rng(); const r = Math.sqrt(-2 * Math.log(u)); spare = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }; }
+
+const COLS = ["sun_L", "weather_Wm2", "land_T", "ml_T", "deep_T", "global_T", "aw", "ab", "bare", "Z",
+  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b"];
+
+function simulateOcean(P, onProgress) {
+  P = Object.assign({}, OCEAN_DEFAULTS, P || {});
+  const dt = 0.25, dts = dt * DAY;
+  const L0 = +P.L, f_o = +P.fo, A_w = +P.Aw, A_b = +P.Ab, A_g = +P.Ag, A_o = +P.Ao;
+  const a_ir = +P.a, b_ir = +P.b, q = +P.q, gam = +P.gam, Topt = +P.Topt, wd = +P.wd;
+  const life = !!P.life, grazers = life && !!P.grazers, deep = !!P.deep;
+  const r = life ? +P.r : 0;
+  const g0 = grazers ? +P.g0 : 0;
+  const Tg = +P.Tg, wg = +P.wg, s_w = 2 * P.p, s_b = 2 * (1 - P.p), K = +P.K, e = +P.e, m = +P.m;
+  const C_L = +P.CL, C_m = 4.2e6 * P.H, C_d = +P.Cd, k = +P.k, gam_o = deep ? +P.gamO : 0;
+  const sig = +P.sigma, Zmin = 1e-5;
+  const has_ocean = f_o > 0;
+  const hasDeep = has_ocean && deep;
+
+  const spinSteps = Math.round(P.spinYears) * STEPS_PER_YEAR;
+  const years = Math.max(0, Math.round(P.years));
+  const nsteps = spinSteps + years * STEPS_PER_YEAR;
+  const stepAt = P.sunStepYear === null || P.sunStepYear === undefined ? Infinity : spinSteps + Math.round(P.sunStepYear * STEPS_PER_YEAR);
+  const L1 = L0 + (+P.sunStepDL);
+
+  const daily = P.sampling === "daily";
+  const perYear = daily ? 365 : 12;
+  const n = years * perYear;
+  // block ends within a year (step index after the last step in the block)
+  const ends = new Int32Array(perYear);
+  for (let kb = 0; kb < perYear; kb++) ends[kb] = daily ? 4 * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
+
+  const t = new Float64Array(n);
+  const acc = new Float64Array(COLS.length);
+  const out = COLS.map(() => new Float64Array(n));
+
+  const gauss = gaussFactory(mulberry32(P.seed >>> 0));
+  const sqrtDts = Math.sqrt(dts), sqrtDay = Math.sqrt(DAY), wfac = Math.sqrt(DAY / dts);
+  const oceanFac = has_ocean ? k * (1 - f_o) / f_o : 0;
+
+  let aw = 0.3, ab = 0.3, Z = 0.05, TL = 20, Tm = 20, Td = 20;
+  let j = 0, kb = 0, inYear = 0, blockStart = 0, cnt = 0, ranAway = false;
+  const progEvery = Math.max(1, Math.floor(nsteps / 100));
+
+  for (let i = 0; i < nsteps; i++) {
+    const L = i >= stepAt ? L1 : L0;
+    const Q = 342.0 * L;
+    let g = 1.0 - aw - ab; if (g < 0) g = 0;
+    const AL = aw * A_w + ab * A_b + g * A_g;
+    const Tw = TL + q * (AL - A_w);
+    const Tb = TL + q * (AL - A_b);
+    const xg = (TL - Tg) / wg;
+    const gmax = g0 * Math.exp(-xg * xg);
+    const denom = K + s_w * aw + s_b * ab;
+    const Gw = gmax * s_w * aw * Z / denom;
+    const Gb = gmax * s_b * ab * Z / denom;
+    let xw = (Tw - Topt) / wd, bw = 1 - xw * xw; if (bw < 0) bw = 0;
+    let xb = (Tb - Topt) / wd, bb = 1 - xb * xb; if (bb < 0) bb = 0;
+    const grw = r * bw * g - gam, grb = r * bb * g - gam;
+    const daw = aw * grw - Gw;
+    const dab = ab * grb - Gb;
+    const dZ = e * (Gw + Gb) - m * Z;
+    let FL = Q * (1.0 - AL) - (a_ir + b_ir * TL), Fm = 0, Fd = 0;
+    if (has_ocean) {
+      FL -= k * (TL - Tm);
+      Fm = Q * (1.0 - A_o) - (a_ir + b_ir * Tm) + oceanFac * (TL - Tm) - gam_o * (Tm - Td);
+      Fd = gam_o * (Tm - Td);
+    }
+    const xi = gauss();
+    TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
+    if (has_ocean) {
+      Tm += dts * Fm / C_m;
+      if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
+      Td += dts * Fd / C_d;
+    }
+    aw += dt * daw;
+    ab += dt * dab;
+    Z += dt * dZ;
+    if (aw < 1e-4) aw = 1e-4;
+    if (ab < 1e-4) ab = 1e-4;
+    if (Z < Zmin) Z = Zmin;
+
+    if (!(TL > -100 && TL < 200 && Tm > -100 && Tm < 200 && Td > -100 && Td < 200)) { ranAway = true; break; }
+
+    if (i >= spinSteps) {
+      // rates and diagnostics from the old state; state columns after the step
+      let gn = 1 - aw - ab; if (gn < 0) gn = 0;
+      const ALn = aw * A_w + ab * A_b + gn * A_g;
+      acc[0] += L; acc[1] += sig * wfac * xi;
+      acc[2] += TL; acc[3] += Tm; acc[4] += Td;
+      acc[5] += has_ocean ? (1 - f_o) * TL + f_o * Tm : TL;
+      acc[6] += aw; acc[7] += ab; acc[8] += gn; acc[9] += Z;
+      acc[10] += ALn; acc[11] += has_ocean ? (1 - f_o) * ALn + f_o * A_o : ALn;
+      acc[12] += Tw; acc[13] += Tb; acc[14] += grw; acc[15] += grb;
+      acc[16] += gmax; acc[17] += Gw; acc[18] += Gb;
+      cnt++; inYear++;
+      if (inYear === ends[kb]) {
+        for (let c = 0; c < acc.length; c++) { out[c][j] = acc[c] / cnt; acc[c] = 0; }
+        const y = Math.floor((i - spinSteps) / STEPS_PER_YEAR);
+        t[j] = y + ((blockStart + inYear) / 2) * dt / 365;
+        j++; cnt = 0; blockStart = inYear; kb++;
+        if (kb === perYear) { kb = 0; inYear = 0; blockStart = 0; }
+      }
+    }
+    if (onProgress && (i + 1) % progEvery === 0) onProgress((i + 1) / nsteps);
+  }
+
+  const nn = j;
+  const cols = {};
+  COLS.forEach((name, c) => { cols[name] = nn === n ? out[c] : out[c].slice(0, nn); });
+  if (!has_ocean) cols.ml_T = null;
+  if (!hasDeep) cols.deep_T = null;
+  if (!life) for (const c of ["aw", "ab", "bare", "Tw", "Tb", "growth_w", "growth_b"]) cols[c] = null;
+  if (!grazers) for (const c of ["Z", "appetite", "graze_w", "graze_b"]) cols[c] = null;
+  if (onProgress) onProgress(1);
+  return { perYear, n: nn, years, t: nn === n ? t : t.slice(0, nn), cols,
+    flags: { ocean: has_ocean, deep: hasDeep, life, grazers }, ranAway };
+}
+
+if (typeof module !== "undefined") module.exports = { OCEAN_DEFAULTS, simulateOcean };
+
+// ---- worker.js ----
+// Worker body, appended after model.js: run one simulation, report progress, transfer the result.
+self.onmessage = function (ev) {
+  const P = ev.data && ev.data.P;
+  let last = -1;
+  let res;
+  try {
+    res = simulateOcean(P, function (f) {
+      const pct = Math.floor(f * 100);         // at most ~100 progress messages
+      if (pct !== last) { last = pct; self.postMessage({ progress: f }); }
+    });
+  } catch (e) { self.postMessage({ error: String(e && e.message || e) }); return; }
+  const transfer = [res.t.buffer];
+  for (const k in res.cols) if (res.cols[k]) transfer.push(res.cols[k].buffer);
+  self.postMessage({ result: res }, transfer);
+};
+
+</script>
+<script>
+// ---- model.js ----
+// Daisyworld with an ocean: land + mixed layer + deep ocean + daisies + grazers + shared random weather.
+// Port of run() in box-model/daisy_box.py (sigO = sigF, shareW = 1). Time in days, temperatures in deg C.
+
+const OCEAN_DEFAULTS = {
+  L: 1.05,          // sun brightness relative to today; Q = 342 L W m-2
+  Aw: 0.50,         // albedo of white daisies
+  Ab: 0.15,         // albedo of black daisies
+  Ag: 0.32,         // albedo of bare ground
+  Ao: 0.28,         // albedo of the ocean
+  a: 203.3,         // outgoing longwave intercept, W m-2
+  b: 2.09,          // outgoing longwave slope, W m-2 K-1
+  q: 20,            // patch temperature contrast, K
+  r: 0.1,           // daisy maximum growth rate, per day
+  gam: 0.03,        // daisy death rate, per day
+  Topt: 22.5,       // daisy optimum temperature, deg C
+  wd: 17.5,         // daisy growth half-width, K
+  g0: 0.12,         // grazer maximum appetite, per day
+  Tg: 25,           // grazer favourite land temperature, deg C
+  wg: 6,            // grazer temperature tolerance, K
+  p: 0.3,           // grazer preference for white daisies (0-1)
+  K: 0.08,          // grazing half-saturation
+  e: 0.5,           // grazer conversion efficiency
+  m: 0.015,         // grazer death rate, per day
+  CL: 1e7,          // land heat capacity, J m-2 K-1
+  H: 75,            // mixed-layer depth, m (C_m = 4.2e6 H)
+  Cd: 4.2e9,        // deep-ocean heat capacity, J m-2 K-1
+  k: 15,            // land-ocean heat exchange, W m-2 K-1
+  gamO: 0.7,        // mixed layer to deep ocean exchange, W m-2 K-1
+  fo: 0.7,          // ocean fraction of the planet
+  sigma: 30,        // weather size: spread of daily-mean weather flux, W m-2
+  life: true,       // daisies and grazers on
+  grazers: true,    // grazers on (needs life)
+  deep: true,       // deep ocean on
+  years: 2000,      // years shown after the spin-up
+  spinYears: 1500,  // hidden spin-up, years
+  seed: 1,          // random seed for the weather
+  sunStepYear: null,// year (after spin-up) the sun brightens; null = never
+  sunStepDL: 0.05,  // how much L rises at the sun step
+  sampling: "monthly", // "monthly" (12 per year) or "daily" (365 per year)
+};
+
+const DAY = 86400.0;
+const STEPS_PER_YEAR = 1460; // dt = 0.25 day, 365-day years
+
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gaussFactory(rng){ let spare = null; return function(){ if (spare !== null){ const s = spare; spare = null; return s; } let u = 0, v = 0; while (u === 0) u = rng(); v = rng(); const r = Math.sqrt(-2 * Math.log(u)); spare = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }; }
+
+const COLS = ["sun_L", "weather_Wm2", "land_T", "ml_T", "deep_T", "global_T", "aw", "ab", "bare", "Z",
+  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b"];
+
+function simulateOcean(P, onProgress) {
+  P = Object.assign({}, OCEAN_DEFAULTS, P || {});
+  const dt = 0.25, dts = dt * DAY;
+  const L0 = +P.L, f_o = +P.fo, A_w = +P.Aw, A_b = +P.Ab, A_g = +P.Ag, A_o = +P.Ao;
+  const a_ir = +P.a, b_ir = +P.b, q = +P.q, gam = +P.gam, Topt = +P.Topt, wd = +P.wd;
+  const life = !!P.life, grazers = life && !!P.grazers, deep = !!P.deep;
+  const r = life ? +P.r : 0;
+  const g0 = grazers ? +P.g0 : 0;
+  const Tg = +P.Tg, wg = +P.wg, s_w = 2 * P.p, s_b = 2 * (1 - P.p), K = +P.K, e = +P.e, m = +P.m;
+  const C_L = +P.CL, C_m = 4.2e6 * P.H, C_d = +P.Cd, k = +P.k, gam_o = deep ? +P.gamO : 0;
+  const sig = +P.sigma, Zmin = 1e-5;
+  const has_ocean = f_o > 0;
+  const hasDeep = has_ocean && deep;
+
+  const spinSteps = Math.round(P.spinYears) * STEPS_PER_YEAR;
+  const years = Math.max(0, Math.round(P.years));
+  const nsteps = spinSteps + years * STEPS_PER_YEAR;
+  const stepAt = P.sunStepYear === null || P.sunStepYear === undefined ? Infinity : spinSteps + Math.round(P.sunStepYear * STEPS_PER_YEAR);
+  const L1 = L0 + (+P.sunStepDL);
+
+  const daily = P.sampling === "daily";
+  const perYear = daily ? 365 : 12;
+  const n = years * perYear;
+  // block ends within a year (step index after the last step in the block)
+  const ends = new Int32Array(perYear);
+  for (let kb = 0; kb < perYear; kb++) ends[kb] = daily ? 4 * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
+
+  const t = new Float64Array(n);
+  const acc = new Float64Array(COLS.length);
+  const out = COLS.map(() => new Float64Array(n));
+
+  const gauss = gaussFactory(mulberry32(P.seed >>> 0));
+  const sqrtDts = Math.sqrt(dts), sqrtDay = Math.sqrt(DAY), wfac = Math.sqrt(DAY / dts);
+  const oceanFac = has_ocean ? k * (1 - f_o) / f_o : 0;
+
+  let aw = 0.3, ab = 0.3, Z = 0.05, TL = 20, Tm = 20, Td = 20;
+  let j = 0, kb = 0, inYear = 0, blockStart = 0, cnt = 0, ranAway = false;
+  const progEvery = Math.max(1, Math.floor(nsteps / 100));
+
+  for (let i = 0; i < nsteps; i++) {
+    const L = i >= stepAt ? L1 : L0;
+    const Q = 342.0 * L;
+    let g = 1.0 - aw - ab; if (g < 0) g = 0;
+    const AL = aw * A_w + ab * A_b + g * A_g;
+    const Tw = TL + q * (AL - A_w);
+    const Tb = TL + q * (AL - A_b);
+    const xg = (TL - Tg) / wg;
+    const gmax = g0 * Math.exp(-xg * xg);
+    const denom = K + s_w * aw + s_b * ab;
+    const Gw = gmax * s_w * aw * Z / denom;
+    const Gb = gmax * s_b * ab * Z / denom;
+    let xw = (Tw - Topt) / wd, bw = 1 - xw * xw; if (bw < 0) bw = 0;
+    let xb = (Tb - Topt) / wd, bb = 1 - xb * xb; if (bb < 0) bb = 0;
+    const grw = r * bw * g - gam, grb = r * bb * g - gam;
+    const daw = aw * grw - Gw;
+    const dab = ab * grb - Gb;
+    const dZ = e * (Gw + Gb) - m * Z;
+    let FL = Q * (1.0 - AL) - (a_ir + b_ir * TL), Fm = 0, Fd = 0;
+    if (has_ocean) {
+      FL -= k * (TL - Tm);
+      Fm = Q * (1.0 - A_o) - (a_ir + b_ir * Tm) + oceanFac * (TL - Tm) - gam_o * (Tm - Td);
+      Fd = gam_o * (Tm - Td);
+    }
+    const xi = gauss();
+    TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
+    if (has_ocean) {
+      Tm += dts * Fm / C_m;
+      if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
+      Td += dts * Fd / C_d;
+    }
+    aw += dt * daw;
+    ab += dt * dab;
+    Z += dt * dZ;
+    if (aw < 1e-4) aw = 1e-4;
+    if (ab < 1e-4) ab = 1e-4;
+    if (Z < Zmin) Z = Zmin;
+
+    if (!(TL > -100 && TL < 200 && Tm > -100 && Tm < 200 && Td > -100 && Td < 200)) { ranAway = true; break; }
+
+    if (i >= spinSteps) {
+      // rates and diagnostics from the old state; state columns after the step
+      let gn = 1 - aw - ab; if (gn < 0) gn = 0;
+      const ALn = aw * A_w + ab * A_b + gn * A_g;
+      acc[0] += L; acc[1] += sig * wfac * xi;
+      acc[2] += TL; acc[3] += Tm; acc[4] += Td;
+      acc[5] += has_ocean ? (1 - f_o) * TL + f_o * Tm : TL;
+      acc[6] += aw; acc[7] += ab; acc[8] += gn; acc[9] += Z;
+      acc[10] += ALn; acc[11] += has_ocean ? (1 - f_o) * ALn + f_o * A_o : ALn;
+      acc[12] += Tw; acc[13] += Tb; acc[14] += grw; acc[15] += grb;
+      acc[16] += gmax; acc[17] += Gw; acc[18] += Gb;
+      cnt++; inYear++;
+      if (inYear === ends[kb]) {
+        for (let c = 0; c < acc.length; c++) { out[c][j] = acc[c] / cnt; acc[c] = 0; }
+        const y = Math.floor((i - spinSteps) / STEPS_PER_YEAR);
+        t[j] = y + ((blockStart + inYear) / 2) * dt / 365;
+        j++; cnt = 0; blockStart = inYear; kb++;
+        if (kb === perYear) { kb = 0; inYear = 0; blockStart = 0; }
+      }
+    }
+    if (onProgress && (i + 1) % progEvery === 0) onProgress((i + 1) / nsteps);
+  }
+
+  const nn = j;
+  const cols = {};
+  COLS.forEach((name, c) => { cols[name] = nn === n ? out[c] : out[c].slice(0, nn); });
+  if (!has_ocean) cols.ml_T = null;
+  if (!hasDeep) cols.deep_T = null;
+  if (!life) for (const c of ["aw", "ab", "bare", "Tw", "Tb", "growth_w", "growth_b"]) cols[c] = null;
+  if (!grazers) for (const c of ["Z", "appetite", "graze_w", "graze_b"]) cols[c] = null;
+  if (onProgress) onProgress(1);
+  return { perYear, n: nn, years, t: nn === n ? t : t.slice(0, nn), cols,
+    flags: { ocean: has_ocean, deep: hasDeep, life, grazers }, ranAway };
+}
+
+if (typeof module !== "undefined") module.exports = { OCEAN_DEFAULTS, simulateOcean };
+
+// ---- analysis.js ----
+// Daisyworld with an Ocean: analysis of a run (timescale spreads, busts, spectrum).
+
+function blockMeans(x, size) {
+  const nb = Math.floor(x.length / size), out = new Float64Array(nb);
+  for (let b = 0; b < nb; b++) {
+    let s = 0;
+    for (let i = b * size; i < (b + 1) * size; i++) s += x[i];
+    out[b] = s / size;
+  }
+  return out;
+}
+
+function oceanAnSd(v) {
+  // null when fewer than 2 values: the sd cannot be computed and the chart hides that bar.
+  if (v.length < 2) return null;
+  let m = 0; for (let i = 0; i < v.length; i++) m += v[i]; m /= v.length;
+  let s = 0; for (let i = 0; i < v.length; i++) s += (v[i] - m) * (v[i] - m);
+  return Math.sqrt(s / (v.length - 1));
+}
+
+function spreadOfMeans(globalT, perYear) {
+  const sizes = [1, perYear, perYear * 10, perYear * 100];
+  const sd = sizes.map((k) => oceanAnSd(blockMeans(globalT, k)));
+  const weatherLine = sizes.map((k) => (sd[0] === null ? null : sd[0] / Math.sqrt(k)));
+  return { labels: ["month", "year", "decade", "century"], sd, weatherLine };
+}
+
+// Same rules as scipy.signal.find_peaks(-x, distance=12, prominence=0.3).
+function _troughs(x) {
+  const n = x.length, cand = [];
+  let i = 1;
+  while (i < n - 1) {
+    if (x[i] < x[i - 1]) {
+      let j = i;
+      while (j + 1 < n && x[j + 1] === x[i]) j++;
+      if (j + 1 < n && x[j + 1] > x[i]) { cand.push((i + j) >> 1); i = j + 1; continue; }
+      i = j + 1; continue;
+    }
+    i++;
+  }
+  // distance filter: deepest first, drop |i - j| < 12; scipy visits the later index first among equally deep minima
+  const order = cand.map((c, k) => k).sort((a, b) => (x[cand[a]] - x[cand[b]]) || (b - a));
+  const keep = new Array(cand.length).fill(true);
+  for (const k of order) {
+    if (!keep[k]) continue;
+    for (let q = k - 1; q >= 0 && cand[k] - cand[q] < 12; q--) keep[q] = false;
+    for (let q = k + 1; q < cand.length && cand[q] - cand[k] < 12; q++) keep[q] = false;
+  }
+  const out = [];
+  cand.forEach((t, k) => {
+    if (!keep[k]) return;
+    let left = x[t], right = x[t];
+    for (let a = t; a >= 0 && x[a] >= x[t]; a--) if (x[a] > left) left = x[a];
+    for (let a = t; a < n && x[a] >= x[t]; a++) if (x[a] > right) right = x[a];
+    const p = Math.min(left, right) - x[t];
+    if (p >= 0.3) out.push({ index: t, prominence: p });
+  });
+  return out;
+}
+
+function detectBusts(Zmonthly, perYear) {
+  if (!Zmonthly || Zmonthly.length < perYear) return [];
+  const lz = Array.from(blockMeans(Zmonthly, perYear), (v) => Math.log10(Math.max(v, 1e-12)));
+  const n = lz.length, lz5 = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const a = Math.max(0, i - 2), b = Math.min(n - 1, i + 2);
+    let s = 0; for (let k = a; k <= b; k++) s += lz[k];
+    lz5[i] = s / (b - a + 1);
+  }
+  return _troughs(lz5).map((t, k) => ({
+    id: k + 1, year: t.index, monthIndex: t.index * 12 + 6,
+    depth: t.prominence, drop: Math.pow(10, t.prominence),
+  }));
+}
+
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const a = i + k, b = a + len / 2;
+        const tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr;
+      }
+    }
+  }
+}
+
+// Welch: Hann-windowed segments of min(2^13, largest power of 2 <= n), 50% overlap,
+// then averaged into 60 log-spaced period bins (empty bins dropped).
+function spectrum(x, perYear) {
+  const n = x.length;
+  if (n < 4) return { period: new Float64Array(0), power: new Float64Array(0) };
+  let L = 1; while (L * 2 <= n && L < 8192) L *= 2;
+  const w = new Float64Array(L);
+  for (let i = 0; i < L; i++) w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / L);
+  const acc = new Float64Array(L / 2 + 1), re = new Float64Array(L), im = new Float64Array(L);
+  let nseg = 0;
+  for (let s = 0; s + L <= n; s += L / 2) {
+    let m = 0; for (let i = 0; i < L; i++) m += x[s + i]; m /= L;
+    for (let i = 0; i < L; i++) { re[i] = (x[s + i] - m) * w[i]; im[i] = 0; }
+    fft(re, im);
+    for (let k = 0; k <= L / 2; k++) acc[k] += re[k] * re[k] + im[k] * im[k];
+    nseg++;
+  }
+  // frequency k / L cycles per sample -> period L / (k * perYear) years; skip k = 0
+  const pmin = L / ((L / 2) * perYear), pmax = L / perYear, NB = 60;
+  const lo = Math.log(pmin), span = Math.log(pmax) - lo || 1;
+  const sum = new Float64Array(NB), lsum = new Float64Array(NB), cnt = new Float64Array(NB);
+  for (let k = 1; k <= L / 2; k++) {
+    const p = L / (k * perYear);
+    const b = Math.min(NB - 1, Math.floor((Math.log(p) - lo) / span * NB));
+    sum[b] += acc[k] / nseg; lsum[b] += Math.log(p); cnt[b]++;
+  }
+  const period = [], power = [];
+  for (let b = 0; b < NB; b++) if (cnt[b] > 0) { period.push(Math.exp(lsum[b] / cnt[b])); power.push(sum[b] / cnt[b]); }
+  return { period: Float64Array.from(period), power: Float64Array.from(power) };
+}
+
+if (typeof module !== "undefined") module.exports = { blockMeans, spreadOfMeans, detectBusts, spectrum, fft, _troughs };
+
+// ---- export.js ----
+// CSV and settings-file exports for "Daisyworld with an Ocean".
+// Plain script: concatenated with model.js and analysis.js into one browser script.
+
+const OCEAN_COLUMNS = [
+  { name: "year", key: "t", digits: 4 },
+  { name: "sun_L", key: "sun_L", digits: 3 },
+  { name: "weather_Wm2", key: "weather_Wm2", digits: 2 },
+  { name: "land_T_degC", key: "land_T", digits: 2 },
+  { name: "mixed_layer_T_degC", key: "ml_T", digits: 2 },
+  { name: "deep_T_degC", key: "deep_T", digits: 2 },
+  { name: "global_T_degC", key: "global_T", digits: 2 },
+  { name: "white_cover", key: "aw", digits: 4 },
+  { name: "black_cover", key: "ab", digits: 4 },
+  { name: "bare_cover", key: "bare", digits: 4 },
+  { name: "grazers", key: "Z", sig: 4 },
+  { name: "land_albedo", key: "land_albedo", digits: 4 },
+  { name: "planet_albedo", key: "planet_albedo", digits: 4 },
+  { name: "white_patch_T_degC", key: "Tw", digits: 2 },
+  { name: "black_patch_T_degC", key: "Tb", digits: 2 },
+  { name: "white_growth_per_day", key: "growth_w", sig: 4 },
+  { name: "black_growth_per_day", key: "growth_b", sig: 4 },
+  { name: "grazer_appetite_per_day", key: "appetite", sig: 4 },
+  { name: "grazing_on_white_per_day", key: "graze_w", sig: 4 },
+  { name: "grazing_on_black_per_day", key: "graze_b", sig: 4 },
+];
+
+// Fixed decimals; never "-0.00", never exponent notation.
+function oceanExFixed(v, d) {
+  if (v === null || v === undefined || !isFinite(v)) return "";
+  let s = Number(v).toFixed(d);
+  if (/^-0(\.0*)?$/.test(s)) s = s.slice(1);
+  return s;
+}
+
+// Significant figures written as a plain decimal.
+function oceanExSig(v, n) {
+  if (v === null || v === undefined || !isFinite(v)) return "";
+  if (v === 0) return "0";
+  const d = n - 1 - Math.floor(Math.log10(Math.abs(v)));
+  return oceanExFixed(v, Math.min(Math.max(d, 0), 100));
+}
+
+function oceanExSource(result, c) {
+  return c.key === "t" ? result.t : result.cols[c.key];
+}
+
+// One data row (no newline) for row i, in OCEAN_COLUMNS order.
+function oceanExRow(result, i) {
+  return OCEAN_COLUMNS.map((c) => {
+    const a = oceanExSource(result, c);
+    if (!a) return "";
+    return c.sig ? oceanExSig(a[i], c.sig) : oceanExFixed(a[i], c.digits);
+  }).join(",");
+}
+
+function oceanExHeader() {
+  return OCEAN_COLUMNS.map((c) => c.name).join(",");
+}
+
+function runCSV(result) {
+  const out = [oceanExHeader()];
+  for (let i = 0; i < result.n; i++) out.push(oceanExRow(result, i));
+  return out.join("\n") + "\n";
+}
+
+// Rows of the +-20-year window around a bust, clipped to the rows that exist.
+function oceanExWindowRows(result, bust, prefix) {
+  const py = result.perYear, half = 20 * py, out = [];
+  const lo = Math.max(0, bust.monthIndex - half), hi = Math.min(result.n - 1, bust.monthIndex + half);
+  for (let i = lo; i <= hi; i++) {
+    const yfb = (i - bust.monthIndex) / py;
+    out.push(prefix + oceanExFixed(yfb, 4) + "," + oceanExFixed(Math.round(yfb), 0) + "," + oceanExRow(result, i));
+  }
+  return out;
+}
+
+function windowCSV(result, bust) {
+  const out = ["years_from_bust,whole_years_from_bust," + oceanExHeader()];
+  return out.concat(oceanExWindowRows(result, bust, "")).join("\n") + "\n";
+}
+
+function stackedCSV(result, busts) {
+  const out = ["bust_id,bust_year,bust_drop_factor,years_from_bust,whole_years_from_bust," + oceanExHeader()];
+  const lastYear = Math.floor(result.n / result.perYear) - 1;
+  (busts || []).forEach((b) => {
+    if (b.year < 20 || b.year > lastYear - 20) return;
+    const prefix = b.id + "," + b.year + "," + oceanExSig(b.drop, 3) + ",";
+    Array.prototype.push.apply(out, oceanExWindowRows(result, b, prefix));
+  });
+  return out.join("\n") + "\n";
+}
+
+const OCEAN_EX_MEANING = {
+  L: "sun brightness relative to today; Q = 342 L W m-2",
+  Aw: "albedo of white daisies",
+  Ab: "albedo of black daisies",
+  Ag: "albedo of bare ground",
+  Ao: "albedo of the ocean",
+  a: "outgoing longwave intercept, W m-2",
+  b: "outgoing longwave slope, W m-2 K-1",
+  q: "patch temperature contrast, K",
+  r: "daisy maximum growth rate, per day",
+  gam: "daisy death rate, per day",
+  Topt: "daisy optimum temperature, deg C",
+  wd: "daisy growth half-width, K",
+  g0: "grazer maximum appetite, per day",
+  Tg: "grazer favourite land temperature, deg C",
+  wg: "grazer temperature tolerance, K",
+  p: "grazer preference for white daisies (0-1)",
+  K: "grazing half-saturation",
+  e: "grazer conversion efficiency",
+  m: "grazer death rate, per day",
+  CL: "land heat capacity, J m-2 K-1",
+  H: "mixed-layer depth, m (C_m = 4.2e6 H)",
+  Cd: "deep-ocean heat capacity, J m-2 K-1",
+  k: "land-ocean heat exchange, W m-2 K-1",
+  gamO: "mixed layer to deep ocean exchange, W m-2 K-1",
+  fo: "ocean fraction of the planet",
+  sigma: "weather size: spread of daily-mean weather flux, W m-2",
+  life: "daisies and grazers on",
+  grazers: "grazers on (needs life)",
+  deep: "deep ocean on",
+  years: "years shown after the spin-up",
+  spinYears: "hidden spin-up, years",
+  seed: "weather number (random seed for the weather)",
+  sunStepYear: "year (after spin-up) the sun brightens; null = never",
+  sunStepDL: "how much L rises at the sun step",
+  sampling: "monthly (12 per year) or daily (365 per year)",
+};
+
+function settingsText(P, url, dateISO) {
+  const lines = ["Daisyworld with an Ocean - run settings", "date = " + dateISO, "weather number = " + P.seed, "page = " + url,
+    "# The page link reruns this run in the same browser. With daisies and grazers, another browser or device",
+    "# gives the same kind of run, with busts at different times.", ""];
+  Object.keys(P).forEach((k) => {
+    const left = k + " = " + String(P[k]);
+    const m = OCEAN_EX_MEANING[k];
+    lines.push(m ? left.padEnd(22) + "# " + m : left);
+  });
+  return lines.join("\n") + "\n";
+}
+
+function fileStem(presetId, P) {
+  const p = presetId === "custom" ? "custom" : "preset" + presetId;
+  return "daisyworld-ocean_" + p + "_weather" + P.seed;
+}
+
+if (typeof module !== "undefined") module.exports = { OCEAN_COLUMNS, runCSV, windowCSV, stackedCSV, settingsText, fileStem };
+
+// ---- charts.js ----
+// Charts for Daisyworld with an Ocean: canvas drawing, following app 1's drawChart
+// (device-pixel scaling, niceTicks, colours read from the CSS tokens at draw time).
+// Plain script, no DOM access at load time; concatenated after export.js.
+
+const CH_FONT = "12px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif";
+// The previous run ("Keep this run") is drawn dashed, thin and faint in --muted on every chart, so it never
+// looks like a data series (dark mode's black-daisy colour is a grey close to --muted).
+const CH_GHOST_DASH = [5, 4], CH_GHOST_ALPHA = 0.55, CH_GHOST_WIDTH = 1;
+// When the previous run has more points than the chart has pixel columns, it is thinned to about one point
+// per CH_GHOST_BIN pixel columns: a dashed line needs room to show its dashes, or it turns into a grey haze.
+const CH_GHOST_BIN = 3;
+
+function chCss(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function niceTicks(lo, hi, n) {
+  const span = hi - lo || 1, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((s) => s * mag).find((s) => span / s <= n) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+
+// Ticks on a log axis. lo and hi are log10 values; returns log10 tick positions.
+// Every power of ten; when that gives fewer than 3 ticks, also 2x and 5x.
+function logTicks(lo, hi) {
+  const out = [];
+  for (let k = Math.ceil(lo - 1e-9); k <= hi + 1e-9; k++) out.push(k);
+  if (out.length >= 3) return out;
+  const more = [];
+  for (let k = Math.floor(lo) - 1; k <= Math.ceil(hi); k++)
+    for (const m of [1, 2, 5]) { const v = k + Math.log10(m); if (v >= lo - 1e-9 && v <= hi + 1e-9) more.push(v); }
+  return more;
+}
+
+// A plain decimal, never exponent notation (axis values go down to 1e-6).
+function chNum(v) {
+  if (v === 0) return "0";
+  const a = Math.abs(v);
+  const d = a >= 100 ? 0 : Math.min(8, Math.max(0, 1 - Math.floor(Math.log10(a))));
+  return String(parseFloat(v.toFixed(d)));
+}
+
+function setupCanvas(cv) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h); ctx.font = CH_FONT;
+  return { ctx, w, h };
+}
+
+// Axes, grid and labels. opt: {xr, yr (data units, already log10 for log axes), xTicks(pw) -> [{v, label}],
+// yTicks: [{v, label}], xLabel, yLabel}. Returns the plot geometry. The left margin fits the widest y label.
+function chAxes(ctx, w, h, opt) {
+  let maxw = 0;
+  for (const t of opt.yTicks) if (t.label) maxw = Math.max(maxw, ctx.measureText(t.label).width);
+  const M = { l: Math.max(30, Math.ceil(24 + maxw + (maxw ? 6 : 0))), r: 12, t: 10, b: opt.xLabel ? 38 : 22 };
+  const pw = Math.max(10, w - M.l - M.r), ph = Math.max(10, h - M.t - M.b);
+  const [x0, x1] = opt.xr, [y0, y1] = opt.yr;
+  const X = (v) => M.l + (v - x0) / (x1 - x0 || 1) * pw;
+  const Y = (v) => M.t + (1 - (v - y0) / (y1 - y0 || 1)) * ph;
+  const muted = chCss("--muted");
+  ctx.strokeStyle = chCss("--grid"); ctx.lineWidth = 1; ctx.fillStyle = muted;
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (const t of opt.yTicks) {
+    const y = Math.round(Y(t.v)) + 0.5;
+    ctx.beginPath(); ctx.moveTo(M.l, y); ctx.lineTo(M.l + pw, y); ctx.stroke();
+    if (t.label) ctx.fillText(t.label, M.l - 6, y);
+  }
+  // x tick labels: dropped when they would overlap the previous one or leave the canvas
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  let lastRight = -Infinity;
+  for (const t of opt.xTicks(pw)) {
+    const x = Math.round(X(t.v)) + 0.5;
+    if (x < M.l - 1 || x > M.l + pw + 1) continue;
+    ctx.beginPath(); ctx.moveTo(x, M.t); ctx.lineTo(x, M.t + ph); ctx.stroke();
+    const half = ctx.measureText(t.label).width / 2;
+    if (x - half < lastRight + 6 || x - half < 0 || x + half > w) continue;
+    ctx.fillText(t.label, x, M.t + ph + 6); lastRight = x + half;
+  }
+  if (opt.xLabel) ctx.fillText(opt.xLabel, M.l + pw / 2, M.t + ph + 21);
+  if (opt.yLabel) {
+    ctx.save(); ctx.translate(11, M.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "middle";
+    ctx.fillText(opt.yLabel, 0, 0); ctx.restore();
+  }
+  ctx.strokeStyle = chCss("--rule");
+  ctx.beginPath(); ctx.moveTo(M.l + 0.5, M.t); ctx.lineTo(M.l + 0.5, M.t + ph + 0.5); ctx.lineTo(M.l + pw, M.t + ph + 0.5); ctx.stroke();
+  return { M, pw, ph, X, Y, x0, x1, y0, y1 };
+}
+
+// First index with t[i] >= v (t sorted).
+function chLower(t, v) { let a = 0, b = t.length; while (a < b) { const m = (a + b) >> 1; if (t[m] < v) a = m + 1; else b = m; } return a; }
+
+// One line through t[i0..i1]. When there are many more points than pixels, each pixel column draws its min-max span.
+function chLine(ctx, g, t, y, i0, i1, f) {
+  ctx.beginPath();
+  let pen = false;
+  const many = (i1 - i0) > 2 * g.pw;
+  let col = null, lo = 0, hi = 0;
+  const flush = () => { if (col === null) return; if (!pen) { ctx.moveTo(col, lo); pen = true; } ctx.lineTo(col, lo); ctx.lineTo(col, hi); };
+  for (let i = i0; i <= i1; i++) {
+    const v = f(y[i]);
+    if (!isFinite(v)) { flush(); col = null; pen = false; continue; }
+    const px = g.X(t[i]), py = g.Y(v);
+    if (!many) { if (!pen) { ctx.moveTo(px, py); pen = true; } else ctx.lineTo(px, py); continue; }
+    const c = Math.round(px);
+    if (c !== col) { flush(); col = c; lo = hi = py; } else { if (py < lo) lo = py; if (py > hi) hi = py; }
+  }
+  if (many) flush();
+  ctx.stroke();
+}
+
+// The previous run, thinned when it has more points than the chart has pixel columns. Each bin of 2*CH_GHOST_BIN
+// columns keeps two real points, its lowest and its highest (on the plotted scale, so logs on a log axis), in time
+// order: every dip and peak survives at its true time and depth, and there is about one point per CH_GHOST_BIN columns.
+// The extremes of different series fall at different times, so each series gets its own times.
+// plotW is the plot width in pixels, estimated before the axes are laid out. Returns [{t, series: [{y}]}, ...]
+// (one set per series, covering t0..t1), or null when no thinning is needed.
+function chThinGhost(gh, t0, t1, plotW, f) {
+  const i0 = Math.max(0, chLower(gh.t, t0) - 1), i1 = Math.min(gh.t.length - 1, chLower(gh.t, t1)), n = i1 - i0 + 1;
+  if (n <= plotW) return null;
+  const k = Math.max(2, Math.ceil(n * 2 * CH_GHOST_BIN / plotW));
+  return gh.series.map((ser) => {
+    const tt = [], yy = [];
+    for (let a = i0; a <= i1; a += k) {
+      const b = Math.min(i1, a + k - 1);
+      let lo = -1, hi = -1;
+      for (let i = a; i <= b; i++) {
+        const v = f(ser.y[i]); if (!isFinite(v)) continue;
+        if (lo < 0 || v < f(ser.y[lo])) lo = i;
+        if (hi < 0 || v > f(ser.y[hi])) hi = i;
+      }
+      if (lo < 0) { tt.push(gh.t[a]); yy.push(NaN); continue; }        // a gap stays a gap
+      for (const i of lo === hi ? [lo] : lo < hi ? [lo, hi] : [hi, lo]) { tt.push(gh.t[i]); yy.push(ser.y[i]); }
+    }
+    return { t: Float64Array.from(tt), series: [{ y: Float64Array.from(yy) }] };
+  });
+}
+
+// cfg = {t, series: [{y, color, dash?, width?, label}], ghost?: {t, series}, logY?, yLabel, xLabel?,
+//        window: [t0, t1], yRange?: [lo, hi], yFrom0?, markers?: [{t, size, selected?, onTap}], cursor?: t,
+//        vlines?: [{t, label}]}
+// Stores the geometry on canvas._tc for timeChartPointer.
+function drawTimeChart(canvas, cfg) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  const [t0, t1] = cfg.window;
+  const f = cfg.logY ? (v) => (v > 0 ? Math.log10(Math.max(v, 1e-6)) : NaN) : (v) => v;
+  const sets = [{ t: cfg.t, series: cfg.series }];
+  if (cfg.ghost && cfg.ghost.t) {
+    const thin = chThinGhost(cfg.ghost, t0, t1, Math.max(10, w - 70), f);
+    if (thin) sets.push(...thin); else sets.push(cfg.ghost);
+  }
+  const span = [];
+  for (const s of sets) {
+    const i0 = Math.max(0, chLower(s.t, t0) - 1), i1 = Math.min(s.t.length - 1, chLower(s.t, t1));
+    span.push([i0, i1]);
+  }
+  let lo = Infinity, hi = -Infinity;
+  if (cfg.yRange) { lo = f(cfg.yRange[0]); hi = f(cfg.yRange[1]); }
+  else sets.forEach((s, k) => s.series.forEach((ser) => {
+    for (let i = span[k][0]; i <= span[k][1]; i++) { const v = f(ser.y[i]); if (isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; } }
+  }));
+  if (!isFinite(lo)) { lo = 0; hi = 1; }
+  if (cfg.yFrom0 && !cfg.logY) lo = 0;
+  let yTicks;
+  if (cfg.logY) {
+    // half-decade steps with a little room, so values on the floor don't run along the axis
+    lo = Math.floor((lo - 0.2) * 2) / 2; hi = Math.ceil((hi + 0.1) * 2) / 2; if (hi - lo < 1) hi = lo + 1;
+    yTicks = logTicks(lo, hi).map((v) => ({ v, label: chNum(Math.pow(10, v)) }));
+  } else {
+    if (hi - lo < 1e-6) { lo -= 0.5; hi += 0.5; }
+    const tk = niceTicks(lo, hi, 5), step = tk.length > 1 ? tk[1] - tk[0] : (hi - lo);
+    if (!cfg.yRange) { lo = cfg.yFrom0 ? 0 : Math.floor(lo / step + 1e-9) * step; hi = Math.ceil(hi / step - 1e-9) * step; }
+    yTicks = niceTicks(lo, hi, 5).map((v) => ({ v, label: chNum(v) }));
+  }
+  const g = chAxes(ctx, w, h, { xr: [t0, t1], yr: [lo, hi], yTicks, xLabel: cfg.xLabel === undefined ? "year" : cfg.xLabel, yLabel: cfg.yLabel,
+    xTicks: (pw) => niceTicks(t0, t1, Math.max(3, Math.floor(pw / 80))).map((v) => ({ v, label: chNum(v) })) });
+
+  ctx.save(); ctx.beginPath(); ctx.rect(g.M.l, g.M.t, g.pw, g.ph); ctx.clip();
+  ctx.lineJoin = "round";
+  for (const v of cfg.vlines || []) {
+    if (v.t < t0 || v.t > t1) continue;
+    const x = Math.round(g.X(v.t)) + 0.5;
+    ctx.strokeStyle = chCss("--heat"); ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(x, g.M.t); ctx.lineTo(x, g.M.t + g.ph); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = chCss("--heat"); ctx.textBaseline = "top";
+    const tw = ctx.measureText(v.label).width;
+    const right = x + 4 + tw <= g.M.l + g.pw;
+    ctx.textAlign = right ? "left" : "right"; ctx.fillText(v.label, right ? x + 4 : x - 4, g.M.t + 3);
+  }
+  if (sets.length > 1) {
+    ctx.globalAlpha = CH_GHOST_ALPHA; ctx.strokeStyle = chCss("--muted"); ctx.lineWidth = CH_GHOST_WIDTH; ctx.setLineDash(CH_GHOST_DASH);
+    for (let k = 1; k < sets.length; k++) for (const ser of sets[k].series) chLine(ctx, g, sets[k].t, ser.y, span[k][0], span[k][1], f);
+    ctx.globalAlpha = 1; ctx.setLineDash([]);
+  }
+  for (const ser of cfg.series) {
+    ctx.strokeStyle = ser.color; ctx.lineWidth = ser.width || 1.8; ctx.setLineDash(ser.dash || []);
+    chLine(ctx, g, cfg.t, ser.y, span[0][0], span[0][1], f);
+  }
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  const hits = [];
+  if (cfg.markers && cfg.markers.length && cfg.series.length) {
+    const ys = cfg.series[0].y, heat = chCss("--heat"), panel = chCss("--panel");
+    const order = cfg.markers.slice().sort((a, b) => (a.selected ? 1 : 0) - (b.selected ? 1 : 0));
+    for (const m of order) {
+      if (m.t < t0 || m.t > t1) continue;
+      const i = Math.min(cfg.t.length - 1, chLower(cfg.t, m.t));
+      const v = f(m.y !== undefined ? m.y : ys[i]);
+      if (!isFinite(v)) continue;
+      const x = g.X(m.t), y = Math.min(g.M.t + g.ph - m.size, Math.max(g.M.t + m.size, g.Y(v)));
+      ctx.beginPath(); ctx.arc(x, y, m.size, 0, 2 * Math.PI);
+      ctx.fillStyle = m.selected ? heat : panel; ctx.globalAlpha = m.selected ? 1 : 0.85; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = heat; ctx.lineWidth = m.selected ? 2.5 : 1.5; ctx.stroke();
+      hits.push({ x, y, r: m.size, m });
+    }
+  }
+  if (cfg.cursor !== null && cfg.cursor !== undefined && cfg.cursor >= t0 && cfg.cursor <= t1) {
+    const x = Math.round(g.X(cfg.cursor)) + 0.5;
+    ctx.strokeStyle = chCss("--muted"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, g.M.t); ctx.lineTo(x, g.M.t + g.ph); ctx.stroke();
+    const i = Math.min(cfg.t.length - 1, chLower(cfg.t, cfg.cursor));
+    for (const ser of cfg.series) {
+      const v = f(ser.y[i]); if (!isFinite(v) || v < g.y0 || v > g.y1) continue;
+      ctx.fillStyle = ser.color; ctx.beginPath(); ctx.arc(x, g.Y(v), 3.5, 0, 2 * Math.PI); ctx.fill();
+    }
+  }
+  canvas._tc = { g, hits, t0, t1 };
+}
+
+// What a pointer event on a time chart points at: {marker} when within reach of a bust marker, else {t}.
+function timeChartPointer(canvas, ev) {
+  const c = canvas._tc; if (!c) return null;
+  const r = canvas.getBoundingClientRect(), px = ev.clientX - r.left, py = ev.clientY - r.top;
+  let best = null, bd = Infinity;
+  for (const hit of c.hits) {
+    const d = Math.hypot(hit.x - px, hit.y - py);
+    if (d <= Math.max(hit.r + 4, 14) && d < bd) { bd = d; best = hit.m; }
+  }
+  if (best) return { marker: best };
+  const g = c.g, x = Math.min(g.M.l + g.pw, Math.max(g.M.l, px));
+  return { t: g.x0 + (x - g.M.l) / g.pw * (g.x1 - g.x0) };
+}
+
+// Timescale bars on a log axis. cfg = {labels, sd, weatherLine, ghostSd?}; null entries are not drawn.
+function drawBars(canvas, cfg) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  const ok = (v) => v !== null && v !== undefined && isFinite(v) && v > 0;
+  const vals = [].concat(cfg.sd, cfg.weatherLine, cfg.ghostSd || []).filter(ok).map(Math.log10);
+  if (!vals.length) return;
+  let lo = Math.floor(Math.min(...vals) - 0.05), hi = Math.max(...vals) + 0.3;
+  if (hi - lo < 1) lo = Math.floor(hi - 1);
+  const yTicks = logTicks(lo, hi).map((v) => ({ v, label: chNum(Math.pow(10, v)) }));
+  const nb = cfg.labels.length;
+  const g = chAxes(ctx, w, h, { xr: [0, nb], yr: [lo, hi], yTicks, xLabel: "averaged over", yLabel: "spread (K, ×10 per step)",
+    xTicks: () => [] });
+  const band = g.pw / nb, ghost = cfg.ghostSd && cfg.ghostSd.some(ok);
+  const bw = Math.min(54, band * (ghost ? 0.36 : 0.5));
+  const accent = chCss("--accent"), muted = chCss("--muted"), heat = chCss("--heat"), ink = chCss("--ink"), panel = chCss("--panel");
+  const base = g.M.t + g.ph;
+  const cx = (k) => g.M.l + band * (k + 0.5) + (ghost ? bw * 0.55 : 0);
+  const labels = [];
+  ctx.textAlign = "center";
+  for (let k = 0; k < nb; k++) {
+    ctx.fillStyle = muted; ctx.textBaseline = "top";
+    ctx.fillText(cfg.labels[k], g.M.l + band * (k + 0.5), base + 6);
+    if (ghost && ok(cfg.ghostSd[k])) {
+      const gx = g.M.l + band * (k + 0.5) - bw * 0.55, y = g.Y(Math.log10(cfg.ghostSd[k]));
+      ctx.globalAlpha = 0.12; ctx.fillStyle = muted; ctx.fillRect(gx - bw / 2, y, bw, base - y);
+      ctx.globalAlpha = CH_GHOST_ALPHA + 0.15; ctx.strokeStyle = muted; ctx.lineWidth = 1.5; ctx.setLineDash(CH_GHOST_DASH);
+      ctx.strokeRect(gx - bw / 2 + 0.75, y + 0.75, bw - 1.5, base - y - 0.75); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+    if (!ok(cfg.sd[k])) continue;
+    const y = g.Y(Math.log10(cfg.sd[k]));
+    ctx.fillStyle = accent; ctx.fillRect(cx(k) - bw / 2, y, bw, base - y);
+    // value inside the top of the bar when it fits, else above it; drawn after the weather line, on a backing
+    const label = chNum(+cfg.sd[k].toPrecision(2)), tw = ctx.measureText(label).width, inside = base - y >= 22 && tw <= bw - 4;
+    labels.push({ label, tw, x: cx(k), y: inside ? y + 5 : y - 17, inside });
+  }
+  // weather alone: from the run's own month bar, falling as if each month were independent of the last
+  ctx.strokeStyle = heat; ctx.fillStyle = heat; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); let pen = false;
+  for (let k = 0; k < nb; k++) {
+    if (!ok(cfg.weatherLine[k])) { pen = false; continue; }
+    const x = cx(k), y = g.Y(Math.log10(cfg.weatherLine[k]));
+    if (!pen) { ctx.moveTo(x, y); pen = true; } else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  for (let k = 0; k < nb; k++) {
+    if (!ok(cfg.weatherLine[k])) continue;
+    ctx.beginPath(); ctx.arc(cx(k), g.Y(Math.log10(cfg.weatherLine[k])), 3.5, 0, 2 * Math.PI); ctx.fill();
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (const L of labels) {
+    ctx.fillStyle = L.inside ? accent : panel; ctx.fillRect(L.x - L.tw / 2 - 3, L.y, L.tw + 6, 15);
+    ctx.fillStyle = L.inside ? panel : ink; ctx.fillText(L.label, L.x, L.y + 1);
+  }
+}
+
+// How much temperature varies at each timescale, against period (years), log-log.
+// cfg = {period, power, ghost?: {period, power}, weather?: k, drawn as the line k / period (weather alone), marks: [{period, label}]}
+function drawSpectrum(canvas, cfg) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  const pos = (p, q) => { const out = []; for (let i = 0; i < p.length; i++) if (p[i] > 0 && q[i] > 0) out.push([Math.log10(p[i]), Math.log10(q[i])]); return out; };
+  const main = pos(cfg.period, cfg.power), gh = cfg.ghost ? pos(cfg.ghost.period, cfg.ghost.power) : [];
+  if (!main.length) return;
+  const xs = main.concat(gh).map((a) => a[0]).concat((cfg.marks || []).map((m) => Math.log10(m.period)));
+  const wy = (x) => Math.log10(cfg.weather) - x;          // weather alone on the log axes: slope -1
+  const ys = main.concat(gh).map((a) => a[1]).concat(cfg.weather > 0 ? [wy(main[0][0]), wy(main[main.length - 1][0])] : []);
+  const x0 = Math.min(...xs) - 0.12, x1 = Math.max(...xs) + 0.12;
+  const y0 = Math.floor(Math.min(...ys)), y1 = Math.ceil(Math.max(...ys) + 0.6);
+  const yTicks = logTicks(y0, y1).filter((v) => Math.abs(v - Math.round(v)) < 1e-9).map((v) => ({ v, label: "" }));
+  const g = chAxes(ctx, w, h, { xr: [x0, x1], yr: [y0, y1], yTicks, xLabel: "period (years)", yLabel: "variation (×10 per line)",
+    xTicks: () => logTicks(x0, x1).filter((v) => Math.abs(v - Math.round(v)) < 1e-9).map((v) => ({ v, label: chNum(Math.pow(10, v)) })) });
+  ctx.save(); ctx.beginPath(); ctx.rect(g.M.l, g.M.t, g.pw, g.ph); ctx.clip();
+  const line = (pts) => { ctx.beginPath(); pts.forEach((a, i) => { const x = g.X(a[0]), y = g.Y(a[1]); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.stroke(); };
+  ctx.lineJoin = "round";
+  if (gh.length) {
+    ctx.globalAlpha = CH_GHOST_ALPHA; ctx.strokeStyle = chCss("--muted"); ctx.lineWidth = CH_GHOST_WIDTH + 0.3; ctx.setLineDash(CH_GHOST_DASH);
+    line(gh); ctx.globalAlpha = 1; ctx.setLineDash([]);
+  }
+  if (cfg.weather > 0) {
+    ctx.strokeStyle = chCss("--heat"); ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(g.X(x0), g.Y(wy(x0))); ctx.lineTo(g.X(x1), g.Y(wy(x1))); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.strokeStyle = chCss("--accent"); ctx.lineWidth = 2; line(main);
+  // timescale marks; labels kept inside the plot and moved down a row when they would overlap
+  const muted = chCss("--muted"), panel = chCss("--panel");
+  const rows = [];
+  const marks = (cfg.marks || []).slice().sort((a, b) => a.period - b.period);
+  for (const m of marks) {
+    const x = Math.round(g.X(Math.log10(m.period))) + 0.5;
+    ctx.strokeStyle = muted; ctx.lineWidth = 1.5; ctx.setLineDash([1.5, 3]);   // dotted, unlike the dashed previous run
+    ctx.beginPath(); ctx.moveTo(x, g.M.t); ctx.lineTo(x, g.M.t + g.ph); ctx.stroke(); ctx.setLineDash([]);
+    const tw = ctx.measureText(m.label).width;
+    let lx = Math.min(g.M.l + g.pw - tw - 3, Math.max(g.M.l + 3, x - tw / 2));
+    let row = 0; while (rows[row] !== undefined && lx < rows[row] + 8) row++;
+    rows[row] = lx + tw;
+    const ly = g.M.t + 3 + row * 16;
+    ctx.fillStyle = panel; ctx.globalAlpha = 0.85; ctx.fillRect(lx - 2, ly - 1, tw + 4, 15); ctx.globalAlpha = 1;
+    ctx.fillStyle = muted; ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(m.label, lx, ly);
+  }
+  ctx.restore();
+}
+
+// ---- ui.js ----
+// Page state for Daisyworld with an Ocean: presets, URL hash, run scheduling. DOM wiring lives in initPage().
+
+// In the page OCEAN_DEFAULTS is a global from model.js; in Node we require it (no top-level redeclaration).
+const UI_DEFAULTS = typeof module !== "undefined" && module.exports ? require("./model.js").OCEAN_DEFAULTS : OCEAN_DEFAULTS;
+
+const PRESET_COMMON = { L: 1.05, H: 75, sigma: 30, years: 2000, deep: true, sunStepYear: null };
+const PRESETS = [
+  { id: 1, name: "Land only", blurb: "Bare land only: temperature jitters with every change in the weather.",
+    params: { fo: 0, life: false, grazers: false } },
+  { id: 2, name: "Add a mixed layer", blurb: "An ocean surface layer smooths the year-to-year jitter, but the slow wander stays.",
+    params: { fo: 0.7, deep: false, life: false, grazers: false } },
+  { id: 3, name: "Add a deep ocean", blurb: "A deep ocean calms things a little more; brighten the sun and the last bit of warming takes centuries.",
+    params: { fo: 0.7, life: false, grazers: false } },
+  { id: 4, name: "Add life", blurb: "Daisies and grazers bring busts of every size every few decades, and slow swings grow.",
+    params: { fo: 0.7, p: 0.3, wg: 6, Tg: 25, life: true, grazers: true } },
+  { id: 5, name: "Compare: grazers, all land", blurb: "Without the ocean, grazers give a fast, small boom and bust every year or two.",
+    params: { fo: 0, p: 0.3, wg: 6, Tg: 25, life: true, grazers: true } },
+  { id: 6, name: "Compare: grazers, no weather", blurb: "With no weather, grazers give a perfectly regular cycle, every bust the same.",
+    params: { fo: 0.7, p: 0.3, wg: 6, Tg: 25, sigma: 0, life: true, grazers: true } },
+  { id: 7, name: "Clockwork cycle", blurb: "Regular deep busts; a deeper mixed layer makes the cycle longer.",
+    params: { fo: 0.7, p: 0.3, wg: 5, Tg: 26, life: true, grazers: true } },
+];
+
+function presetParams(id) {
+  const pr = PRESETS.find((x) => x.id === Number(id));
+  return Object.assign({}, UI_DEFAULTS, PRESET_COMMON, pr ? pr.params : {});
+}
+
+// Hash format: "#key=value&..." for every key of P. Booleans as 1/0, null as "none", numbers and strings as text.
+function encodeHash(P) {
+  return "#" + Object.keys(P).map((k) => {
+    const v = P[k];
+    const s = v === null || v === undefined ? "none" : typeof v === "boolean" ? (v ? "1" : "0") : String(v);
+    return encodeURIComponent(k) + "=" + encodeURIComponent(s);
+  }).join("&");
+}
+
+// Start from the defaults; override known keys only, restoring each value to the type of its default.
+function decodeHash(hash) {
+  const P = Object.assign({}, UI_DEFAULTS);
+  const s = String(hash || "").replace(/^#/, "");
+  if (!s) return P;
+  for (const part of s.split("&")) {
+    const i = part.indexOf("=");
+    if (i < 0) continue;
+    let k, v;
+    try { k = decodeURIComponent(part.slice(0, i)); v = decodeURIComponent(part.slice(i + 1)); }
+    catch (e) { continue; }                 // malformed escape: skip, key keeps its default
+    if (!Object.prototype.hasOwnProperty.call(UI_DEFAULTS, k)) continue;
+    const d = UI_DEFAULTS[k];
+    if (d === null) {                       // sunStepYear: a number, or null for "never"
+      const x = parseFloat(v);
+      P[k] = v === "none" || v === "" || !isFinite(x) ? null : x;
+    } else if (typeof d === "boolean") P[k] = v === "1" || v === "true";
+    else if (typeof d === "number") { const x = parseFloat(v); P[k] = isFinite(x) ? x : d; }
+    else P[k] = v;
+  }
+  return P;
+}
+
+// One run at a time: each request terminates the current worker; a run counter drops messages from old workers.
+class RunScheduler {
+  constructor(makeWorker) { this.makeWorker = makeWorker; this.worker = null; this.runId = 0; }
+  request(P, onProgress, onResult, onError) {
+    this.cancel();
+    const id = ++this.runId;
+    const w = this.makeWorker();
+    this.worker = w;
+    const finish = () => { if (this.runId === id) { w.terminate(); this.worker = null; } };
+    w.onmessage = (ev) => {
+      if (this.runId !== id) return;      // superseded or cancelled
+      const d = ev && ev.data || {};
+      if (d.error !== undefined) { finish(); if (onError) onError(d.error); }
+      else if (d.result !== undefined) { finish(); if (onResult) onResult(d.result); }
+      else if (d.progress !== undefined && onProgress) onProgress(d.progress);
+    };
+    w.onerror = (e) => {
+      if (this.runId !== id) return;
+      finish();
+      if (onError) onError(String(e && e.message || e));
+    };
+    w.postMessage({ P });
+  }
+  cancel() {
+    this.runId++;                          // any message still in flight is now stale
+    if (this.worker) { this.worker.terminate(); this.worker = null; }
+  }
+}
+
+// The preset a parameter set came from (the weather number aside), or "custom".
+function matchPreset(P) {
+  for (const pr of PRESETS) {
+    const q = presetParams(pr.id);
+    if (Object.keys(q).every((k) => k === "seed" || q[k] === P[k])) return pr.id;
+  }
+  return "custom";
+}
+
+// A response time in words: "2 months", "5 years", "190 years".
+function spanWords(years) {
+  if (years < 1) { const m = Math.max(1, Math.round(years * 12)); return m + (m === 1 ? " month" : " months"); }
+  const y = years < 20 ? Math.round(years) : Math.round(years / 10) * 10;
+  return y + (y === 1 ? " year" : " years");
+}
+
+const DAY_UI = 86400;
+
+// Response times (heat capacity / how fast heat is lost) of the parts present: land C_L/b,
+// mixed layer C_m/b, deep ocean C_d/gamma_o. Periods in years, for the spectrum's markers.
+function timescaleMarks(P, flags) {
+  const yr = 365 * DAY_UI, out = [];
+  const land = P.CL / P.b / yr;
+  out.push({ period: land, label: "land, " + spanWords(land) });
+  if (flags.ocean) { const ml = 4.2e6 * P.H / P.b / yr; out.push({ period: ml, label: "mixed layer, " + spanWords(ml) }); }
+  if (flags.deep) { const dp = P.Cd / P.gamO / yr; out.push({ period: dp, label: "deep ocean, " + spanWords(dp) }); }
+  return out;
+}
+
+function initPage() {
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
+  const smooth = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  // Sliders: parameter key -> how its value is shown.
+  const RANGES = {
+    fo: (v) => Math.round(v * 100) + "%" + (v > 0 ? "" : " (all land)"),
+    H: (v) => v + " m",
+    sigma: (v) => v + " W m⁻²",
+    years: (v) => v + " years",
+    p: (v) => v.toFixed(2) + (v < 0.45 ? " (prefer black)" : v > 0.55 ? " (prefer white)" : " (no preference)"),
+    Tg: (v) => v.toFixed(1) + " °C",
+    wg: (v) => v.toFixed(1) + " K",
+    L: (v) => v.toFixed(2),
+  };
+  const CHECKS = ["deep", "life", "grazers"];
+
+  const S = { P: null, presetId: 1, basePreset: 1, shown: null, ghost: null, keep: false, monthly: false, view: "bars",
+    win: "300", start: 0, cursorT: null, tip: null, sel: null, runs: 0, timer: null, running: false, prog: 0, error: null };
+
+  // Start from the link if it has settings, else from preset 1. Slider values are kept inside the sliders' ranges.
+  if (location.hash.length > 1) {
+    S.P = decodeHash(location.hash);
+    S.P.sampling = "monthly";
+    for (const k in RANGES) { const el = $("ctl-" + k); S.P[k] = Math.min(+el.max, Math.max(+el.min, S.P[k])); }
+    S.presetId = matchPreset(S.P); S.basePreset = S.presetId === "custom" ? 1 : S.presetId;
+  } else S.P = presetParams(1);
+
+  // Blob links, called via .call: the build test rejects any "url" followed by an opening bracket (CSS imports).
+  const blobLink = (blob) => URL.createObjectURL.call(URL, blob);
+  const dropLink = (u) => URL.revokeObjectURL.call(URL, u);
+
+  // ---- worker ----
+  let workerURL = null;
+  try { workerURL = blobLink(new Blob([$("worker-src").textContent], { type: "text/javascript" })); } catch (e) { workerURL = null; }
+  function inlineWorker() {                 // same protocol, on the page itself, if workers are unavailable
+    const w = { onmessage: null, onerror: null, dead: false,
+      postMessage(m) {
+        setTimeout(() => {
+          if (w.dead) return;
+          let data; try { data = { result: simulateOcean(m.P) }; } catch (e) { data = { error: String(e && e.message || e) }; }
+          if (!w.dead && w.onmessage) w.onmessage({ data });
+        }, 30);
+      },
+      terminate() { w.dead = true; } };
+    return w;
+  }
+  function makeWorker() {
+    if (workerURL) { try { return new Worker(workerURL); } catch (e) { workerURL = null; } }
+    return inlineWorker();
+  }
+  const sched = new RunScheduler(makeWorker);
+
+  // ---- helpers ----
+  const presetName = (id) => { const pr = PRESETS.find((x) => x.id === id); return pr ? pr.id + " · " + pr.name : "your own settings"; };
+  const pct = (v) => (v * 100).toFixed(v < 0.1 ? 1 : 0) + "%";
+  const sig3 = (v) => (v >= 1 ? v.toFixed(2) : String(+v.toPrecision(3)));
+  const fmtDrop = (d) => (d < 10 ? d.toFixed(1) : String(Math.round(d)));
+  const keyHTML = (items) => items.map((k) => {
+    const cls = k.ghostBox ? "box gbox" : k.box ? "box" : k.ghost ? "ghost" : k.dotted ? "dotted" : k.dash ? "dash" : "";
+    const mark = k.dot ? '<i class="dot"></i>' : `<i class="${cls}"${k.box && !k.ghostBox ? ` style="background:${k.color}"` : ""}></i>`;
+    return `<span class="key" style="color:${k.color}">${mark}<span style="color:var(--muted)">${k.label}</span></span>`;
+  }).join("");
+  const localDate = () => { const d = new Date(), z = (v) => String(v).padStart(2, "0"); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()); };
+  function saveFile(name, text, type) {
+    const url = blobLink(new Blob([text], { type }));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => dropLink(url), 1000);
+  }
+
+  // ---- controls ----
+  const bar = $("presets");
+  for (const pr of PRESETS) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.preset = pr.id;
+    const n = document.createElement("span"); n.className = "num"; n.textContent = pr.id;
+    b.append(n, document.createTextNode(pr.name));
+    b.addEventListener("click", () => loadPreset(pr.id));
+    bar.appendChild(b);
+  }
+
+  function sunYearValue() {
+    let y = Math.round(parseFloat($("sunYear").value)); if (!isFinite(y)) y = 100;
+    return Math.max(0, Math.min(S.P.years - 1, y));
+  }
+  function writeControls() {
+    const P = S.P;
+    for (const k in RANGES) $("ctl-" + k).value = P[k];
+    for (const k of CHECKS) $("ctl-" + k).checked = !!P[k];
+    if (P.sunStepYear !== null) $("sunYear").value = P.sunStepYear;
+    refreshLabels();
+  }
+  function refreshLabels() {
+    const P = S.P;
+    for (const k in RANGES) $("ctl-" + k + "-o").textContent = RANGES[k](+P[k]);
+    $("seed-o").textContent = P.seed;
+    const dim = (id, off) => { const el = $(id); el.classList.toggle("dim", off); el.querySelectorAll("input").forEach((i) => { i.disabled = off; }); };
+    dim("row-H", !(P.fo > 0)); dim("row-deep", !(P.fo > 0)); dim("row-grazers", !P.life);
+    for (const r of ["row-p", "row-Tg", "row-wg"]) dim(r, !(P.life && P.grazers));
+    const on = P.sunStepYear !== null;
+    $("sunBtn").setAttribute("aria-pressed", on ? "true" : "false");
+    // the year box always shows the year that will be used: readControls and sunYearValue clamp it to the
+    // run length, so write the clamped value back (a half-typed, empty box is left alone)
+    const sy = $("sunYear"), typed = parseFloat(sy.value);
+    sy.max = P.years - 1;
+    if (isFinite(typed)) {
+      if (on && typed !== P.sunStepYear) sy.value = P.sunStepYear;
+      else if (!on && (typed > P.years - 1 || typed < 0)) sy.value = Math.max(0, Math.min(P.years - 1, Math.round(typed)));
+    }
+    $("sunHint").textContent = on ? `On: 5% brighter from year ${P.sunStepYear}. Press again to undo.`
+      : "Makes the sun 5% brighter at that year.";
+    bar.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.preset === S.presetId)));
+    $("blurb").textContent = S.presetId === "custom" ? `Your own settings, starting from ${presetName(S.basePreset)}.`
+      : PRESETS.find((x) => x.id === S.presetId).blurb;
+  }
+  function readControls() {
+    const P = S.P;
+    for (const k in RANGES) P[k] = parseFloat($("ctl-" + k).value);
+    for (const k of CHECKS) P[k] = $("ctl-" + k).checked;
+    if (P.sunStepYear !== null) P.sunStepYear = sunYearValue();
+  }
+  function onControl() { readControls(); S.presetId = "custom"; refreshLabels(); schedule(); }
+  function schedule() { clearTimeout(S.timer); S.timer = setTimeout(requestRun, 250); }
+  function loadPreset(id) {
+    const seed = S.P.seed;
+    S.P = Object.assign(presetParams(id), { seed });
+    S.presetId = id; S.basePreset = id;
+    writeControls(); requestRun();
+  }
+
+  // ---- runs ----
+  function setProgress(f) {
+    S.prog = f;
+    $("progress").firstElementChild.style.width = (f * 100).toFixed(1) + "%";
+    if (S.running) $("statusText").textContent = `Running the model… ${Math.round(f * 100)}%`;
+  }
+  function requestRun() {
+    clearTimeout(S.timer);
+    const P = Object.assign({}, S.P), presetId = S.presetId;   // snapshot: the shown result is paired with these settings
+    S.running = true; S.error = null;
+    root.dataset.runState = "running";
+    setProgress(0); renderStatus(); renderNotice();
+    $("charts").classList.add("running");
+    sched.request(P, setProgress, (res) => onResult(res, P, presetId), onError);
+  }
+  function derive(res) {
+    const py = res.perYear, n = res.n, ny = Math.floor(n / py), has = ny >= 1;
+    const annT = new Float64Array(ny); for (let i = 0; i < ny; i++) annT[i] = i + 0.5;
+    const ann = {};
+    if (has) for (const k of ["land_T", "ml_T", "deep_T"]) if (res.cols[k]) ann[k] = blockMeans(res.cols[k], py);
+    const busts = has && res.flags.grazers ? detectBusts(res.cols.Z, py) : [];
+    for (const b of busts) {                 // the marker sits at the lowest month within a year of the bust
+      let low = Infinity;
+      for (let i = Math.max(0, b.monthIndex - py); i <= Math.min(n - 1, b.monthIndex + py); i++) low = Math.min(low, res.cols.Z[i]);
+      b.low = low;
+    }
+    const spread = has ? spreadOfMeans(res.cols.global_T, py) : null;
+    let spec = null;
+    if (has) {
+      const s = spectrum(res.cols.global_T, py);
+      let L = 1; while (L * 2 <= n && L < 8192) L *= 2;          // same segment length as spectrum(); keeps runs comparable
+      // Variation per band of periods: power density × frequency (1/period), so a band holds what
+      // the bars' averaging would wash out. Weather alone (months independent, this run's
+      // month-to-month spread) has flat density sd² × mean(w²) through the Hann window, so here it falls as 1/period.
+      let w2 = 0; for (let i = 0; i < L; i++) w2 += (0.5 - 0.5 * Math.cos(2 * Math.PI * i / L)) ** 2;
+      const sd0 = spread.sd[0];
+      spec = { period: s.period, power: s.power.map((v, k) => v / L / s.period[k]), weather: sd0 === null ? null : sd0 * sd0 * w2 / L };
+    }
+    const varies = !!(spread && spread.sd[0] !== null && spread.sd[0] > 1e-6);
+    return { py, n, ny, has, annT, ann, busts, spread, spec, varies };
+  }
+  function onResult(res, P, presetId) {
+    const next = { res, P, presetId, d: derive(res) };
+    S.ghost = S.keep && S.shown ? S.shown : null;
+    S.shown = next; S.sel = null; S.cursorT = null;
+    S.running = false; S.error = null;
+    try { history.replaceState(null, "", encodeHash(P)); } catch (e) { /* file pages may refuse; the link is optional */ }
+    renderAll();
+    S.runs++; root.dataset.runCount = String(S.runs); root.dataset.runState = "done";
+  }
+  function onError(msg) {
+    S.running = false; S.error = String(msg);
+    console.error("Daisyworld run failed: " + S.error);
+    $("charts").classList.remove("running");
+    renderStatus(); renderNotice();
+    root.dataset.runState = "error";
+  }
+
+  // ---- drawing ----
+  function windowRange() {
+    const total = S.shown ? Math.max(1, S.shown.d.n / S.shown.d.py) : 1;
+    const win = S.win === "all" ? total : Math.min(+S.win, total);
+    S.start = Math.max(0, Math.min(S.start, Math.floor(total - win)));
+    return [S.start, S.start + win, total, win];
+  }
+  function renderTimebar() {
+    const [t0, t1, total, win] = windowRange(), sl = $("winStart"), max = Math.floor(total - win);
+    for (const o of $("winSize").options) o.disabled = o.value !== "all" && +o.value >= total;
+    $("winSize").value = S.win !== "all" && +S.win >= total ? "all" : S.win;   // the student's choice comes back on longer runs
+    sl.max = Math.max(0, max); sl.value = S.start; sl.disabled = max <= 0; sl.hidden = max <= 0;
+    $("winText").textContent = `years ${Math.round(t0)}–${Math.round(t1)} of ${Math.round(total)}`;
+  }
+  function renderStatus() {
+    $("status").classList.toggle("running", S.running);
+    const sh = S.shown;
+    if (S.running) $("statusText").textContent = `Running the model… ${Math.round(S.prog * 100)}%`;
+    else if (S.error) $("statusText").textContent = "The last run did not finish.";
+    else if (sh) $("statusText").textContent = `Shown: ${presetName(sh.presetId)}, weather no. ${sh.P.seed}, ${Math.floor(sh.d.n / sh.d.py)} years.`;
+  }
+  function renderNotice() {
+    const el = $("notice"), sh = S.shown;
+    let msg = "";
+    if (S.error) msg = `The run could not finish (${S.error}). Change a setting to try again; the charts show the last run that worked.`;
+    else if (sh && sh.res.ranAway) msg = (sh.d.has
+      ? `This run stopped early, at year ${sh.d.ny}, because the planet's temperature ran away. Only the years before that are shown.`
+      : "This run stopped during the hidden settling-in years, because the planet's temperature ran away.")
+      + " Try a smaller weather size, a deeper mixed layer or a sun brightness nearer 1.05.";
+    el.textContent = msg; el.hidden = !msg;
+  }
+  function ghostKey(gh) {
+    return { color: chCss("--muted"), ghost: true, label: "dashed: previous run (" + presetName(gh.presetId) + ", weather no. " + gh.P.seed + ")" };
+  }
+  function renderCharts() {
+    const sh = S.shown, charts = $("charts");
+    charts.hidden = !sh;
+    if (!sh) return;
+    charts.classList.toggle("running", S.running);
+    if ($("tab-model").hidden) return;                // canvases have no size while the tab is hidden
+    const d = sh.d, res = sh.res, gh = S.ghost && S.ghost.d.has ? S.ghost : null;
+    const boxes = ["timebar", "popBox", "tempBox", "planet", "varBox"];
+    if (!d.has) {
+      boxes.forEach((id) => { $(id).hidden = true; });
+      $("popNote").hidden = false; $("popNote").textContent = "Nothing to chart: the run has no complete years.";
+      return;
+    }
+    boxes.forEach((id) => { $(id).hidden = false; });
+    renderTimebar();
+    const [t0, t1] = windowRange(), win = [t0, t1], cur = S.cursorT;
+    const heat = chCss("--heat"), cool = chCss("--cool"), place = chCss("--place"), bd = chCss("--bdaisy");
+    const vlines = sh.P.sunStepYear !== null ? [{ t: sh.P.sunStepYear, label: "sun +5%" }] : [];
+
+    // populations
+    if (!res.flags.life) {
+      $("popBox").hidden = true; $("popNote").hidden = false;
+      $("popNote").textContent = "Populations: no daisies or grazers in this run (life is off).";
+    } else {
+      $("popNote").hidden = true;
+      const gz = res.flags.grazers;
+      const gZ = gh && gh.res.flags.grazers, gC = gh && gh.res.flags.life;
+      const keys = [];
+      if (gz) keys.push({ color: place, label: "grazers" });
+      keys.push({ color: cool, label: "white daisies" }, { color: bd, label: "black daisies" });
+      if (gz && d.busts.length) keys.push({ color: heat, dot: true, label: "bust (bigger = deeper)" });
+      if (gZ || gC) keys.push(ghostKey(gh));
+      $("kPop").innerHTML = keyHTML(keys);
+      $("cZ").hidden = !gz;
+      if (gz) drawTimeChart($("cZ"), {
+        t: res.t, series: [{ y: res.cols.Z, color: place, width: 1.5, label: "grazers" }],
+        ghost: gZ ? { t: gh.res.t, series: [{ y: gh.res.cols.Z }] } : null,
+        logY: true, yLabel: "grazers (×10 per step)", xLabel: "", window: win, cursor: cur, vlines,
+        markers: d.busts.map((b) => ({ t: res.t[b.monthIndex], y: b.low, size: 3 + 2.5 * Math.log10(b.drop), selected: S.sel === b.id, onTap: () => selectBust(b) })),
+      });
+      drawTimeChart($("cCover"), {
+        t: res.t, series: [{ y: res.cols.aw, color: cool, width: 1.6, label: "white" }, { y: res.cols.ab, color: bd, width: 1.6, label: "black" }],
+        ghost: gC ? { t: gh.res.t, series: [{ y: gh.res.cols.aw }, { y: gh.res.cols.ab }] } : null,
+        yFrom0: true, yLabel: "share of land", window: win, cursor: cur, vlines,
+      });
+    }
+
+    // temperatures
+    const parts = [["land_T", heat, "land"], ["ml_T", cool, "mixed layer"], ["deep_T", place, "deep ocean"]];
+    const tSeries = [], tKeys = [], gSeries = [];
+    for (const [k, color, label] of parts) {
+      if (res.cols[k]) { tSeries.push({ y: S.monthly ? res.cols[k] : d.ann[k], color, width: S.monthly ? 1.2 : 1.8, label }); tKeys.push({ color, label }); }
+      if (gh && gh.res.cols[k]) gSeries.push({ y: S.monthly ? gh.res.cols[k] : gh.d.ann[k] });
+    }
+    if (gSeries.length) tKeys.push(ghostKey(gh));
+    $("kT").innerHTML = keyHTML(tKeys);
+    $("tAnnual").setAttribute("aria-pressed", String(!S.monthly)); $("tMonthly").setAttribute("aria-pressed", String(S.monthly));
+    drawTimeChart($("cT"), {
+      t: S.monthly ? res.t : d.annT, series: tSeries,
+      ghost: gSeries.length ? { t: S.monthly ? gh.res.t : gh.d.annT, series: gSeries } : null,
+      yLabel: "temperature (°C)", window: win, cursor: cur, vlines,
+    });
+
+    renderVariability(sh, gh);
+  }
+  function renderVariability(sh, gh) {
+    const d = sh.d, bars = S.view === "bars";
+    $("vBars").setAttribute("aria-pressed", String(bars)); $("vSpec").setAttribute("aria-pressed", String(!bars));
+    if (!d.varies) {
+      $("cBars").hidden = true; $("cSpec").hidden = true; $("kV").innerHTML = ""; $("varHint").textContent = "";
+      $("varNote").hidden = false;
+      $("varNote").textContent = "Temperature does not change in this run (no weather and nothing alive), so there is no variation to show.";
+      return;
+    }
+    $("varNote").hidden = true;
+    $("cBars").hidden = !bars; $("cSpec").hidden = bars;
+    const g = gh && gh.d.varies ? gh : null, accent = chCss("--accent"), muted = chCss("--muted");
+    if (bars) {
+      drawBars($("cBars"), { labels: ["1 month", "1 year", "10 years", "100 years"], sd: d.spread.sd, weatherLine: d.spread.weatherLine,
+        ghostSd: g ? g.d.spread.sd : null });
+      const keys = [{ color: accent, box: true, label: "this run" }, { color: chCss("--heat"), dash: true, label: "weather alone" }];
+      if (g) keys.push({ color: muted, ghostBox: true, label: "dashed outline: previous run (" + presetName(g.presetId) + ")" });
+      $("kV").innerHTML = keyHTML(keys);
+      $("varHint").textContent = "Spread of the whole planet's temperature after averaging over a month, a year, 10 years and 100 years. The dashed line is what weather alone would give, if each month were independent of the last.";
+    } else {
+      drawSpectrum($("cSpec"), { period: d.spec.period, power: d.spec.power, weather: d.spec.weather, ghost: g ? g.d.spec : null, marks: timescaleMarks(sh.P, sh.res.flags) });
+      const keys = [{ color: accent, label: "this run" }, { color: chCss("--heat"), dash: true, label: "weather alone" }];
+      if (g) keys.push({ color: muted, ghost: true, label: "dashed: previous run (" + presetName(g.presetId) + ")" });
+      keys.push({ color: muted, dotted: true, label: "response time of each part" });
+      $("kV").innerHTML = keyHTML(keys);
+      $("varHint").textContent = "How much of the temperature's variation sits in swings of each length: fast swings on the left, slow ones on the right. The dashed line is what weather alone would give, if each month were independent of the last. Dotted lines mark how fast each part of the planet responds.";
+    }
+  }
+  function renderPlanet() {
+    const sh = S.shown; if (!sh || !sh.d.has) { $("planet").hidden = true; return; }
+    const res = sh.res, d = sh.d, t1 = windowRange()[1];
+    const i = S.cursorT !== null ? Math.max(0, Math.min(d.n - 1, Math.floor(S.cursorT * d.py)))
+      : Math.max(0, Math.min(d.n - 1, Math.ceil(t1 * d.py) - 1));
+    const ocean = res.flags.ocean, life = res.flags.life, fo = ocean ? sh.P.fo : 0, land = 1 - fo, c = res.cols;
+    const white = life ? land * c.aw[i] : 0, black = life ? land * c.ab[i] : 0, ground = Math.max(0, land - white - black);
+    const parts = { ocean: fo, ground, white, black };
+    for (const k in parts) { $("b_" + k).style.width = pct(parts[k]); $("p_" + k).textContent = pct(parts[k]); }
+    $("k_ocean").hidden = !ocean; $("k_white").hidden = !life; $("k_black").hidden = !life;
+    $("atwhere").textContent = "at year " + (Math.floor(res.t[i] * 10) / 10).toFixed(1);
+    const r = [`<span>land</span><b>${c.land_T[i].toFixed(1)} °C</b>`];
+    if (c.ml_T) r.push(`<span>mixed layer</span><b>${c.ml_T[i].toFixed(1)} °C</b>`);
+    if (c.deep_T) r.push(`<span>deep ocean</span><b>${c.deep_T[i].toFixed(1)} °C</b>`);
+    if (ocean) r.push(`<span>whole planet</span><b>${c.global_T[i].toFixed(1)} °C</b>`);
+    if (c.Z) r.push(`<span>grazers</span><b>${sig3(c.Z[i])}</b>`);
+    r.push(`<span>planet albedo</span><b>${c.planet_albedo[i].toFixed(3)}</b>`, `<span>sun</span><b>${c.sun_L[i].toFixed(2)}</b>`);
+    $("readout").innerHTML = r.join("");
+    placeTip();
+    const b = d.busts.find((x) => x.id === S.sel);
+    $("pickHint").textContent = b ? `Picked: bust ${b.id}, at year ${b.year}, when grazers fell ${fmtDrop(b.drop)}×.`
+      : d.busts.length ? "Move over or tap a chart to pick a moment. Tap a circle on the grazer chart to pick a bust."
+      : "Move over or tap a chart to pick a moment.";
+  }
+  // Show the planet tooltip next to the pointer, flipped to stay on screen.
+  function placeTip() {
+    const tip = $("planet"), at = S.tip;
+    tip.hidden = !at || S.cursorT === null;
+    if (tip.hidden) return;
+    const w = tip.offsetWidth, h = tip.offsetHeight, vw = innerWidth, vh = innerHeight, gap = 16;
+    let x = at.x + gap, y = at.y + gap;
+    if (x + w > vw - 8) x = at.x - gap - w;
+    if (y + h > vh - 8) y = at.y - gap - h;
+    tip.style.transform = `translate(${Math.round(Math.max(8, Math.min(x, vw - w - 8)))}px,${Math.round(Math.max(8, y))}px)`;
+  }
+  function renderExport() {
+    const sh = S.shown;
+    const set = (id, on, why) => { $(id).disabled = !on; $(id + "Why").textContent = why || ""; };
+    if (!sh) { set("dlRun", false, "Waiting for the first run"); set("dlBust", false, "Waiting for the first run"); set("dlBusts", false, "Waiting for the first run"); return; }
+    set("dlRun", sh.d.has, sh.d.has ? `${sh.d.n} rows, one per month` : "Nothing to download");
+    const b = sh.d.busts;
+    if (!b.length) { set("dlBust", false, "No busts in this run"); set("dlBusts", false, "No busts in this run"); return; }
+    const s = b.find((x) => x.id === S.sel);
+    set("dlBust", !!s, s ? `bust ${s.id}, year ${s.year}: grazers fell ${fmtDrop(s.drop)}×` : "Tap a bust marker first");
+    const last = sh.d.ny - 1, kept = b.filter((x) => x.year >= 20 && x.year <= last - 20).length;
+    set("dlBusts", true, kept === b.length ? `${b.length} bust${b.length === 1 ? "" : "s"}`
+      : `${kept} of ${b.length} busts (those within 20 years of either end are left out)`);
+  }
+  function renderAll() { renderStatus(); renderNotice(); renderCharts(); renderPlanet(); renderExport(); }
+  let raf = 0;
+  function redraw() { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; renderCharts(); renderPlanet(); }); }
+
+  function selectBust(b) {
+    S.sel = b.id; S.cursorT = S.shown.res.t[b.monthIndex];
+    redraw(); renderExport();
+  }
+
+  // ---- events ----
+  for (const k in RANGES) $("ctl-" + k).addEventListener("input", onControl);
+  for (const k of CHECKS) $("ctl-" + k).addEventListener("change", onControl);
+  $("newWeather").addEventListener("click", () => { S.P.seed = (S.P.seed | 0) + 1; refreshLabels(); requestRun(); });
+  $("sunBtn").addEventListener("click", () => {
+    S.P.sunStepYear = S.P.sunStepYear === null ? sunYearValue() : null;
+    S.presetId = "custom"; refreshLabels(); requestRun();
+  });
+  $("sunYear").addEventListener("input", () => { if (S.P.sunStepYear !== null) onControl(); });
+  // leaving the box empty or half-typed: show the year that is actually used
+  $("sunYear").addEventListener("change", () => { $("sunYear").value = S.P.sunStepYear !== null ? S.P.sunStepYear : sunYearValue(); });
+  $("reset").addEventListener("click", () => loadPreset(S.basePreset));
+  $("keep").addEventListener("change", () => { S.keep = $("keep").checked; if (!S.keep && S.ghost) { S.ghost = null; redraw(); } });
+  $("winSize").addEventListener("change", () => { S.win = $("winSize").value; redraw(); });
+  $("winStart").addEventListener("input", () => { S.start = +$("winStart").value; redraw(); });
+  $("tAnnual").addEventListener("click", () => { S.monthly = false; redraw(); });
+  $("tMonthly").addEventListener("click", () => { S.monthly = true; redraw(); });
+  $("vBars").addEventListener("click", () => { S.view = "bars"; redraw(); });
+  $("vSpec").addEventListener("click", () => { S.view = "spectrum"; redraw(); });
+  document.querySelectorAll("[data-try]").forEach((b) => b.addEventListener("click", () => {
+    loadPreset(+b.dataset.try);
+    const y = $("tab-model").getBoundingClientRect().top + scrollY - $("head").offsetHeight - 8;
+    scrollTo({ top: Math.max(0, y), behavior: smooth ? "smooth" : "auto" });
+  }));
+  for (const id of ["cZ", "cCover", "cT"]) {
+    const cv = $(id);
+    const point = (e, tap) => {
+      if (!S.shown) return;
+      const hit = timeChartPointer(cv, e); if (!hit) return;
+      cv.style.cursor = hit.marker ? "pointer" : "crosshair";
+      S.tip = { x: e.clientX, y: e.clientY };
+      if (hit.marker) { if (tap) hit.marker.onTap(); else placeTip(); return; }
+      S.cursorT = hit.t; redraw();
+    };
+    cv.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" || e.buttons) point(e, false); });
+    cv.addEventListener("pointerdown", (e) => point(e, true));
+    cv.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse" || !S.shown) return;
+      const b = S.shown.d.busts.find((x) => x.id === S.sel);
+      S.tip = null; S.cursorT = b ? S.shown.res.t[b.monthIndex] : null; redraw();
+    });
+  }
+  // After a tap the tooltip stays until the page scrolls or something else is tapped.
+  const hideTip = () => { if (S.tip) { S.tip = null; placeTip(); } };
+  addEventListener("scroll", hideTip, { passive: true });
+  document.addEventListener("pointerdown", (e) => { if (!["cZ", "cCover", "cT"].includes(e.target.id)) hideTip(); });
+  const stem = () => fileStem(S.shown.presetId, S.shown.P);
+  $("dlRun").addEventListener("click", () => { if (S.shown) saveFile(stem() + "_run.csv", runCSV(S.shown.res), "text/csv;charset=utf-8"); });
+  $("dlBust").addEventListener("click", () => {
+    const b = S.shown && S.shown.d.busts.find((x) => x.id === S.sel);
+    if (b) saveFile(stem() + "_bust" + b.id + ".csv", windowCSV(S.shown.res, b), "text/csv;charset=utf-8");
+  });
+  $("dlBusts").addEventListener("click", () => { if (S.shown && S.shown.d.busts.length) saveFile(stem() + "_busts.csv", stackedCSV(S.shown.res, S.shown.d.busts), "text/csv;charset=utf-8"); });
+  $("dlSettings").addEventListener("click", (e) => {
+    e.preventDefault(); if (!S.shown) return;
+    const url = location.href.split("#")[0] + encodeHash(S.shown.P);
+    saveFile(stem() + "_settings.txt", settingsText(S.shown.P, url, localDate()), "text/plain;charset=utf-8");
+  });
+
+  // tabs: buttons with aria-selected; arrow keys, Home and End move between them
+  const tabs = [$("tabbtn-model"), $("tabbtn-how")];
+  function selectTab(btn, focus) {
+    for (const b of tabs) {
+      const on = b === btn;
+      b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
+      $(b.getAttribute("aria-controls")).hidden = !on;
+    }
+    $("presets").hidden = btn !== tabs[0];
+    if (focus) btn.focus();
+    if (btn === tabs[0]) redraw();
+  }
+  tabs.forEach((b, i) => {
+    b.addEventListener("click", () => selectTab(b));
+    b.addEventListener("keydown", (e) => {
+      const n = tabs.length;
+      const j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i + n - 1) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+      if (j < 0) return;
+      e.preventDefault(); selectTab(tabs[j], true);
+    });
+  });
+
+  // --headh: height of the sticky tabs and presets, so the sticky controls panel sits below them
+  const setHeadH = () => root.style.setProperty("--headh", $("head").offsetHeight + "px");
+  try { new ResizeObserver(setHeadH).observe($("head")); } catch (e) { setHeadH(); }
+  window.addEventListener("resize", redraw);
+  try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw); } catch (e) { /* old browsers */ }
+  new MutationObserver(redraw).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+
+  writeControls(); renderExport(); renderCharts();
+  requestRun();
+}
+
+if (typeof module !== "undefined" && module.exports) module.exports = { PRESETS, presetParams, encodeHash, decodeHash, RunScheduler, matchPreset, timescaleMarks, spanWords };
+if (typeof document !== "undefined") initPage();
+
+</script>
+</body>
+</html>
