@@ -255,7 +255,9 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
       <fieldset>
         <legend>Weather</legend>
         <div class="row"><label for="ctl-sigma">Weather size <output id="ctl-sigma-o"></output></label><input type="range" id="ctl-sigma" min="0" max="60" step="1">
-        <p class="hint">Random daily pushes, the same over land and ocean.</p></div>
+        <p class="hint">Random pushes, the same over land and ocean.</p></div>
+        <label class="check" id="row-cycles"><input type="checkbox" id="ctl-cycles"> Day and seasons</label>
+        <p class="hint">Sunlight follows the day and the year, and the weather lasts a few days.</p>
         <div class="seedrow"><button type="button" id="newWeather">New weather</button><span>weather no. <b id="seed-o"></b></span></div>
       </fieldset>
       <fieldset>
@@ -285,6 +287,7 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
         <div class="timebar" id="timebar">
           <label for="winSize">Show</label>
           <select id="winSize">
+            <option value="10">10 years</option>
             <option value="50">50 years</option>
             <option value="300" selected>300 years</option>
             <option value="1000">1000 years</option>
@@ -334,8 +337,8 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
       </div>
       <section class="try" id="try"><h2>Things to try</h2>
         <ol>
-          <li><button type="button" class="linkbtn" data-try="1">Land only.</button> Look at the month, year, decade and century bars. Do they follow the "weather alone" line? Why does averaging wash the weather out?</li>
-          <li><button type="button" class="linkbtn" data-try="2">Add a mixed layer.</button> The jitter disappears. Where did it go? Is the planet calmer at every timescale, or only at short ones?</li>
+          <li><button type="button" class="linkbtn" data-try="1">Land only.</button> Press <b>Monthly</b> and show 10 years: how big are the seasons? Then look at the month, year, decade and century bars. Do they follow the "weather alone" line? Why does averaging wash the weather out?</li>
+          <li><button type="button" class="linkbtn" data-try="2">Add a mixed layer.</button> The seasons shrink and the jitter disappears. Where did it go? Is the planet calmer at every timescale, or only at short ones?</li>
           <li><button type="button" class="linkbtn" data-try="3">Add a deep ocean.</button> Press <b>Brighten the sun</b>. How long until the planet stops warming? Now turn the deep ocean off and try again. Why the difference?</li>
           <li><button type="button" class="linkbtn" data-try="4">Add life.</button> Find three busts of different sizes. What was the ocean temperature doing just before each one?</li>
           <li><button type="button" class="linkbtn" data-try="5">Compare: grazers, all land.</button> Same grazers, same weather, no ocean. Why are there no long busts?</li>
@@ -385,6 +388,7 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 <ul class="terms">
   <li><b>Sunlight.</b> The sun delivers <i>Q</i>&nbsp;=&nbsp;342 × <i>L</i> W&nbsp;m⁻², where <i>L</i>&nbsp;=&nbsp;1.05 is the sun's brightness, so <i>Q</i>&nbsp;≈&nbsp;359&nbsp;W&nbsp;m⁻². A surface reflects a fraction of it, called its <b>albedo</b> <i>A</i>, and absorbs the rest, <i>Q</i>(1 − <i>A</i>). Albedos (clouds above included): white daisies 0.50, bare ground 0.32, ocean 0.28, black daisies 0.15.</li>
   <li><b>Heat to space.</b> A warmer surface sends out more heat: <i>a</i> + <i>b</i>·<i>T</i>, with <i>a</i>&nbsp;=&nbsp;203.3&nbsp;W&nbsp;m⁻², <i>b</i>&nbsp;=&nbsp;2.09&nbsp;W&nbsp;m⁻²&nbsp;K⁻¹ and <i>T</i> in °C. Each degree warmer sends 2.09&nbsp;W&nbsp;m⁻² more to space. At 19&nbsp;°C that is 243&nbsp;W&nbsp;m⁻², close to the 244&nbsp;W&nbsp;m⁻² that bare ground absorbs, which is why bare land on its own (<b>Land only</b>) settles near 19.5&nbsp;°C. Next to the darker ocean (albedo 0.28) the land settles warmer, near 24&nbsp;°C; with daisies it comes back to about 19&nbsp;°C.</li>
+  <li><b>Day and seasons</b> (on in the first three presets, or tick <b>Day and seasons</b>). Sunlight then rises and sets every day, peaking at noon, and through the year swings 30% above and below its average, highest on 21&nbsp;June. Its average over the year stays <i>Q</i>. Bare land on its own then runs from about −5&nbsp;°C in February to 44&nbsp;°C in August, a range of 49&nbsp;K. Next to the ocean the land's range is about 9&nbsp;K, and the mixed layer's about 3&nbsp;K, warmest in September, nearly three months after the sun. Day and night differ by about 1&nbsp;K on land and 0.04&nbsp;K in the mixed layer. Real bare ground swings far more between day and night, because a day's warmth reaches only its top 10&nbsp;cm or so; the model's land is one block sized for the year's swing.</li>
 </ul>
 <h3>Land</h3>
 <p class="words"><span>In words</span>The land's stored heat changes by the sunlight it absorbs, minus the heat it sends to space, minus the heat it passes to the ocean, plus whatever the weather adds.</p>
@@ -476,11 +480,12 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 
 <section id="how-weather">
 <h2>5. Weather as random pushes, and why the ocean adds them up</h2>
-<p>Real weather brings sunny spells and cloudy ones, warm winds and cold ones. The model has no storms or clouds of its own. Instead, every quarter-day the weather adds a random push of energy, sometimes in and sometimes out. Each push is drawn fresh, like a roll of dice, with no link to the one before, so the weather on its own has no slow swings at all. The pushes are sized so that a day's average push has a spread of <i>σ</i>&nbsp;=&nbsp;30&nbsp;W&nbsp;m⁻² (the <b>Weather size</b> slider). Land and ocean share one atmosphere, so both get the same push at the same moment.</p>
+<p>Real weather brings sunny spells and cloudy ones, warm winds and cold ones. The model has no storms or clouds of its own. Instead, the weather adds a random push of energy, sometimes in and sometimes out. Without <b>Day and seasons</b>, a fresh push comes every quarter-day, drawn like a roll of dice with no link to the one before. With <b>Day and seasons</b>, the push changes every hour but lasts: nearly three-quarters of today's push is still there tomorrow, and it fades over about 3&nbsp;days, as a weather system passes. Either way the weather has no slow swings of its own. The pushes are sized so that a day's average push has a spread of <i>σ</i>&nbsp;=&nbsp;30&nbsp;W&nbsp;m⁻² (the <b>Weather size</b> slider). Land and ocean share one atmosphere, so both get the same push at the same moment.</p>
+<p>A push that lasts 3&nbsp;days moves the temperature further than three separate one-day pushes that partly cancel. So with the same <i>σ</i>, lasting weather makes every part of the planet vary about 2.6 times more, at every timescale longer than a few days. The patterns below don't change.</p>
 <h3>Why the ocean adds them up</h3>
-<p>The same push moves the land about 30 times more than the mixed layer, because the land holds 30 times less heat: a typical quarter-day push warms or cools the land by about 0.13&nbsp;K, the mixed layer by only 0.004&nbsp;K. But the land forgets each push within weeks, while the mixed layer keeps it for about 5&nbsp;years. Over those years warm and cold pushes mostly cancel, but never exactly. A spell with a few more cold pushes than warm ones leaves a colder ocean, and the ocean then wanders slowly, warm for some years and cool for others, though nothing in the weather swings slowly.</p>
+<p>The same push moves the land about 30 times more than the mixed layer, because the land holds 30 times less heat: a day of typical weather warms or cools the land by about 0.26&nbsp;K, the mixed layer by only 0.008&nbsp;K. But the land forgets each push within weeks, while the mixed layer keeps it for about 5&nbsp;years. Over those years warm and cold pushes mostly cancel, but never exactly. A spell with a few more cold pushes than warm ones leaves a colder ocean, and the ocean then wanders slowly, warm for some years and cool for others, though nothing in the weather swings slowly.</p>
 <p>Think of a bath with a slow leak, with cupfuls of water tipped in or scooped out at random: the level wanders slowly. A cup with the same random splashes would only jitter.</p>
-<p>So the ocean does not make the planet more variable. It makes the variability <b>slower</b>. From <b>Land only</b> to <b>Add a mixed layer</b>, the year-to-year spread falls from about 0.7&nbsp;K to about 0.3&nbsp;K, while the spread of 100-year averages stays about the same.</p>
+<p>So the ocean does not make the planet more variable. It makes the variability <b>slower</b>. From <b>Land only</b> to <b>Add a mixed layer</b>, the year-to-year spread falls from about 1.8&nbsp;K to about 0.7&nbsp;K, while the spread of 100-year averages stays about the same. The ocean shrinks the seasons for the same reason: a season is a slow push, but not slow enough for the mixed layer to catch up with it.</p>
 <h3>With life: busts of every size</h3>
 <p>Weather adds random warm and cold spells to the loop in section 4. The land forgets them within weeks; the ocean adds them up, so a run of cold years leaves a cold ocean. A colder ocean going into a bust means a deeper, longer bust: across many busts, the colder the ocean in the three years before, the deeper the bust (a correlation of about −0.8, where −1 would be a perfect match). So busts come in every size. In a typical bust the grazers fall about 10 times; in the largest tenth they fall about 200 times or more. Temperature then varies over decades and centuries, though nothing in the weather or in the biology alone has those timescales.</p>
 <p>On the grazer chart a circle marks each bust, bigger for a deeper one. Circles are kept at least 12 years apart, so when the grazers cycle faster than that, as in <b>Compare: grazers, no weather</b> and <b>Clockwork cycle</b>, only every other dip gets a circle. To time the cycle, measure from dip to dip.</p>
@@ -493,10 +498,10 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 <p>At each step the computer works out every rate of change from the current values, then moves each quantity on by its rate times the step:</p>
 <div class="eqn"><span>new value</span> <span>= old value</span> <span>+ rate of change × time step</span></div>
 <p>If the land is warming at 0.1&nbsp;K per day, a quarter-day later it is 0.025&nbsp;K warmer. Then the rates are worked out again from the new values, and so on.</p>
-<h3>Why a quarter-day</h3>
-<p>Each step pretends the rates stay fixed for the whole step. That is only fair if the step is short compared with the fastest change in the model: the land, tied to the ocean, settles in about a week, and daisies and grazers change by a few percent a day. A step of a quarter-day (6&nbsp;hours) is short enough for both; much longer steps would make the land temperature overshoot back and forth. That makes 1460 steps per year: a 2000-year run with its hidden start is about 5&nbsp;million steps, done in the background while the progress bar fills.</p>
+<h3>Why a quarter-day, or an hour</h3>
+<p>Each step pretends the rates stay fixed for the whole step. That is only fair if the step is short compared with the fastest change in the model: the land, tied to the ocean, settles in about a week, and daisies and grazers change by a few percent a day. A step of a quarter-day (6&nbsp;hours) is short enough for both; much longer steps would make the land temperature overshoot back and forth. That makes 1460 steps per year: a 2000-year run with its hidden start is about 5&nbsp;million steps, done in the background while the progress bar fills. With <b>Day and seasons</b> the sun rises and sets, and a quarter-day step can't follow that, so the step is an hour: 8760 steps per year, about 30&nbsp;million for a run, which takes a second or two.</p>
 <h3>One weather push per step, shared</h3>
-<p>At each step the computer draws one random number. That single number gives the same push, in W&nbsp;m⁻², to the land and to the mixed layer; each temperature then moves by push × time step ÷ its heat capacity. The push for one step has a spread of 2<i>σ</i>&nbsp;=&nbsp;60&nbsp;W&nbsp;m⁻²: four independent pushes averaged over a day have a spread √4&nbsp;=&nbsp;2 times smaller, which is <i>σ</i>. (The same square-root rule comes back in section 7.) <b>New weather</b> picks a new random sequence; the same weather number always gives the same run in the same browser. With daisies and grazers, another browser or device can give a run that behaves the same overall but has its busts at different times, because different browsers can work out the same maths very slightly differently in the last digit, and the busts magnify those tiny differences.</p>
+<p>At each step the computer draws one random number. That single number gives the same push, in W&nbsp;m⁻², to the land and to the mixed layer; each temperature then moves by push × time step ÷ its heat capacity. Without <b>Day and seasons</b>, the push for one step has a spread of 2<i>σ</i>&nbsp;=&nbsp;60&nbsp;W&nbsp;m⁻²: four independent pushes averaged over a day have a spread √4&nbsp;=&nbsp;2 times smaller, which is <i>σ</i>. With <b>Day and seasons</b>, each hour keeps 98.6% of the last hour's push and adds a small new one, so the push fades over 3&nbsp;days. (The same square-root rule comes back in section 7.) <b>New weather</b> picks a new random sequence; the same weather number always gives the same run in the same browser. With daisies and grazers, another browser or device can give a run that behaves the same overall but has its busts at different times, because different browsers can work out the same maths very slightly differently in the last digit, and the busts magnify those tiny differences.</p>
 <h3>The hidden start</h3>
 <p>Every run starts from a made-up state: all temperatures 20&nbsp;°C, 30% white and 30% black daisies, grazers 0.05. The deep ocean needs several of its 190-year response times to forget that start. So the computer first runs 1500 hidden years, about eight deep-ocean response times, and shows only what comes after. The run you see starts settled, with no drift left over from the start.</p>
 <h3>Floors</h3>
@@ -510,6 +515,7 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 <p>The temperature chart shows wiggles of every length at once. The bars pull them apart by asking: after averaging over a month, a year, a decade or a century, how much do those averages still vary?</p>
 <h3>The timescale bars</h3>
 <p>Take the whole planet's temperature, one value per month. With an ocean that is 30% land and 70% mixed layer, <span class="nw">(1 − <i>f</i><sub>o</sub>)·<i>T</i><sub>L</sub> + <i>f</i><sub>o</sub>·<i>T</i><sub>m</sub></span>; with no ocean it is the land. Cut the run into blocks of 1&nbsp;month, 1&nbsp;year, 10&nbsp;years or 100&nbsp;years and average each block. A bar's height is the spread of those block averages: roughly how far a typical block sits from the run's overall average (the standard deviation). The scale goes up 10 times per step.</p>
+<p>With <b>Day and seasons</b>, the seasons would swamp the 1-month bar, and they repeat every year, so they are taken out first. For each month of the year, the computer works out its average over the whole run (the run's average January, average February, and so on) and subtracts it. What is left is how far each month sits from a normal month of its kind: the departures from the average year. The bars and the spectrum use those departures. This is how climate scientists talk about an unusually warm month.</p>
 <h3>The weather-alone line</h3>
 <p>Averaging washes out values that are independent of each other: average <i>N</i> independent values and the spread shrinks by √<i>N</i>. The dashed line starts at this run's 1-month bar, then shrinks by √12&nbsp;≈&nbsp;3.5 from month to year (12&nbsp;months), by √10&nbsp;≈&nbsp;3.2 from year to decade, and by √10 again to the century. It is what the bars would be if each month were independent of the last, like the weather.</p>
 <ul class="terms">
@@ -526,8 +532,8 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 <h2>8. What the model leaves out</h2>
 <ul class="terms">
   <li><b>Geography.</b> One land box and one ocean box: no continents, no equator or poles, no currents carrying heat from place to place.</li>
-  <li><b>Days and seasons.</b> The sun shines steadily; the only ups and downs come from the weather pushes and the <b>Brighten the sun</b> button.</li>
-  <li><b>Real weather.</b> Storms, clouds and winds are replaced by random pushes with no memory of their own.</li>
+  <li><b>Days and seasons, done simply.</b> With <b>Day and seasons</b>, the sun follows one place's day and year: every day is 12&nbsp;hours long, and the land is one block, so its day–night swing is far too small. Without it, the sun shines steadily.</li>
+  <li><b>Real weather.</b> Storms, clouds and winds are replaced by random pushes. With <b>Day and seasons</b> they last a few days; without it they have no memory of their own.</li>
   <li><b>Climate feedbacks.</b> Ice, snow, clouds, water vapour and carbon dioxide do not change with temperature; the straight line <i>a</i> + <i>b</i>·<i>T</i> stands in for all of them.</li>
   <li><b>Richer life.</b> Two kinds of daisy and one kind of grazer, living only on land, and nothing evolves.</li>
   <li><b>Earth's real numbers.</b> The numbers are chosen to show the ideas clearly, not to match Earth.</li>
@@ -572,6 +578,9 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 <dl>
   <dt><i>σ</i></dt><dd>30&nbsp;W&nbsp;m⁻²</dd><dd>weather size, daily</dd>
   <dt class="w">step</dt><dd>0.25&nbsp;day</dd><dd>one weather push per step</dd>
+  <dt class="w">seasons</dt><dd>±30%</dd><dd>with day and seasons</dd>
+  <dt class="w">weather</dt><dd>3&nbsp;days</dd><dd>how long a push lasts, with day and seasons</dd>
+  <dt class="w">step</dt><dd>1&nbsp;hour</dd><dd>with day and seasons</dd>
   <dt class="w">start</dt><dd>1500&nbsp;years</dd><dd>hidden, then 2000 shown</dd>
   <dt class="w">floors</dt><dd>10⁻⁴, 10⁻⁵</dd><dd>daisy cover, grazers</dd>
 </dl>
@@ -583,6 +592,8 @@ svg.loop .midbig{fill:var(--ink);font-size:14px;font-weight:700}
 // ---- model.js ----
 // Daisyworld with an ocean: land + mixed layer + deep ocean + daisies + grazers + shared random weather.
 // Port of run() in box-model/daisy_box.py (sigO = sigF, shareW = 1). Time in days, temperatures in deg C.
+// With cycles on (the app's own addition, not in the box model): sunlight follows the day and the
+// seasons, the weather lasts a few days, and the step is an hour.
 
 const OCEAN_DEFAULTS = {
   L: 1.05,          // sun brightness relative to today; Q = 342 L W m-2
@@ -619,21 +630,33 @@ const OCEAN_DEFAULTS = {
   seed: 1,          // random seed for the weather
   sunStepYear: null,// year (after spin-up) the sun brightens; null = never
   sunStepDL: 0.05,  // how much L rises at the sun step
-  sampling: "monthly", // "monthly" (12 per year) or "daily" (365 per year)
+  sampling: "monthly", // "monthly" (12 per year), "daily" (365 per year) or "step" (every step)
+  cycles: false,    // day and seasons: sunlight follows both, and the weather lasts a few days
+  season: 0.3,      // seasonal swing of sunlight, a fraction of the yearly mean (peak 21 June)
+  wmem: 3,          // how long the weather lasts, days (with cycles; 0 = no memory)
 };
 
 const DAY = 86400.0;
-const STEPS_PER_YEAR = 1460; // dt = 0.25 day, 365-day years
+// dt = 0.25 day, or an hour with cycles; 365-day years
+
+// Sunlight through the day, hour by hour: pi * max(0, cos), noon at 12:00, so the day's mean is 1.
+// Each value is that hour's mean, from the integral of the cosine.
+const SUN_HOURS = Array.from({ length: 24 }, (_, h) => {
+  const a = Math.max(h / 24, 0.25), b = Math.min((h + 1) / 24, 0.75);
+  return b > a ? 24 * (Math.sin(2 * Math.PI * (b - 0.5)) - Math.sin(2 * Math.PI * (a - 0.5))) / 2 : 0;
+});
 
 function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function gaussFactory(rng){ let spare = null; return function(){ if (spare !== null){ const s = spare; spare = null; return s; } let u = 0, v = 0; while (u === 0) u = rng(); v = rng(); const r = Math.sqrt(-2 * Math.log(u)); spare = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }; }
 
 const COLS = ["sun_L", "weather_Wm2", "land_T", "ml_T", "deep_T", "global_T", "aw", "ab", "bare", "Z",
-  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b"];
+  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b", "sun_Wm2"];
 
 function simulateOcean(P, onProgress) {
   P = Object.assign({}, OCEAN_DEFAULTS, P || {});
-  const dt = 0.25, dts = dt * DAY;
+  const cycles = !!P.cycles;
+  const dt = cycles ? 1 / 24 : 0.25, dts = dt * DAY;
+  const STEPS_PER_YEAR = Math.round(365 / dt), stepsPerDay = Math.round(1 / dt);
   const L0 = +P.L, f_o = +P.fo, A_w = +P.Aw, A_b = +P.Ab, A_g = +P.Ag, A_o = +P.Ao;
   const a_ir = +P.a, b_ir = +P.b, q = +P.q, gam = +P.gam, Topt = +P.Topt, wd = +P.wd;
   const life = !!P.life, grazers = life && !!P.grazers, deep = !!P.deep;
@@ -651,12 +674,12 @@ function simulateOcean(P, onProgress) {
   const stepAt = P.sunStepYear === null || P.sunStepYear === undefined ? Infinity : spinSteps + Math.round(P.sunStepYear * STEPS_PER_YEAR);
   const L1 = L0 + (+P.sunStepDL);
 
-  const daily = P.sampling === "daily";
-  const perYear = daily ? 365 : 12;
+  const daily = P.sampling === "daily", every = P.sampling === "step";
+  const perYear = every ? STEPS_PER_YEAR : daily ? 365 : 12;
   const n = years * perYear;
   // block ends within a year (step index after the last step in the block)
   const ends = new Int32Array(perYear);
-  for (let kb = 0; kb < perYear; kb++) ends[kb] = daily ? 4 * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
+  for (let kb = 0; kb < perYear; kb++) ends[kb] = every ? kb + 1 : daily ? stepsPerDay * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
 
   const t = new Float64Array(n);
   const acc = new Float64Array(COLS.length);
@@ -665,6 +688,19 @@ function simulateOcean(P, onProgress) {
   const gauss = gaussFactory(mulberry32(P.seed >>> 0));
   const sqrtDts = Math.sqrt(dts), sqrtDay = Math.sqrt(DAY), wfac = Math.sqrt(DAY / dts);
   const oceanFac = has_ocean ? k * (1 - f_o) / f_o : 0;
+  // Weather with memory (cycles on): a red-noise push that forgets over wmem days, sized so that a
+  // day's mean push has spread sig, as without memory. x = 1 day / wmem; the variance of a day's
+  // mean is 2(x - 1 + e^-x)/x^2 of the instantaneous variance.
+  const mem = cycles && +P.wmem > 0;
+  const xm = mem ? 1 / +P.wmem : 0;
+  const rho = mem ? Math.exp(-dt * xm) : 0;
+  const sigF = mem ? sig / Math.sqrt(2 * (xm - 1 + Math.exp(-xm)) / (xm * xm)) : 0;
+  const kick = sigF * Math.sqrt(1 - rho * rho);
+  const season = cycles ? +P.season : 0;
+  // sunlight factor for each step of the year: the season (at the step's middle) times the hour
+  const sunAt = cycles ? Float64Array.from({ length: STEPS_PER_YEAR }, (_, s) =>
+    (1 + season * Math.cos(2 * Math.PI * ((s + 0.5) * dt - 171.5) / 365)) * SUN_HOURS[s % stepsPerDay]) : null;
+  let Fw = mem ? sigF * gauss() : 0;
 
   let aw = 0.3, ab = 0.3, Z = 0.05, TL = 20, Tm = 20, Td = 20;
   let j = 0, kb = 0, inYear = 0, blockStart = 0, cnt = 0, ranAway = false;
@@ -672,13 +708,14 @@ function simulateOcean(P, onProgress) {
 
   for (let i = 0; i < nsteps; i++) {
     const L = i >= stepAt ? L1 : L0;
-    const Q = 342.0 * L;
+    let Q = 342.0 * L;
+    if (cycles) Q *= sunAt[i % STEPS_PER_YEAR];
     let g = 1.0 - aw - ab; if (g < 0) g = 0;
     const AL = aw * A_w + ab * A_b + g * A_g;
     const Tw = TL + q * (AL - A_w);
     const Tb = TL + q * (AL - A_b);
     const xg = (TL - Tg) / wg;
-    const gmax = g0 * Math.exp(-xg * xg);
+    const gmax = g0 > 0 ? g0 * Math.exp(-xg * xg) : 0;
     const denom = K + s_w * aw + s_b * ab;
     const Gw = gmax * s_w * aw * Z / denom;
     const Gb = gmax * s_b * ab * Z / denom;
@@ -695,11 +732,17 @@ function simulateOcean(P, onProgress) {
       Fd = gam_o * (Tm - Td);
     }
     const xi = gauss();
-    TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
-    if (has_ocean) {
-      Tm += dts * Fm / C_m;
-      if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
-      Td += dts * Fd / C_d;
+    if (mem) {                               // same weather on land and ocean, as below
+      Fw = rho * Fw + kick * xi;
+      TL += dts * (FL + Fw) / C_L;
+      if (has_ocean) { Tm += dts * (Fm + Fw) / C_m; Td += dts * Fd / C_d; }
+    } else {
+      TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
+      if (has_ocean) {
+        Tm += dts * Fm / C_m;
+        if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
+        Td += dts * Fd / C_d;
+      }
     }
     aw += dt * daw;
     ab += dt * dab;
@@ -714,7 +757,7 @@ function simulateOcean(P, onProgress) {
       // rates and diagnostics from the old state; state columns after the step
       let gn = 1 - aw - ab; if (gn < 0) gn = 0;
       const ALn = aw * A_w + ab * A_b + gn * A_g;
-      acc[0] += L; acc[1] += sig * wfac * xi;
+      acc[0] += L; acc[1] += mem ? Fw : sig * wfac * xi; acc[19] += Q;
       acc[2] += TL; acc[3] += Tm; acc[4] += Td;
       acc[5] += has_ocean ? (1 - f_o) * TL + f_o * Tm : TL;
       acc[6] += aw; acc[7] += ab; acc[8] += gn; acc[9] += Z;
@@ -742,7 +785,7 @@ function simulateOcean(P, onProgress) {
   if (!grazers) for (const c of ["Z", "appetite", "graze_w", "graze_b"]) cols[c] = null;
   if (onProgress) onProgress(1);
   return { perYear, n: nn, years, t: nn === n ? t : t.slice(0, nn), cols,
-    flags: { ocean: has_ocean, deep: hasDeep, life, grazers }, ranAway };
+    flags: { ocean: has_ocean, deep: hasDeep, life, grazers, cycles }, ranAway };
 }
 
 if (typeof module !== "undefined") module.exports = { OCEAN_DEFAULTS, simulateOcean };
@@ -769,6 +812,8 @@ self.onmessage = function (ev) {
 // ---- model.js ----
 // Daisyworld with an ocean: land + mixed layer + deep ocean + daisies + grazers + shared random weather.
 // Port of run() in box-model/daisy_box.py (sigO = sigF, shareW = 1). Time in days, temperatures in deg C.
+// With cycles on (the app's own addition, not in the box model): sunlight follows the day and the
+// seasons, the weather lasts a few days, and the step is an hour.
 
 const OCEAN_DEFAULTS = {
   L: 1.05,          // sun brightness relative to today; Q = 342 L W m-2
@@ -805,21 +850,33 @@ const OCEAN_DEFAULTS = {
   seed: 1,          // random seed for the weather
   sunStepYear: null,// year (after spin-up) the sun brightens; null = never
   sunStepDL: 0.05,  // how much L rises at the sun step
-  sampling: "monthly", // "monthly" (12 per year) or "daily" (365 per year)
+  sampling: "monthly", // "monthly" (12 per year), "daily" (365 per year) or "step" (every step)
+  cycles: false,    // day and seasons: sunlight follows both, and the weather lasts a few days
+  season: 0.3,      // seasonal swing of sunlight, a fraction of the yearly mean (peak 21 June)
+  wmem: 3,          // how long the weather lasts, days (with cycles; 0 = no memory)
 };
 
 const DAY = 86400.0;
-const STEPS_PER_YEAR = 1460; // dt = 0.25 day, 365-day years
+// dt = 0.25 day, or an hour with cycles; 365-day years
+
+// Sunlight through the day, hour by hour: pi * max(0, cos), noon at 12:00, so the day's mean is 1.
+// Each value is that hour's mean, from the integral of the cosine.
+const SUN_HOURS = Array.from({ length: 24 }, (_, h) => {
+  const a = Math.max(h / 24, 0.25), b = Math.min((h + 1) / 24, 0.75);
+  return b > a ? 24 * (Math.sin(2 * Math.PI * (b - 0.5)) - Math.sin(2 * Math.PI * (a - 0.5))) / 2 : 0;
+});
 
 function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function gaussFactory(rng){ let spare = null; return function(){ if (spare !== null){ const s = spare; spare = null; return s; } let u = 0, v = 0; while (u === 0) u = rng(); v = rng(); const r = Math.sqrt(-2 * Math.log(u)); spare = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }; }
 
 const COLS = ["sun_L", "weather_Wm2", "land_T", "ml_T", "deep_T", "global_T", "aw", "ab", "bare", "Z",
-  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b"];
+  "land_albedo", "planet_albedo", "Tw", "Tb", "growth_w", "growth_b", "appetite", "graze_w", "graze_b", "sun_Wm2"];
 
 function simulateOcean(P, onProgress) {
   P = Object.assign({}, OCEAN_DEFAULTS, P || {});
-  const dt = 0.25, dts = dt * DAY;
+  const cycles = !!P.cycles;
+  const dt = cycles ? 1 / 24 : 0.25, dts = dt * DAY;
+  const STEPS_PER_YEAR = Math.round(365 / dt), stepsPerDay = Math.round(1 / dt);
   const L0 = +P.L, f_o = +P.fo, A_w = +P.Aw, A_b = +P.Ab, A_g = +P.Ag, A_o = +P.Ao;
   const a_ir = +P.a, b_ir = +P.b, q = +P.q, gam = +P.gam, Topt = +P.Topt, wd = +P.wd;
   const life = !!P.life, grazers = life && !!P.grazers, deep = !!P.deep;
@@ -837,12 +894,12 @@ function simulateOcean(P, onProgress) {
   const stepAt = P.sunStepYear === null || P.sunStepYear === undefined ? Infinity : spinSteps + Math.round(P.sunStepYear * STEPS_PER_YEAR);
   const L1 = L0 + (+P.sunStepDL);
 
-  const daily = P.sampling === "daily";
-  const perYear = daily ? 365 : 12;
+  const daily = P.sampling === "daily", every = P.sampling === "step";
+  const perYear = every ? STEPS_PER_YEAR : daily ? 365 : 12;
   const n = years * perYear;
   // block ends within a year (step index after the last step in the block)
   const ends = new Int32Array(perYear);
-  for (let kb = 0; kb < perYear; kb++) ends[kb] = daily ? 4 * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
+  for (let kb = 0; kb < perYear; kb++) ends[kb] = every ? kb + 1 : daily ? stepsPerDay * (kb + 1) : Math.round((kb + 1) * STEPS_PER_YEAR / 12);
 
   const t = new Float64Array(n);
   const acc = new Float64Array(COLS.length);
@@ -851,6 +908,19 @@ function simulateOcean(P, onProgress) {
   const gauss = gaussFactory(mulberry32(P.seed >>> 0));
   const sqrtDts = Math.sqrt(dts), sqrtDay = Math.sqrt(DAY), wfac = Math.sqrt(DAY / dts);
   const oceanFac = has_ocean ? k * (1 - f_o) / f_o : 0;
+  // Weather with memory (cycles on): a red-noise push that forgets over wmem days, sized so that a
+  // day's mean push has spread sig, as without memory. x = 1 day / wmem; the variance of a day's
+  // mean is 2(x - 1 + e^-x)/x^2 of the instantaneous variance.
+  const mem = cycles && +P.wmem > 0;
+  const xm = mem ? 1 / +P.wmem : 0;
+  const rho = mem ? Math.exp(-dt * xm) : 0;
+  const sigF = mem ? sig / Math.sqrt(2 * (xm - 1 + Math.exp(-xm)) / (xm * xm)) : 0;
+  const kick = sigF * Math.sqrt(1 - rho * rho);
+  const season = cycles ? +P.season : 0;
+  // sunlight factor for each step of the year: the season (at the step's middle) times the hour
+  const sunAt = cycles ? Float64Array.from({ length: STEPS_PER_YEAR }, (_, s) =>
+    (1 + season * Math.cos(2 * Math.PI * ((s + 0.5) * dt - 171.5) / 365)) * SUN_HOURS[s % stepsPerDay]) : null;
+  let Fw = mem ? sigF * gauss() : 0;
 
   let aw = 0.3, ab = 0.3, Z = 0.05, TL = 20, Tm = 20, Td = 20;
   let j = 0, kb = 0, inYear = 0, blockStart = 0, cnt = 0, ranAway = false;
@@ -858,13 +928,14 @@ function simulateOcean(P, onProgress) {
 
   for (let i = 0; i < nsteps; i++) {
     const L = i >= stepAt ? L1 : L0;
-    const Q = 342.0 * L;
+    let Q = 342.0 * L;
+    if (cycles) Q *= sunAt[i % STEPS_PER_YEAR];
     let g = 1.0 - aw - ab; if (g < 0) g = 0;
     const AL = aw * A_w + ab * A_b + g * A_g;
     const Tw = TL + q * (AL - A_w);
     const Tb = TL + q * (AL - A_b);
     const xg = (TL - Tg) / wg;
-    const gmax = g0 * Math.exp(-xg * xg);
+    const gmax = g0 > 0 ? g0 * Math.exp(-xg * xg) : 0;
     const denom = K + s_w * aw + s_b * ab;
     const Gw = gmax * s_w * aw * Z / denom;
     const Gb = gmax * s_b * ab * Z / denom;
@@ -881,11 +952,17 @@ function simulateOcean(P, onProgress) {
       Fd = gam_o * (Tm - Td);
     }
     const xi = gauss();
-    TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
-    if (has_ocean) {
-      Tm += dts * Fm / C_m;
-      if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
-      Td += dts * Fd / C_d;
+    if (mem) {                               // same weather on land and ocean, as below
+      Fw = rho * Fw + kick * xi;
+      TL += dts * (FL + Fw) / C_L;
+      if (has_ocean) { Tm += dts * (Fm + Fw) / C_m; Td += dts * Fd / C_d; }
+    } else {
+      TL += dts * FL / C_L + sig * sqrtDts * xi * sqrtDay / C_L;
+      if (has_ocean) {
+        Tm += dts * Fm / C_m;
+        if (sig > 0) Tm += sig * sqrtDts * xi * sqrtDay / C_m;
+        Td += dts * Fd / C_d;
+      }
     }
     aw += dt * daw;
     ab += dt * dab;
@@ -900,7 +977,7 @@ function simulateOcean(P, onProgress) {
       // rates and diagnostics from the old state; state columns after the step
       let gn = 1 - aw - ab; if (gn < 0) gn = 0;
       const ALn = aw * A_w + ab * A_b + gn * A_g;
-      acc[0] += L; acc[1] += sig * wfac * xi;
+      acc[0] += L; acc[1] += mem ? Fw : sig * wfac * xi; acc[19] += Q;
       acc[2] += TL; acc[3] += Tm; acc[4] += Td;
       acc[5] += has_ocean ? (1 - f_o) * TL + f_o * Tm : TL;
       acc[6] += aw; acc[7] += ab; acc[8] += gn; acc[9] += Z;
@@ -928,7 +1005,7 @@ function simulateOcean(P, onProgress) {
   if (!grazers) for (const c of ["Z", "appetite", "graze_w", "graze_b"]) cols[c] = null;
   if (onProgress) onProgress(1);
   return { perYear, n: nn, years, t: nn === n ? t : t.slice(0, nn), cols,
-    flags: { ocean: has_ocean, deep: hasDeep, life, grazers }, ranAway };
+    flags: { ocean: has_ocean, deep: hasDeep, life, grazers, cycles }, ranAway };
 }
 
 if (typeof module !== "undefined") module.exports = { OCEAN_DEFAULTS, simulateOcean };
@@ -943,6 +1020,17 @@ function blockMeans(x, size) {
     for (let i = b * size; i < (b + 1) * size; i++) s += x[i];
     out[b] = s / size;
   }
+  return out;
+}
+
+// Departures from the run's average year: subtract, from each month (or day), the mean of that
+// month over the whole run. Used when the run has seasons, so the bars and the spectrum show the
+// variability, not the seasonal cycle.
+function anomalies(x, perYear) {
+  const clim = new Float64Array(perYear), cnt = new Float64Array(perYear), out = new Float64Array(x.length);
+  for (let i = 0; i < x.length; i++) { clim[i % perYear] += x[i]; cnt[i % perYear]++; }
+  for (let k = 0; k < perYear; k++) clim[k] /= cnt[k] || 1;
+  for (let i = 0; i < x.length; i++) out[i] = x[i] - clim[i % perYear];
   return out;
 }
 
@@ -1062,7 +1150,7 @@ function spectrum(x, perYear) {
   return { period: Float64Array.from(period), power: Float64Array.from(power) };
 }
 
-if (typeof module !== "undefined") module.exports = { blockMeans, spreadOfMeans, detectBusts, spectrum, fft, _troughs };
+if (typeof module !== "undefined") module.exports = { blockMeans, anomalies, spreadOfMeans, detectBusts, spectrum, fft, _troughs };
 
 // ---- export.js ----
 // CSV and settings-file exports for "Daisyworld with an Ocean".
@@ -1567,12 +1655,12 @@ const UI_DEFAULTS = typeof module !== "undefined" && module.exports ? require(".
 
 const PRESET_COMMON = { L: 1.05, H: 75, sigma: 30, years: 2000, deep: true, sunStepYear: null };
 const PRESETS = [
-  { id: 1, name: "Land only", blurb: "Bare land only: temperature jitters with every change in the weather.",
-    params: { fo: 0, life: false, grazers: false } },
-  { id: 2, name: "Add a mixed layer", blurb: "An ocean surface layer smooths the year-to-year jitter, but the slow wander stays.",
-    params: { fo: 0.7, deep: false, life: false, grazers: false } },
+  { id: 1, name: "Land only", blurb: "Bare land only: big seasons, and temperature jitters with every change in the weather.",
+    params: { fo: 0, life: false, grazers: false, cycles: true } },
+  { id: 2, name: "Add a mixed layer", blurb: "An ocean surface layer shrinks the seasons and smooths the year-to-year jitter, but the slow wander stays.",
+    params: { fo: 0.7, deep: false, life: false, grazers: false, cycles: true } },
   { id: 3, name: "Add a deep ocean", blurb: "A deep ocean calms things a little more; brighten the sun and the last bit of warming takes centuries.",
-    params: { fo: 0.7, life: false, grazers: false } },
+    params: { fo: 0.7, life: false, grazers: false, cycles: true } },
   { id: 4, name: "Add life", blurb: "Daisies and grazers bring busts of every size every few decades, and slow swings grow.",
     params: { fo: 0.7, p: 0.3, wg: 6, Tg: 25, life: true, grazers: true } },
   { id: 5, name: "Compare: grazers, all land", blurb: "Without the ocean, grazers give a fast, small boom and bust every year or two.",
@@ -1694,7 +1782,7 @@ function initPage() {
     wg: (v) => v.toFixed(1) + " K",
     L: (v) => v.toFixed(2),
   };
-  const CHECKS = ["deep", "life", "grazers"];
+  const CHECKS = ["deep", "life", "grazers", "cycles"];
 
   const S = { P: null, presetId: 1, basePreset: 1, shown: null, ghost: null, keep: false, monthly: false, view: "bars",
     win: "300", start: 0, cursorT: null, tip: null, sel: null, runs: 0, timer: null, running: false, prog: 0, error: null };
@@ -1834,10 +1922,12 @@ function initPage() {
       for (let i = Math.max(0, b.monthIndex - py); i <= Math.min(n - 1, b.monthIndex + py); i++) low = Math.min(low, res.cols.Z[i]);
       b.low = low;
     }
-    const spread = has ? spreadOfMeans(res.cols.global_T, py) : null;
+    // with seasons, the bars and the spectrum use departures from the run's average year
+    const gT = has && res.flags.cycles ? anomalies(res.cols.global_T, py) : res.cols.global_T;
+    const spread = has ? spreadOfMeans(gT, py) : null;
     let spec = null;
     if (has) {
-      const s = spectrum(res.cols.global_T, py);
+      const s = spectrum(gT, py);
       let L = 1; while (L * 2 <= n && L < 8192) L *= 2;          // same segment length as spectrum(); keeps runs comparable
       // Variation per band of periods: power density × frequency (1/period), so a band holds what
       // the bars' averaging would wash out. Weather alone (months independent, this run's
@@ -1967,11 +2057,14 @@ function initPage() {
   }
   function renderVariability(sh, gh) {
     const d = sh.d, bars = S.view === "bars";
+    const seasons = sh.res.flags.cycles ? " The day and the seasons are taken out first: these are departures from the run's average year." : "";
     $("vBars").setAttribute("aria-pressed", String(bars)); $("vSpec").setAttribute("aria-pressed", String(!bars));
     if (!d.varies) {
       $("cBars").hidden = true; $("cSpec").hidden = true; $("kV").innerHTML = ""; $("varHint").textContent = "";
       $("varNote").hidden = false;
-      $("varNote").textContent = "Temperature does not change in this run (no weather and nothing alive), so there is no variation to show.";
+      $("varNote").textContent = sh.res.flags.cycles
+        ? "Apart from the day and the seasons, which repeat every year, temperature does not change in this run (no weather and nothing alive), so there is no variation to show."
+        : "Temperature does not change in this run (no weather and nothing alive), so there is no variation to show.";
       return;
     }
     $("varNote").hidden = true;
@@ -1983,14 +2076,14 @@ function initPage() {
       const keys = [{ color: accent, box: true, label: "this run" }, { color: chCss("--heat"), dash: true, label: "weather alone" }];
       if (g) keys.push({ color: muted, ghostBox: true, label: "dashed outline: previous run (" + presetName(g.presetId) + ")" });
       $("kV").innerHTML = keyHTML(keys);
-      $("varHint").textContent = "Spread of the whole planet's temperature after averaging over a month, a year, 10 years and 100 years. The dashed line is what weather alone would give, if each month were independent of the last.";
+      $("varHint").textContent = "Spread of the whole planet's temperature after averaging over a month, a year, 10 years and 100 years. The dashed line is what weather alone would give, if each month were independent of the last." + seasons;
     } else {
       drawSpectrum($("cSpec"), { period: d.spec.period, power: d.spec.power, weather: d.spec.weather, ghost: g ? g.d.spec : null, marks: timescaleMarks(sh.P, sh.res.flags) });
       const keys = [{ color: accent, label: "this run" }, { color: chCss("--heat"), dash: true, label: "weather alone" }];
       if (g) keys.push({ color: muted, ghost: true, label: "dashed: previous run (" + presetName(g.presetId) + ")" });
       keys.push({ color: muted, dotted: true, label: "response time of each part" });
       $("kV").innerHTML = keyHTML(keys);
-      $("varHint").textContent = "How much of the temperature's variation sits in swings of each length: fast swings on the left, slow ones on the right. The dashed line is what weather alone would give, if each month were independent of the last. Dotted lines mark how fast each part of the planet responds.";
+      $("varHint").textContent = "How much of the temperature's variation sits in swings of each length: fast swings on the left, slow ones on the right. The dashed line is what weather alone would give, if each month were independent of the last. Dotted lines mark how fast each part of the planet responds." + seasons;
     }
   }
   function renderPlanet() {
