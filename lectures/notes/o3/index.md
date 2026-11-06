@@ -4,7 +4,7 @@ title: "O3 · A slow ocean that has to move"
 subtitle: "Lecture notes · EC2113 Ocean module · Lecture 3 · Friday 6 November 2026"
 footer: "[← All lectures and tutorials](../../../)"
 ---
-*These notes follow the lecture as it was taught. We stopped at Nansen's question. The rest of the plan, on how the wind moves the ocean and why the ocean gains heat where it is cold, is at the end, under "Read this part": read it before the next lecture. The readings are extracts in the course's shared readings folder, under O3.*
+*These notes follow the lecture as it was taught. We stopped at Nansen's question, and we will work out the answer, Ekman transport, in detail in the next lecture. The rest of the plan, including why the ocean gains heat where it is cold, is at the end, under "Read this part": read it before the next lecture. The readings are extracts in the course's shared readings folder, under O3.*
 
 ## The question
 
@@ -105,11 +105,11 @@ The map of wind stress on the ocean shows the push. Wherever the wind and the wa
 
 The ocean doesn't simply follow the push, because of its huge **mechanical** inertia: not thermal inertia this time, but the inertia of all that mass.
 
-**Nansen's question.** On the *Fram*, drifting across the Arctic in 1893–96, [Fridtjof Nansen](https://en.wikipedia.org/wiki/Fridtjof_Nansen) recorded the winds and watched the sea ice. The ice never drifted straight downwind, however strong the wind. It went consistently 20–40° to the **right** of it. Why should that be? Suhas has already given you the tool: the Coriolis effect. That is where we stopped. The answer is below.
+**Nansen's question.** On the *Fram*, drifting across the Arctic in 1893–96, [Fridtjof Nansen](https://en.wikipedia.org/wiki/Fridtjof_Nansen) recorded the winds and watched the sea ice. The ice never drifted straight downwind, however strong the wind. It went consistently 20–40° to the **right** of it. Why should that be? Suhas has already given you the tool: the Coriolis effect. That is where we stopped. We'll work out the answer carefully next lecture; there is a short preview below.
 
 ## Read this part: what we didn't cover in class
 
-The first three items matter most: they answer Nansen's question and the puzzle of §6.
+The upwelling section matters most: it answers the puzzle of §6. The Ekman section is a preview of the next lecture.
 
 ### Ponderous: air against water
 
@@ -121,7 +121,9 @@ The first three items matter most: they answer Nansen's question and the puzzle 
 
 A typical wind stress of 0.1 N/m², spread over a 50 m mixed layer, accelerates it at τ/(ρH) ≈ **2 × 10⁻⁶ m/s²**. Unopposed, it would take about two months to reach the speed of the wind. It never gets there, because the Earth is turning. And even a slow current carries far more heat through a square metre than a fast wind: water holds about 3,400 times more heat per cubic metre than air.
 
-### Nansen's answer: Ekman transport
+### Nansen's answer: Ekman transport (a preview)
+
+*We'll work this out in detail in the next lecture. Read it now for the idea; upwelling, below, builds on it.*
 
 Vagn Walfrid Ekman worked out the reason in 1905. Take the whole stirred layer, in a steady state. Two forces act on it: the wind's stress, along the wind, and the Coriolis force, at 90° to the layer's motion. They can cancel only if the layer as a whole moves **90° to the right of the wind** in the northern hemisphere (to the left in the southern). Water at the very surface moves at a smaller angle, which is why Nansen's ice went 20–40° to the right, and the direction turns further with depth. Only the total over the layer is at exactly a right angle.
 
@@ -172,7 +174,7 @@ All extracts are in the shared readings folder, under O3. The core readings add 
 
 **Core: not covered in class (16 pages)**
 
-- Stewart §9.3 "Ekman Mass Transport" and §9.4 "Application of Ekman Theory", pp. 143–147 (5 pages). Ekman transport and upwelling. Stop at §9.5.
+- Stewart §9.3 "Ekman Mass Transport" and §9.4 "Application of Ekman Theory", pp. 143–147 (5 pages). Ekman transport and upwelling. Stop at §9.5. We'll go through Ekman transport in the next lecture, so this is also its reading.
 - Hartmann §7.4 "The Wind-Driven Circulation", pp. 206–216 (11 pages). Start at the heading on p. 206. Wind stress, the gyres, and western and eastern boundary currents, with the maps. Stop at §7.5.
 
 **Optional**
