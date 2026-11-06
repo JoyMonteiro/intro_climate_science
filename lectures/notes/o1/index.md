@@ -103,6 +103,8 @@ The absorption map has clear patterns. Asking *why* of a pattern like this is wh
 
 ## Readings
 
+Extracts of all of these, except the research papers, are in the course's shared readings folder, under O1.
+
 **Core**
 
 - Hartmann, *Global Physical Climatology* (2nd ed., 2016), §2.8 "The Energy Balance at the Top of the Atmosphere" and §2.9 "Poleward Energy Flux", pp. 40–48 (PDF pp. 56–64). The CERES maps and the transport curve from this lecture.

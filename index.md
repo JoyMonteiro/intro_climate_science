@@ -10,6 +10,10 @@ footer: |
 
 1. **[O1 · Climate science is accounting](lectures/notes/o1/)**
    *28 October 2026* · Why a planet's energy books must balance, why no single place on Earth is in balance, and how the atmosphere and ocean move energy, mass and momentum to keep them balanced.
+2. **[O2 · How much of the surface feels the weather?](lectures/notes/o2/)**
+   *5 November 2026* · Where sunlight goes in the ocean, how the weather pushes on the surface, and why only a thin layer of land but tens of metres of ocean feel it.
+3. **[O3 · A slow ocean that has to move](lectures/notes/o3/)**
+   *6 November 2026* · What a deep mixed layer does to weather noise, why the ocean gains heat where it is cold, who carries the heat, and what pushes the ocean.
 {: .lectures}
 
 ## Slides
