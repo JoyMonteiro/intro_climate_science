@@ -14,6 +14,8 @@ footer: |
    *5 November 2026* · Where sunlight goes in the ocean, how the weather pushes on the surface, and why only a thin layer of land but tens of metres of ocean feel it.
 3. **[O3 · A slow ocean that has to move](lectures/notes/o3/)**
    *6 November 2026* · What a deep mixed layer does to weather noise, why the ocean gains heat where it is cold, who carries the heat, and what pushes the ocean.
+4. **[O4 · Nansen's answer: what the wind does to a rotating ocean](lectures/notes/o4/)**
+   *11 November 2026* · The equations of fluid motion in words, why the wind moves the ocean's top layer at right angles to itself, and how that brings cold water up and builds hills of water that the currents circle.
 {: .lectures}
 
 ## Slides
