@@ -22,6 +22,8 @@ footer: |
    *Ocean module* · Space to advance, O for an overview.
 2. **[The ocean's ledger · Week 2](lectures/ocean-ledger-w2/)**
    *Ocean module* · How much of the surface feels the weather, and the ponderous ocean.
+3. **[The ocean's ledger · Week 3](lectures/ocean-ledger-w3/)**
+   *Ocean module* · What the wind does to a rotating ocean: Ekman transport, upwelling, gyres.
 {: .lectures}
 
 ## Tutorials
