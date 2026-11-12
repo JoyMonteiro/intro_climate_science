@@ -27,7 +27,7 @@ Start the way we started for heat: treat the whole ocean as one box and ask what
 - **Sea ice** can do either. Freezing takes water out of the sea, and melting puts it back.
 - **Evaporation** is essentially the only way water leaves.
 
-**Salt** is a different story. Rain, evaporation and ice carry almost no salt: evaporation and freezing take the water and leave the salt behind. Rivers do bring a little dissolved salt, from the [weathering](https://en.wikipedia.org/wiki/Weathering) of rocks, but that matters only over geological time, vastly longer than anything in this course. On the timescales we care about, **the ocean holds a fixed amount of salt.**
+**Salt** is a different story. Rain, evaporation and ice carry almost no salt: evaporation and freezing take the water and leave the salt behind. Rivers do bring a little dissolved salt, from the [weathering](https://en.wikipedia.org/wiki/Weathering) of rocks, but that matters only over geological time, vastly longer than anything in this course. (How the ocean balances its salt budget over that time, and whether the sea has always been this salty, is a good question in its own right: see the two optional readings at the end.) On the timescales we care about, **the ocean holds a fixed amount of salt.**
 
 So the total amount of salt doesn't change; what changes is how concentrated it is. [Salinity](https://en.wikipedia.org/wiki/Salinity) is grams of salt per kilogram of seawater, about 35 on average. You can't change the grams of salt, so the only way to change salinity at a place is to change the water: take water away (evaporation, freezing) and it gets saltier; add water (rain, rivers, melting ice) and it gets fresher. Ocean currents also carry salty water in and fresh water out, and we'll come back to that. But to a first approximation, **the salinity of the surface ocean is a record of evaporation minus precipitation, E − P.**
 
@@ -236,6 +236,11 @@ All extracts are in the shared readings folder, under O5. The core readings add 
 **Optional**
 
 - Stewart §6.5 continued, pp. 87–88: neutral density and the equation of state, for the curious.
+
+**Optional: the salt budget over geological time** (web pages, about ten minutes together; the question from §2)
+
+- Richardson, *Essentials of Oceanography*, §3.8 ["Geochemical Residence Time"](https://geo.libretexts.org/Bookshelves/Oceanography/Essentials_of_Oceanography_(Richardson)/03%3A_From_Rock_to_Salt/3.08%3A_Geochemical_Residence_Time) (Penn State, on LibreTexts). Rivers alone would bring the ocean all its salt in about 20 million years, yet the ocean is billions of years old. So salt must also be leaving the ocean. The page doesn't say how: think about where it could go.
+- Chamberlin, Shaw and Rich, *Our World Ocean*, §8.5 ["Salinity over Long Timescales"](https://geo.libretexts.org/Bookshelves/Oceanography/Our_World_Ocean%3A_Understanding_the_Most_Important_Ecosystem_on_Earth_Essentials_Edition_(Chamberlin_Shaw_and_Rich)/03%3A_New_Page/08%3A_The_Water_Cycle_and_Ocean_Salinity/8.05%3A_Salinity_over_Long_Timescales) (on LibreTexts). Has the sea always been this salty? Salt buried as evaporites, and estimates that the early ocean may have been saltier, though the evidence disagrees. One slip to read past: it calls the Earth "a billion and a half years old" (it is about 4.5 billion).
 
 ## Works cited
 
