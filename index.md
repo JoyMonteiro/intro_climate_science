@@ -16,6 +16,8 @@ footer: |
    *6 November 2026* · What a deep mixed layer does to weather noise, why the ocean gains heat where it is cold, who carries the heat, and what pushes the ocean.
 4. **[O4 · Nansen's answer: what the wind does to a rotating ocean](lectures/notes/o4/)**
    *11 November 2026* · The equations of fluid motion in words, why the wind moves the ocean's top layer at right angles to itself, and how that brings cold water up and builds hills of water that the currents circle.
+5. **[O5 · The salt ledger: what makes seawater heavy](lectures/notes/o5/)**
+   *12 November 2026* · Why the sea is salty in some places and fresh in others, why the Bay of Bengal and the Arabian Sea differ, what makes seawater dense enough to sink, and how to read water masses.
 {: .lectures}
 
 ## Slides
@@ -24,8 +26,12 @@ footer: |
    *Ocean module* · Space to advance, O for an overview.
 2. **[The ocean's ledger · Week 2](lectures/ocean-ledger-w2/)**
    *Ocean module* · How much of the surface feels the weather, and the ponderous ocean.
-3. **[The ocean's ledger · Week 3](lectures/ocean-ledger-w3/)**
+3. **[The ocean's ledger · O4](lectures/ocean-ledger-o4/)**
    *Ocean module* · What the wind does to a rotating ocean: Ekman transport, upwelling, gyres.
+4. **[The ocean's ledger · O5](lectures/ocean-ledger-o5/)**
+   *Ocean module* · The salt ledger: what makes seawater heavy, and where deep water comes from.
+5. **[The ocean's ledger · O6](lectures/ocean-ledger-o6/)**
+   *Ocean module* · The overturning: where water sinks, how it comes back up, and whether it can switch off.
 {: .lectures}
 
 ## Tutorials
