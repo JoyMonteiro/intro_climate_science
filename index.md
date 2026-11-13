@@ -18,6 +18,8 @@ footer: |
    *11 November 2026* · The equations of fluid motion in words, why the wind moves the ocean's top layer at right angles to itself, and how that brings cold water up and builds hills of water that the currents circle.
 5. **[O5 · The salt ledger: what makes seawater heavy](lectures/notes/o5/)**
    *12 November 2026* · Why the sea is salty in some places and fresh in others, why the Bay of Bengal and the Arabian Sea differ, what makes seawater dense enough to sink, and how to read water masses.
+6. **[O6 · The overturning: the slow ocean, and can it switch off?](lectures/notes/o6/)**
+   *13 November 2026* · Why deep water forms in the North Atlantic but not the North Pacific, how the Southern Ocean's winds bring it back up, why the round trip takes a thousand years, and how Stommel's two boxes show that the overturning could switch off.
 {: .lectures}
 
 ## Slides
