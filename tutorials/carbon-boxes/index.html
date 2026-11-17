@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Boxes of Carbon</title>
+<style>
+/* Three Boxes of Carbon: tokens and layout as the Daisyworld apps on this site. */
+:root{
+  --bg:#F7F8F6; --panel:#FFFFFF; --ink:#1C252D; --muted:#5A6670; --rule:#D5DBD8; --grid:#E6EAE8;
+  --heat:#C9531A; --cool:#00809A; --place:#4A55A2; --deep:#1F3F66; --accent:#00809A; --obs:#1C252D;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943; --grid:#252E36;
+    --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --deep:#7FA6D6; --accent:#3FB8CC; --obs:#E6EBEF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171C; --panel:#1A2128; --ink:#E6EBEF; --muted:#9AA6B0; --rule:#2E3943; --grid:#252E36;
+  --heat:#E8804F; --cool:#3FB8CC; --place:#9AA3E8; --deep:#7FA6D6; --accent:#3FB8CC; --obs:#E6EBEF;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px}
+a{color:var(--accent)}
+h1{font-size:26px;line-height:1.2;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:19px;margin:22px 0 6px}
+.lede{color:var(--muted);margin:0 0 14px;max-width:62em}
+.tabs{display:flex;gap:6px;margin:0 0 12px;border-bottom:1px solid var(--rule)}
+.tabs button{font:inherit;font-weight:600;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:8px 10px;cursor:pointer;min-height:40px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.presetbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.presetbar button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer}
+.presetbar button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.blurb{color:var(--muted);margin:0 0 12px;max-width:62em;min-height:1.4em}
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 14px 6px}
+fieldset{border:0;border-top:1px solid var(--rule);margin:0 0 6px;padding:10px 0 4px}
+fieldset:first-of-type{border-top:0;padding-top:0}
+legend{font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0}
+.row{margin:8px 0 10px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.row label output{font-variant-numeric:tabular-nums;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:2px 0 0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.seg label{flex:1 1 auto;display:flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;font-size:13.5px;cursor:pointer;min-height:38px}
+.seg input{accent-color:var(--accent)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;min-height:32px}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+button.plain{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:7px 10px;min-height:38px;cursor:pointer}
+.summary{font-size:15px;margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0}
+.summary b{font-variant-numeric:tabular-nums}
+.charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:1100px){.charts{grid-template-columns:minmax(0,1fr)}}
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px 10px 6px}
+.chart h3{font-size:14px;margin:0 0 2px}
+.chart .sub{font-size:12.5px;color:var(--muted);margin:0 0 4px}
+.chart canvas{display:block;width:100%;height:240px}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted);margin:4px 0 2px}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:0;border-top:3px solid currentColor}
+.key i.dash{border-top-style:dashed}
+.key i.dot{width:8px;height:8px;border:0;border-radius:50%;background:currentColor}
+.key i.box{width:12px;height:12px;border:0;border-radius:2px;background:currentColor}
+.boxes{margin:8px 0 14px}
+.boxes svg{width:100%;max-width:560px;height:auto;display:block}
+.how{max-width:52em}
+.how p,.how li{margin:6px 0}
+.eq{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre;line-height:1.6}
+table{border-collapse:collapse;font-size:14px;margin:8px 0}
+td,th{border-bottom:1px solid var(--rule);padding:5px 10px 5px 0;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+[hidden]{display:none!important}
+.back{font-size:13.5px;margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="back"><a href="../../">← Introduction to Climate Science</a></p>
+<h1>Three Boxes of Carbon</h1>
+<p class="lede">The air, the top of the ocean and the deep ocean, joined by two slow exchanges and the ocean's carbonate chemistry. Put carbon into the air and watch where it goes, how fast, and where it finally settles.</p>
+<div class="tabs" role="tablist" aria-label="Page sections">
+  <button type="button" role="tab" id="tabbtn-model" aria-controls="tab-model" aria-selected="true">Model</button>
+  <button type="button" role="tab" id="tabbtn-how" aria-controls="tab-how" aria-selected="false" tabindex="-1">How it works</button>
+</div>
+
+<section id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model">
+  <div class="presetbar" id="presets" role="group" aria-label="Presets"></div>
+  <p class="blurb" id="blurb"></p>
+  <div class="grid">
+    <aside class="panel" id="controls">
+      <fieldset>
+        <legend>What goes in</legend>
+        <div class="seg" role="radiogroup" aria-label="Scenario">
+          <label><input type="radio" name="mode" value="history"> Our emissions</label>
+          <label><input type="radio" name="mode" value="pulse"> One pulse</label>
+        </div>
+        <div class="row" id="row-stop"><label for="ctl-stop">Emissions stop in <output id="ctl-stop-o"></output></label><input type="range" id="ctl-stop" min="2025" max="2150" step="5">
+        <p class="hint">1750–2024 from the Global Carbon Budget; after that, today's rate (<span id="rate-o"></span> GtC a year).</p></div>
+        <div class="row" id="row-pulse" hidden><label for="ctl-pulse">Pulse size <output id="ctl-pulse-o"></output></label><input type="range" id="ctl-pulse" min="100" max="5000" step="100">
+        <p class="hint">Added all at once to the air of a pre-industrial world. We have added about <span id="sofar-o"></span> GtC so far.</p></div>
+      </fieldset>
+      <fieldset>
+        <legend>Ocean</legend>
+        <label class="check"><input type="checkbox" id="ctl-chem"> Carbonate chemistry (the buffer)</label>
+        <p class="hint">Off: the ocean's ability to hold carbon stays at its pre-industrial value.</p>
+        <div class="row"><label for="ctl-ka">Air–sea exchange time <output id="ctl-ka-o"></output></label><input type="range" id="ctl-ka" min="1" max="20" step="1">
+        <p class="hint">How fast the top of the ocean catches up with the air.</p></div>
+        <div class="row"><label for="ctl-turn">Deep-ocean turnover time <output id="ctl-turn-o"></output></label><input type="range" id="ctl-turn" min="50" max="2000" step="50">
+        <p class="hint">How long the deep ocean takes to swap its water with the top (O6: about 1,000 years).</p></div>
+      </fieldset>
+      <fieldset>
+        <legend>Show</legend>
+        <div class="seg" role="radiogroup" aria-label="Time span" id="spanseg"></div>
+        <label class="check" id="row-log" hidden><input type="checkbox" id="ctl-log"> Log time axis</label>
+        <label class="check"><input type="checkbox" id="keep"> Keep this run (dashed) under the next</label>
+      </fieldset>
+    </aside>
+    <div>
+      <p class="summary" id="summary"></p>
+      <div class="charts">
+        <div class="chart"><h3>Carbon dioxide in the air</h3><p class="sub">ppm · <span class="xunit"></span></p><canvas id="c-co2" aria-label="Atmospheric CO2"></canvas><div class="key" id="k-co2"></div></div>
+        <div class="chart"><h3>Where the added carbon is</h3><p class="sub">share of all the carbon added so far</p><canvas id="c-share" aria-label="Where the carbon is"></canvas><div class="key" id="k-share"></div></div>
+        <div class="chart"><h3>Ocean uptake</h3><p class="sub">GtC a year, air to ocean</p><canvas id="c-flux" aria-label="Ocean uptake"></canvas><div class="key" id="k-flux"></div></div>
+        <div class="chart"><h3>Surface-ocean pH</h3><p class="sub">lower is more acidic</p><canvas id="c-ph" aria-label="Surface ocean pH"></canvas><div class="key" id="k-ph"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-how" role="tabpanel" aria-labelledby="tabbtn-how" hidden>
+<div class="how">
+<h2>The model</h2>
+<p>This is the "BEAM" model of <a href="https://doi.org/10.1007/s10584-014-1224-y">Glotter et al. (2014)</a>, which goes back to <a href="https://en.wikipedia.org/wiki/Bert_Bolin">Bolin</a> and Eriksson (1959). Three boxes hold carbon, in gigatonnes (GtC): the air (M<sub>AT</sub>), the top of the ocean (M<sub>UP</sub>, the top 1/51 of the ocean's volume, about 75 m) and the deep ocean (M<sub>LO</sub>, the other 50/51).</p>
+<div class="boxes"><svg viewBox="0 0 560 210" role="img" aria-label="Three boxes: air, upper ocean, deep ocean">
+  <rect x="150" y="8" width="260" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="280" y="37" text-anchor="middle" font-size="15" fill="currentColor">Air  M<tspan font-size="11" dy="4">AT</tspan></text>
+  <rect x="150" y="84" width="260" height="34" rx="6" fill="none" stroke="var(--cool)" stroke-width="1.5"/>
+  <text x="280" y="106" text-anchor="middle" font-size="15" fill="currentColor">Upper ocean  M<tspan font-size="11" dy="4">UP</tspan></text>
+  <rect x="150" y="146" width="260" height="56" rx="6" fill="none" stroke="var(--deep)" stroke-width="1.5"/>
+  <text x="280" y="179" text-anchor="middle" font-size="15" fill="currentColor">Deep ocean  M<tspan font-size="11" dy="4">LO</tspan> (50 × the volume)</text>
+  <path d="M260 56 V82 M300 82 V56" stroke="var(--cool)" stroke-width="2" fill="none"/>
+  <path d="M255 76 l5 6 l5 -6 M295 62 l5 -6 l5 6" stroke="var(--cool)" stroke-width="2" fill="none"/>
+  <text x="312" y="74" font-size="13" fill="var(--muted)">air–sea exchange, 1/k<tspan font-size="10" dy="3">a</tspan></text>
+  <path d="M260 120 V144 M300 144 V120" stroke="var(--deep)" stroke-width="2" fill="none"/>
+  <path d="M255 138 l5 6 l5 -6 M295 126 l5 -6 l5 6" stroke="var(--deep)" stroke-width="2" fill="none"/>
+  <text x="312" y="136" font-size="13" fill="var(--muted)">mixing and overturning, 1/k<tspan font-size="10" dy="3">d</tspan></text>
+  <text x="20" y="37" font-size="13" fill="var(--heat)">our emissions E(t) →</text>
+</svg></div>
+<div class="eq">dM_AT/dt = E(t) − k_a (M_AT − A·B·M_UP)
+dM_UP/dt = k_a (M_AT − A·B·M_UP) − k_d (M_UP − M_LO/δ)
+dM_LO/dt = k_d (M_UP − M_LO/δ)</div>
+<p>Each exchange wears away a difference: carbon moves until the two boxes it joins are in balance. M<sub>UP</sub> − M<sub>LO</sub>/δ is zero when the two parts of the ocean have the same carbon per litre (δ = 50 is the deep ocean's volume over the top's). The time for the deep ocean to swap its water with the top is δ/k<sub>d</sub>: 1,000 years with the paper's k<sub>d</sub> = 0.05 a year.</p>
+<p><b>The chemistry.</b> A·B is how much carbon the air holds, in balance, for each gigatonne in the top of the ocean. A is Henry's law: CO₂ dissolves in proportion to how much is in the air. B is the catch. Only a small part of the ocean's carbon is dissolved CO₂ gas; the rest is bicarbonate (HCO₃⁻) and carbonate (CO₃²⁻) ions:</p>
+<div class="eq">CO₂ + H₂O  ⇌  HCO₃⁻ + H⁺  ⇌  CO₃²⁻ + 2H⁺
+1/B = 1 + k₁/[H⁺] + k₁k₂/[H⁺]²     (all the carbon, per unit of dissolved CO₂)</div>
+<p>Before we started, 1/B was about 170 in this model: for every CO₂ molecule dissolved as gas, the top of the ocean held about 170 carbon atoms as ions. That is why the ocean holds so much more carbon than the air (about 60 times as much, in this model). But adding CO₂ makes seawater more acidic (more H⁺), which pushes the reactions to the left, so 1/B falls (to about 120 by 2024 in the "Faster deep exchange" run): the more carbon the ocean has taken, the less ready it is to take more. This is the <a href="https://en.wikipedia.org/wiki/Revelle_factor">Revelle (buffer) factor</a>. The model finds [H⁺] at each step from the upper ocean's carbon, holding its alkalinity (the seawater's capacity to neutralise acid) fixed. Turn the chemistry off and B stays at its pre-industrial value.</p>
+<h2>Numbers</h2>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>From</th></tr>
+<tr><td>Air–sea exchange, k<sub>a</sub></td><td>0.2 a year (5 years)</td><td rowspan="3">Glotter et al. 2014, Table 3, from Bolin and Eriksson (1959)</td></tr>
+<tr><td>Upper–deep exchange, k<sub>d</sub></td><td>0.05 a year (turnover δ/k<sub>d</sub> = 1,000 years)</td></tr>
+<tr><td>Deep/upper volume, δ</td><td>50</td></tr>
+<tr><td>k<sub>H</sub>, k₁, k₂</td><td>1.23 × 10³, 8.00 × 10⁻⁷, 4.53 × 10⁻¹⁰ mol/kg</td><td rowspan="3">Table 3 (at 10 °C; the paper's temperature dependence is left out, as in its "no temp" version)</td></tr>
+<tr><td>Moles of air, of ocean water</td><td>1.77 × 10²⁰, 7.8 × 10²²</td></tr>
+<tr><td>Alkalinity (upper ocean)</td><td>767 GtC (about 2,317 μmol/kg)</td></tr>
+<tr><td>Start</td><td>280 ppm, top of the ocean in balance with it (pH <span id="ph0-o"></span>), deep ocean in balance with the top</td><td>Table 4 (see the note below)</td></tr>
+</table>
+<p>1 ppm of CO₂ = 2.124 GtC. Note: with Table 3's rounded constants, the paper's Table 4 upper ocean (713 GtC) balances 277 ppm, not 280; we keep 280 ppm and let the upper ocean (<span id="mup0-o"></span> GtC) balance it. The difference is under 1%.</p>
+<h2>The emissions</h2>
+<p>"Our emissions" are, for each year from 1750 to 2024, the carbon that ended up in the air or the sea: the atmospheric growth plus the ocean sink in the <a href="https://globalcarbonbudget.org/">Global Carbon Budget 2025</a> (Friedlingstein et al. 2025, historical budget). That is our fossil and land-use emissions minus what the land took up. The model has no land, so this is the part it has to deal with: about <span id="sofar2-o"></span> GtC in all. After 2024 the app uses the 2015–2024 average, <span id="rate2-o"></span> GtC a year, until emissions stop. Observed CO₂ is the annual mean at <a href="https://gml.noaa.gov/ccgg/trends/">Mauna Loa</a> (NOAA GML); the observed ocean sink is from the Global Carbon Budget.</p>
+<h2>Testing it</h2>
+<ul>
+<li><b>Today's ocean sink.</b> With the paper's numbers the ocean takes up too little today: about 1.3 GtC a year in 2014–2024 against the Global Carbon Budget's 3.2, so the air ends up with too much CO₂ (478 ppm in 2024). Shorten the deep-ocean turnover to 200 years (k<sub>d</sub> = 0.25 a year) and the model follows Mauna Loa (314, 359 and 423 ppm in 1959, 1994 and 2024, against 316, 359 and 425 measured) and takes up 3.4 GtC a year in 2014–2024 (preset "Faster deep exchange"). Neither is right: one deep box has to stand for both the thermocline, which takes up carbon within decades, and the abyss, which takes a thousand years. Where the carbon finally settles doesn't depend on these exchange times at all, only on the chemistry and the size of the ocean.</li>
+<li><b>Where it settles.</b> In ocean-only models compared by <a href="https://doi.org/10.1146/annurev.earth.031208.100206">Archer et al. (2009)</a>, about 20% of a 1,000 GtC pulse stays in the air once the ocean has caught up, and about 35% of a 5,000 GtC pulse. This model gives <span id="af1000-o"></span>% and <span id="af5000-o"></span>%.</li>
+<li><b>How fast.</b> Archer et al. (2009): the ocean takes up most of the carbon over 2 to 20 centuries. <a href="https://doi.org/10.5194/acp-13-2793-2013">Joos et al. (2013)</a>, comparing many models with land and ocean: of 100 GtC added to today's air, 25 ± 9% is still there after 1,000 years.</li>
+</ul>
+<h2>What it leaves out</h2>
+<ul>
+<li><b>Land.</b> Plants and soils take up about a fifth of today's emissions (21% over 2015–2024, Global Carbon Budget 2025).</li>
+<li><b>The sea floor and rocks.</b> Over thousands of years, the more acidic water dissolves calcium carbonate on the sea floor, which restores the buffer and draws the air down further (3,000–7,000 years, Archer et al. 2009). Over hundreds of thousands of years, the weathering of rocks takes the rest. So the level where this model settles is not the end: it is where the ocean alone would leave us.</li>
+<li><b>Warming.</b> A warmer ocean holds less CO₂, so the real air keeps somewhat more. Glotter et al. include this; here it is left out.</li>
+<li><b>Biology</b> and ocean currents, except as the two exchange times.</li>
+</ul>
+<h2>Sources</h2>
+<ul>
+<li>Glotter, M. J., R. T. Pierrehumbert, J. W. Elliott, N. J. Matteson and E. J. Moyer (2014). A simple carbon cycle representation for economic and policy analyses. <i>Climatic Change</i> 126, 319–335. <a href="https://doi.org/10.1007/s10584-014-1224-y">doi:10.1007/s10584-014-1224-y</a></li>
+<li>Archer, D. and others (2009). Atmospheric lifetime of fossil fuel carbon dioxide. <i>Annual Review of Earth and Planetary Sciences</i> 37, 117–134. <a href="https://doi.org/10.1146/annurev.earth.031208.100206">doi:10.1146/annurev.earth.031208.100206</a></li>
+<li>Joos, F. and others (2013). Carbon dioxide and climate impulse response functions for the computation of greenhouse gas metrics: a multi-model analysis. <i>Atmospheric Chemistry and Physics</i> 13, 2793–2825. <a href="https://doi.org/10.5194/acp-13-2793-2013">doi:10.5194/acp-13-2793-2013</a></li>
+<li>Friedlingstein, P. and others (2025). Global Carbon Budget 2025. Data: <a href="https://doi.org/10.18160/gcp-2025">doi:10.18160/gcp-2025</a>, via <a href="https://openclimatedata.net/">openclimatedata.net</a>.</li>
+<li>NOAA Global Monitoring Laboratory, Mauna Loa CO₂ annual means (<a href="https://gml.noaa.gov/ccgg/trends/">gml.noaa.gov</a>), downloaded 17 November 2026.</li>
+</ul>
+<p class="hint">The equations are solved in your browser with a fourth-order Runge–Kutta scheme and a step short enough for the fast air–sea exchange.</p>
+</div>
+</section>
+</div>
+
+<script>
+"use strict";
+const DATA = {"y0":1750,"emis":[0.0,-0.0743,-0.0707,-0.0678,-0.0641,-0.0584,-0.0503,-0.0406,-0.0282,-0.0144,0.0019,0.0202,0.0406,0.0629,0.0875,0.1126,0.1357,0.1561,0.1748,0.1912,0.205,0.2166,0.2264,0.2336,0.2387,0.243,0.2489,0.257,0.2666,0.2782,0.292,0.3897,0.4311,0.4691,0.5088,0.5345,0.567,0.5906,0.6107,0.622,0.6347,0.6439,0.6443,0.6459,0.6392,0.6336,0.6206,0.6059,0.5896,0.5699,0.554,0.5356,0.5164,0.4961,0.4746,0.4514,0.4273,0.4019,0.3752,0.3474,0.3184,0.2829,0.2512,0.2184,0.1795,0.145,0.1144,0.0903,0.0725,0.0563,0.0511,0.0523,0.0597,0.0684,0.0888,0.1152,0.1477,0.1839,0.2085,0.2234,0.2412,0.2566,0.2703,0.2825,0.2947,0.3137,0.3397,0.3722,0.4102,0.4532,0.4948,0.5489,0.5958,0.6219,0.623,0.6013,0.5724,0.5291,0.4807,0.4181,0.3534,0.291,0.2413,0.1827,0.1352,0.1173,0.119,0.1361,0.1593,0.1838,0.2145,0.2579,0.3137,0.3729,0.4359,0.5107,0.579,0.638,0.6873,0.7272,0.7528,0.7749,0.7853,0.7826,0.7677,0.7445,0.7324,0.7403,0.7587,0.791,0.8301,0.8747,0.9247,0.9796,1.0431,1.1239,1.1905,1.2375,1.2582,1.2795,1.2975,1.2983,1.2882,1.2642,1.2328,1.1893,1.1343,1.0678,1.0119,0.9843,0.9736,0.9833,1.0014,1.0369,1.0843,1.1328,1.1742,1.21,1.2385,1.2589,1.2698,1.2956,1.3299,1.3715,1.4003,1.4299,1.4447,1.4534,1.4488,1.4257,1.3994,1.3811,1.3673,1.3693,1.3732,1.3854,1.4,1.4179,1.4427,1.455,1.4575,1.4583,1.4625,1.4607,1.4571,1.449,1.433,1.4129,1.3879,1.3455,1.2806,1.1916,1.0985,1.0034,0.9296,0.8858,0.882,0.8965,0.9394,0.9966,1.0653,1.1316,1.2088,1.2931,1.38,1.4702,1.5592,1.6644,2.5479,3.1541,2.5917,2.6816,2.2587,2.4772,2.407,3.792,3.712,2.5167,3.4606,4.2737,3.7475,2.9867,4.7653,4.6945,2.9793,4.1354,3.702,5.7888,4.4438,6.2015,5.5803,4.3827,4.1293,6.1219,4.6956,5.5327,4.2124,7.7388,6.68,5.2173,4.7946,3.9493,4.0249,5.0596,5.8211,6.5307,4.5035,6.5662,8.4738,5.0804,4.8461,6.031,7.5026,7.4555,5.8882,7.8696,6.5019,7.2206,6.4744,6.1897,7.8458,6.563,8.0252,8.1587,7.3938,9.4341,9.3198,7.6687,8.2911,8.5523,8.1922,8.1785,7.9844,9.0102,11.3115],"rate":8.794,"ocean":[[1959,1.115],[1960,1.084],[1961,1.025],[1962,1.069],[1963,1.267],[1964,1.366],[1965,1.456],[1966,1.376],[1967,1.221],[1968,1.358],[1969,1.47],[1970,1.347],[1971,1.436],[1972,1.643],[1973,1.593],[1974,1.535],[1975,1.523],[1976,1.642],[1977,1.711],[1978,1.704],[1979,1.656],[1980,2.012],[1981,1.94],[1982,2.027],[1983,2.214],[1984,2.083],[1985,2.028],[1986,2.046],[1987,2.11],[1988,2.071],[1989,2.116],[1990,2.203],[1991,2.356],[1992,2.496],[1993,2.447],[1994,2.295],[1995,2.283],[1996,2.273],[1997,2.382],[1998,2.442],[1999,2.234],[2000,2.191],[2001,2.102],[2002,2.49],[2003,2.592],[2004,2.575],[2005,2.623],[2006,2.721],[2007,2.696],[2008,2.715],[2009,2.834],[2010,2.833],[2011,2.867],[2012,2.906],[2013,2.955],[2014,3.082],[2015,3.168],[2016,3.288],[2017,3.123],[2018,3.215],[2019,3.242],[2020,3.243],[2021,3.145],[2022,3.12],[2023,3.275],[2024,3.389]],"mlo":[[1959,315.98],[1960,316.91],[1961,317.64],[1962,318.45],[1963,318.99],[1964,319.62],[1965,320.04],[1966,321.37],[1967,322.18],[1968,323.05],[1969,324.62],[1970,325.68],[1971,326.32],[1972,327.46],[1973,329.68],[1974,330.19],[1975,331.13],[1976,332.03],[1977,333.84],[1978,335.41],[1979,336.84],[1980,338.76],[1981,340.12],[1982,341.48],[1983,343.15],[1984,344.87],[1985,346.35],[1986,347.61],[1987,349.31],[1988,351.69],[1989,353.2],[1990,354.45],[1991,355.7],[1992,356.54],[1993,357.21],[1994,358.96],[1995,360.97],[1996,362.74],[1997,363.88],[1998,366.84],[1999,368.54],[2000,369.71],[2001,371.32],[2002,373.45],[2003,375.98],[2004,377.7],[2005,379.98],[2006,382.09],[2007,384.02],[2008,385.83],[2009,387.64],[2010,390.1],[2011,391.85],[2012,394.06],[2013,396.74],[2014,398.81],[2015,401.01],[2016,404.41],[2017,406.76],[2018,408.72],[2019,411.65],[2020,414.21],[2021,416.41],[2022,418.53],[2023,421.08],[2024,424.61],[2025,427.35]]};
+
+/* ------------------------------------------------------------------ the model (Glotter et al. 2014, App. A) */
+const DELTA = 50, KH = 1.23e3, K1 = 8.00e-7, K2 = 4.53e-10, AM = 1.77e20, OM = 7.8e22, ALK = 767.0;
+const A = KH * AM / (OM / (DELTA + 1));
+const GTC_PER_PPM = 2.124, PPM0 = 280;
+function hFromMup(m) {               // Eq. 13 as a quadratic in x = 1/[H+]
+  const r = m / ALK, a = (2 * r - 1) * K1 * K2, b = (r - 1) * K1;
+  return 1 / ((-b + Math.sqrt(b * b + 4 * a)) / (2 * a));
+}
+const Bof = (h) => 1 / (1 + K1 / h + K1 * K2 / (h * h));
+const phOf = (m) => -Math.log10(hFromMup(m));
+function bisect(f, lo, hi) { let flo = f(lo); for (let i = 0; i < 200; i++) { const mid = 0.5 * (lo + hi), fm = f(mid); if ((fm > 0) === (flo > 0)) { lo = mid; flo = fm; } else hi = mid; } return 0.5 * (lo + hi); }
+const MAT0 = PPM0 * GTC_PER_PPM;
+const MUP0 = bisect((m) => A * Bof(hFromMup(m)) * m - MAT0, 300, 3000);
+const MLO0 = DELTA * MUP0;
+const B0 = Bof(hFromMup(MUP0));
+const AB = (m, chem) => A * (chem ? Bof(hFromMup(m)) : B0);
+
+/** Where the carbon settles once the whole ocean has caught up: total carbon conserved. */
+function settle(added, chem) {
+  const total = MAT0 + MUP0 + MLO0 + added;
+  const mup = bisect((m) => AB(m, chem) * m + m * (1 + DELTA) - total, MUP0 * 0.5, MUP0 * 4);
+  return { mat: AB(mup, chem) * mup, mup, mlo: DELTA * mup };
+}
+
+const E_HIST = DATA.emis;            // GtC/yr, 1750..2024
+const Y0 = DATA.y0, RATE = DATA.rate;
+
+function simulate(cfg) {
+  const ka = 1 / cfg.kaTime, kd = DELTA / cfg.turn, chem = cfg.chem;
+  const hist = cfg.mode === "history";
+  const t0 = hist ? Y0 : 0, t1 = t0 + cfg.span;
+  const emis = hist ? (t) => { if (t >= cfg.stop) return 0; const i = Math.floor(t - Y0); return i < E_HIST.length ? E_HIST[i] : RATE; } : () => 0;
+  let y = [MAT0 + (hist ? 0 : cfg.pulse), MUP0, MLO0];
+  const f = (t, s) => { const fa = ka * (s[0] - AB(s[1], chem) * s[1]), fd = kd * (s[1] - s[2] / DELTA); return [emis(t) - fa, fa - fd, fd]; };
+  const nOut = 1200, dOut = cfg.span / nOut;
+  const geo = hist ? null : [0, ...Array.from({ length: nOut }, (_, k) => 0.05 * Math.pow(cfg.span / 0.05, k / (nOut - 1)))];
+  let gi = 1;
+  const out = { t: [], mat: [], mup: [], mlo: [], flux: [], added: [] };
+  let t = t0, added = hist ? 0 : cfg.pulse, nextOut = t0;
+  const push = () => {
+    out.t.push(t); out.mat.push(y[0]); out.mup.push(y[1]); out.mlo.push(y[2]);
+    out.flux.push(ka * (y[0] - AB(y[1], chem) * y[1])); out.added.push(added);
+  };
+  while (t < t1 - 1e-9) {
+    if (t >= nextOut - 1e-9) { push(); nextOut = hist ? nextOut + (nextOut < 2150 ? Math.min(dOut, 1) : dOut) : (gi < geo.length ? geo[gi++] : t1); }   // yearly to 2150; pulses on a log grid
+    // Step: short enough for the fast air-sea mode (rate ~ ka * d(AB*MUP)/dMUP), and never across a year boundary in the history.
+    const dm = 1e-3 * y[1], slope = (AB(y[1] + dm, chem) * (y[1] + dm) - AB(y[1], chem) * y[1]) / dm;
+    const lam = ka * (1 + slope) + kd * (1 + 1 / DELTA);
+    const fa0 = Math.abs(ka * (y[0] - AB(y[1], chem) * y[1])) + Math.abs(kd * (y[1] - y[2] / DELTA)) + 1e-12;
+    let h = Math.min(0.5, 0.8 / lam, 0.002 * y[1] / fa0, nextOut - t, t1 - t);   // and the upper ocean changes < 0.2% a step
+    if (hist) { const nb = Math.floor(t + 1e-9) + 1; if (t < cfg.stop && nb - t > 1e-9) h = Math.min(h, nb - t); if (t < cfg.stop) h = Math.min(h, Math.max(cfg.stop - t, 1e-6)); }
+    const k1 = f(t, y), y2 = y.map((v, i) => v + 0.5 * h * k1[i]);
+    const k2 = f(t + 0.5 * h, y2), y3 = y.map((v, i) => v + 0.5 * h * k2[i]);
+    const k3 = f(t + 0.5 * h, y3), y4 = y.map((v, i) => v + h * k3[i]);
+    const k4 = f(t + h, y4);
+    added += h * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]) / 6 + h * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]) / 6 + h * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2]) / 6;
+    y = y.map((v, i) => v + h * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6);
+    t += h;
+  }
+  push();
+  // The total added (emissions over the whole run) and where it would settle.
+  out.total = hist ? E_HIST.reduce((s, e, i) => s + (Y0 + i < cfg.stop ? e * Math.min(1, cfg.stop - (Y0 + i)) : 0), 0) + Math.max(0, cfg.stop - (Y0 + E_HIST.length)) * RATE : cfg.pulse;
+  out.settle = settle(out.total, chem);
+  return out;
+}
+if (typeof window === "undefined") { module.exports = { simulate, settle, MAT0, MUP0, MLO0, phOf, B0, A }; }
+</script>
+<script>
+"use strict";
+if (typeof window !== "undefined") (function () {
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = (v, d = 0) => v.toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+
+const SPANS = { history: [["to 2100", 350], ["to 3000", 1250], ["to 12,000", 10250]], pulse: [["100 years", 100], ["1,000 years", 1000], ["10,000 years", 10000]] };
+const PRESETS = [
+  { id: "hist", label: "Our emissions, then stop", cfg: { mode: "history", stop: 2025, chem: true, kaTime: 5, turn: 1000, spanI: 1 },
+    blurb: "Everything added to the air and sea from 1750 to 2024, then nothing. The paper's ocean. Compare the model with the dots: the measured CO₂ at Mauna Loa and the measured ocean sink. Then follow it on: how far does CO₂ fall, and how long does it take?" },
+  { id: "fast", label: "Faster deep exchange", cfg: { mode: "history", stop: 2025, chem: true, kaTime: 5, turn: 200, spanI: 1 },
+    blurb: "The same emissions, with the deep ocean swapping its water in 200 years instead of 1,000. Now the model follows the measured CO₂ and takes up carbon about as fast as the real ocean does today. Does it change where CO₂ settles?" },
+  { id: "late", label: "Keep going to 2100", cfg: { mode: "history", stop: 2100, chem: true, kaTime: 5, turn: 200, spanI: 1 },
+    blurb: "Today's rate of emissions until 2100, then stop. Watch the share left in the air, and the pH." },
+  { id: "p1000", label: "A 1,000 GtC pulse", cfg: { mode: "pulse", pulse: 1000, chem: true, kaTime: 5, turn: 1000, spanI: 2 },
+    blurb: "1,000 GtC, about twice what we have added so far, put into the air of a pre-industrial world all at once. How much is still there after 100 years? After 1,000?" },
+  { id: "p5000", label: "A 5,000 GtC pulse", cfg: { mode: "pulse", pulse: 5000, chem: true, kaTime: 5, turn: 1000, spanI: 2 },
+    blurb: "Five times bigger. Does the ocean take the same share? (Tick 'Keep this run' on the 1,000 GtC pulse first, to compare.)" },
+  { id: "nochem", label: "No buffer chemistry", cfg: { mode: "pulse", pulse: 1000, chem: false, kaTime: 5, turn: 1000, spanI: 2 },
+    blurb: "The same 1,000 GtC, but the ocean's ability to hold carbon doesn't fall as it acidifies. The ocean is 50 times the air's carbon, so it would take nearly all of it. The chemistry is why it doesn't." },
+];
+
+let cfg = { ...PRESETS[0].cfg, pulse: 1000, log: true }, kept = null, last = null, presetId = "hist";
+
+// ---------------------------------------------------------------- controls
+const pb = $("presets");
+PRESETS.forEach((p) => { const b = document.createElement("button"); b.type = "button"; b.textContent = p.label; b.dataset.id = p.id; b.onclick = () => applyPreset(p.id); pb.appendChild(b); });
+function applyPreset(id) {
+  const p = PRESETS.find((q) => q.id === id); presetId = id;
+  cfg = { ...cfg, ...p.cfg }; syncControls(); $("blurb").textContent = p.blurb; render();
+}
+function syncControls() {
+  document.querySelectorAll('input[name=mode]').forEach((r) => (r.checked = r.value === cfg.mode));
+  $("row-stop").hidden = cfg.mode !== "history"; $("row-pulse").hidden = cfg.mode !== "pulse"; $("row-log").hidden = cfg.mode !== "pulse"; $("ctl-log").checked = cfg.log;
+  $("ctl-stop").value = cfg.stop; $("ctl-pulse").value = cfg.pulse; $("ctl-chem").checked = cfg.chem;
+  $("ctl-ka").value = cfg.kaTime; $("ctl-turn").value = cfg.turn;
+  const seg = $("spanseg"); seg.innerHTML = "";
+  SPANS[cfg.mode].forEach(([lab], i) => { const l = document.createElement("label"); l.innerHTML = `<input type="radio" name="span" value="${i}"${i === cfg.spanI ? " checked" : ""}> ${lab}`; seg.appendChild(l); });
+  seg.querySelectorAll("input").forEach((r) => (r.onchange = () => { cfg.spanI = +r.value; render(); }));
+  outputs();
+  pb.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === presetId)));
+}
+function outputs() {
+  $("ctl-stop-o").textContent = cfg.stop; $("ctl-pulse-o").textContent = `${fmt(cfg.pulse)} GtC`;
+  $("ctl-ka-o").textContent = `${cfg.kaTime} years`; $("ctl-turn-o").textContent = `${fmt(cfg.turn)} years`;
+}
+const changed = () => { presetId = null; $("blurb").textContent = ""; pb.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false")); outputs(); render(); };
+document.querySelectorAll('input[name=mode]').forEach((r) => (r.onchange = () => { cfg.mode = r.value; cfg.spanI = cfg.mode === "pulse" ? 2 : 1; syncControls(); changed(); }));
+$("ctl-stop").oninput = (e) => { cfg.stop = +e.target.value; changed(); };
+$("ctl-pulse").oninput = (e) => { cfg.pulse = +e.target.value; changed(); };
+$("ctl-chem").onchange = (e) => { cfg.chem = e.target.checked; changed(); };
+$("ctl-ka").oninput = (e) => { cfg.kaTime = +e.target.value; changed(); };
+$("ctl-turn").oninput = (e) => { cfg.turn = +e.target.value; changed(); };
+$("ctl-log").onchange = (e) => { cfg.log = e.target.checked; draw(); };
+$("keep").onchange = (e) => { kept = e.target.checked && last ? last : null; draw(); };
+
+// tabs
+const tabs = [["tabbtn-model", "tab-model"], ["tabbtn-how", "tab-how"]];
+tabs.forEach(([b, p]) => ($(b).onclick = () => { tabs.forEach(([bb, pp]) => { $(bb).setAttribute("aria-selected", String(bb === b)); $(bb).tabIndex = bb === b ? 0 : -1; $(pp).hidden = pp !== p; }); if (p === "tab-model") draw(); }));
+
+// static numbers in the text
+$("rate-o").textContent = fmt(RATE, 1); $("rate2-o").textContent = fmt(RATE, 1);
+const SOFAR = E_HIST.reduce((s, e) => s + e, 0);
+$("sofar-o").textContent = fmt(Math.round(SOFAR / 10) * 10); $("sofar2-o").textContent = fmt(Math.round(SOFAR / 10) * 10);
+$("ph0-o").textContent = fmt(phOf(MUP0), 2); $("mup0-o").textContent = fmt(MUP0);
+const af = (g) => (settle(g, true).mat - MAT0) / g;
+$("af1000-o").textContent = fmt(100 * af(1000)); $("af5000-o").textContent = fmt(100 * af(5000));
+
+// ---------------------------------------------------------------- charts
+function setup(cv) {
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return { g, W: r.width, H: r.height };
+}
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => span / s <= n) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out;
+}
+function chart(id, { x0, x1, y0, y1, series = [], points = [], hlines = [], stack = null, yfmt = (v) => fmt(v), xfmt = (v) => fmt(v), xlog = false }) {
+  const cv = $(id); const { g, W, H } = setup(cv);
+  const ml = 46, mr = 18, mt = 8, mb = 26, pw = W - ml - mr, ph = H - mt - mb;
+  const lx0 = Math.log10(x0), lx1 = Math.log10(x1);
+  const X = xlog ? (v) => ml + ((Math.log10(Math.max(v, x0)) - lx0) / (lx1 - lx0)) * pw : (v) => ml + ((v - x0) / (x1 - x0)) * pw;
+  const Y = (v) => mt + (1 - (v - y0) / (y1 - y0)) * ph;
+  g.clearRect(0, 0, W, H); g.font = "11.5px -apple-system,Segoe UI,Roboto,sans-serif"; g.lineWidth = 1;
+  g.strokeStyle = css("--grid"); g.fillStyle = css("--muted"); g.textAlign = "right"; g.textBaseline = "middle";
+  niceTicks(y0, y1, 4).forEach((v) => { g.beginPath(); g.moveTo(ml, Y(v)); g.lineTo(ml + pw, Y(v)); g.stroke(); g.fillText(yfmt(v), ml - 6, Y(v)); });
+  g.textAlign = "center"; g.textBaseline = "top";
+  (xlog ? [0.1, 1, 10, 100, 1000, 10000].filter((v) => v >= x0 * 0.999 && v <= x1 * 1.001) : niceTicks(x0, x1, Math.max(3, Math.floor(pw / 90)))).forEach((v) => { g.beginPath(); g.moveTo(X(v), mt); g.lineTo(X(v), mt + ph); g.stroke(); g.fillText(xfmt(v), X(v), mt + ph + 6); });
+  g.save(); g.beginPath(); g.rect(ml, mt, pw, ph); g.clip();
+  if (stack) {
+    let base = stack.t.map(() => 0);
+    stack.layers.forEach((L) => {
+      const top = base.map((b, i) => b + L.v[i]);
+      g.beginPath(); stack.t.forEach((t, i) => (i ? g.lineTo(X(t), Y(top[i])) : g.moveTo(X(t), Y(top[i]))));
+      for (let i = stack.t.length - 1; i >= 0; i--) g.lineTo(X(stack.t[i]), Y(base[i]));
+      g.closePath(); g.fillStyle = L.color; g.globalAlpha = L.alpha ?? 0.85; g.fill(); g.globalAlpha = 1; base = top;
+    });
+  }
+  hlines.forEach((h) => { g.strokeStyle = h.color; g.setLineDash([5, 4]); g.lineWidth = 1.5; g.beginPath(); g.moveTo(ml, Y(h.y)); g.lineTo(ml + pw, Y(h.y)); g.stroke(); g.setLineDash([]); });
+  series.forEach((s) => {
+    g.strokeStyle = s.color; g.lineWidth = s.width ?? 2.2; g.setLineDash(s.dash ? [6, 4] : []); g.beginPath();
+    let on = false; s.t.forEach((t, i) => { const v = s.v[i]; if (!isFinite(v)) { on = false; return; } on ? g.lineTo(X(t), Y(v)) : g.moveTo(X(t), Y(v)); on = true; });
+    g.stroke(); g.setLineDash([]);
+  });
+  points.forEach((p) => { g.fillStyle = p.color; p.t.forEach((t, i) => { g.beginPath(); g.arc(X(t), Y(p.v[i]), p.r ?? 2.2, 0, 7); g.fill(); }); });
+  g.restore();
+  g.strokeStyle = css("--rule"); g.strokeRect(ml, mt, pw, ph);
+}
+const key = (id, items) => ($(id).innerHTML = items.map(([cls, col, lab]) => `<span style="color:${col}"><i class="${cls}"></i><span style="color:var(--muted)">${lab}</span></span>`).join(""));
+
+function render() { document.querySelectorAll(".xunit").forEach((e) => (e.textContent = cfg.mode === "history" ? "by year" : "years after the pulse")); last = simulate({ ...cfg, span: SPANS[cfg.mode][cfg.spanI][1] }); summary(last); draw(); }
+
+function draw() {
+  const r = last; if (!r) return;
+  const hist = cfg.mode === "history";
+  const xlog = !hist && cfg.log;
+  const x0 = xlog ? 0.1 : r.t[0], x1 = r.t[r.t.length - 1];
+  const xfmt = hist ? (v) => String(Math.round(v)) : (v) => fmt(v, v < 1 ? 1 : 0);
+  const heat = css("--heat"), cool = css("--cool"), deep = css("--deep"), muted = css("--muted"), obs = css("--obs"), place = css("--place");
+  const ppm = (a) => a.map((m) => m / GTC_PER_PPM);
+  const settlePpm = r.settle.mat / GTC_PER_PPM;
+  const k = kept && kept.mode === cfg.mode ? kept : null;
+  // CO2
+  const co2 = ppm(r.mat), kc = k ? ppm(k.r.mat) : [];
+  const obsT = hist ? DATA.mlo.map((d) => d[0] + 0.5) : [], obsV = hist ? DATA.mlo.map((d) => d[1]) : [];
+  let ymax = Math.max(...co2, ...kc, ...(hist ? obsV : []), settlePpm) * 1.04;
+  chart("c-co2", { x0, x1, xfmt, xlog, y0: 250, y1: Math.max(320, ymax),
+    hlines: [{ y: PPM0, color: muted }, { y: settlePpm, color: place }],
+    series: [...(k ? [{ t: k.r.t, v: kc, color: muted, dash: true, width: 1.8 }] : []), { t: r.t, v: co2, color: heat }],
+    points: hist ? [{ t: obsT, v: obsV, color: obs, r: 1.8 }] : [] });
+  key("k-co2", [["", heat, "model"], ...(hist ? [["dot", obs, "measured, Mauna Loa"]] : []), ["dash", place, `settles at ${fmt(settlePpm)} ppm (ocean only)`], ["dash", muted, "280 ppm, pre-industrial"], ...(k ? [["dash", muted, "kept run"]] : [])]);
+  // shares
+  const sh = (arr, base) => arr.map((m, i) => (r.added[i] > 1e-6 ? (m - base) / r.added[i] : NaN));
+  const sA = sh(r.mat, MAT0), sU = sh(r.mup, MUP0), sL = sh(r.mlo, MLO0);
+  const valid = r.t.map((_, i) => r.added[i] > 0.5);
+  const T = r.t.filter((_, i) => valid[i]);
+  const pick = (a) => a.filter((_, i) => valid[i]).map((v) => Math.max(0, v));
+  chart("c-share", { x0, x1, xfmt, xlog, y0: 0, y1: 1, yfmt: (v) => `${fmt(100 * v)}%`,
+    stack: { t: T, layers: [{ v: pick(sL), color: deep }, { v: pick(sU), color: cool }, { v: pick(sA), color: heat }] },
+    series: k ? [{ t: k.r.t.filter((_, i) => k.r.added[i] > 0.5), v: k.r.mat.map((m, i) => (m - MAT0) / k.r.added[i]).filter((_, i) => k.r.added[i] > 0.5).map((v) => 1 - v), color: css("--ink"), dash: true, width: 1.6 }] : [] });
+  key("k-share", [["box", heat, "air"], ["box", cool, "upper ocean"], ["box", deep, "deep ocean"], ...(k ? [["dash", css("--ink"), "kept run: air above the line"]] : [])]);
+  // flux
+  const fl = r.flux, kf = k ? k.r.flux : [];
+  const oT = hist ? DATA.ocean.map((d) => d[0] + 0.5) : [], oV = hist ? DATA.ocean.map((d) => d[1]) : [];
+  const late = (rr, a) => a.filter((_, i) => rr.t[i] - rr.t[0] >= 1);   // leave out a pulse's first-year spike
+  chart("c-flux", { x0, x1, xfmt, xlog, y0: Math.min(0, ...late(r, fl)), y1: Math.max(0.5, ...late(r, fl), ...(k ? late(k.r, kf) : []), ...oV) * 1.08, yfmt: (v) => fmt(v, v % 1 ? 1 : 0),
+    series: [...(k ? [{ t: k.r.t, v: kf, color: muted, dash: true, width: 1.8 }] : []), { t: r.t, v: fl, color: cool }],
+    points: hist ? [{ t: oT, v: oV, color: obs, r: 1.8 }] : [] });
+  key("k-flux", [["", cool, hist ? "model" : "model (the first year's spike runs off the top)"], ...(hist ? [["dot", obs, "Global Carbon Budget ocean sink"]] : []), ...(k ? [["dash", muted, "kept run"]] : [])]);
+  // pH
+  const ph = r.mup.map(phOf), kp = k ? k.r.mup.map(phOf) : [];
+  chart("c-ph", { x0, x1, xfmt, xlog, y0: Math.min(...(cfg.chem ? ph : []), ...kp, 8.0) - 0.03, y1: phOf(MUP0) + 0.03, yfmt: (v) => fmt(v, 2),
+    hlines: [{ y: phOf(MUP0), color: muted }],
+    series: [...(k ? [{ t: k.r.t, v: kp, color: muted, dash: true, width: 1.8 }] : []), ...(cfg.chem ? [{ t: r.t, v: ph, color: place }] : [])] });
+  key("k-ph", [["", place, cfg.chem ? "model, surface ocean" : "chemistry off: this run has no pH"], ["dash", muted, `pre-industrial, ${fmt(phOf(MUP0), 2)}`], ...(k ? [["dash", muted, "kept run"]] : [])]);
+  if ($("keep").checked) kept = { mode: cfg.mode, r };
+}
+
+function at(r, t) { let i = r.t.findIndex((x) => x >= t); if (i < 0) i = r.t.length - 1; return i; }
+function summary(r) {
+  const airShare = (i) => (r.mat[i] - MAT0) / r.added[i];
+  const settleAir = (r.settle.mat - MAT0) / r.total, sp = r.settle.mat / GTC_PER_PPM;
+  let s;
+  if (cfg.mode === "history") {
+    const i25 = at(r, 2025), iS = at(r, cfg.stop), iEnd = r.t.length - 1;
+    const peak = Math.max(...r.mat) / GTC_PER_PPM;
+    s = `Added to the air and sea by ${cfg.stop}: <b>${fmt(r.total)} GtC</b>. CO₂ peaks at <b>${fmt(peak)} ppm</b>`
+      + (cfg.stop > 2025 ? "" : ` (measured in 2024: ${fmt(DATA.mlo[DATA.mlo.length - 2][1])})`)
+      + `; by ${Math.round(r.t[iEnd])} it is <b>${fmt(r.mat[iEnd] / GTC_PER_PPM)} ppm</b>. Once the whole ocean has caught up it settles at <b>${fmt(sp)} ppm</b> (280 before we started), with <b>${fmt(100 * settleAir)}%</b> of the added carbon still in the air.`;
+  } else {
+    const parts = [10, 100, 1000].filter((y) => y <= r.t[r.t.length - 1]).map((y) => `${fmt(100 * airShare(at(r, y)))}% after ${fmt(y)} years`);
+    s = `Of the <b>${fmt(cfg.pulse)} GtC</b> pulse, still in the air: ${parts.map((p) => `<b>${p.split(" after")[0]}</b> after${p.split(" after")[1]}`).join(", ")}. Once the whole ocean has caught up: <b>${fmt(100 * settleAir)}%</b> (${fmt(sp)} ppm).`;
+  }
+  $("summary").innerHTML = s;
+}
+
+let rt = 0; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 100); });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+applyPreset("hist");
+})();
+</script>
+</body>
+</html>

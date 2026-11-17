@@ -44,4 +44,6 @@ footer: |
    *Ocean module* · Where does Earth take in more energy than it gives back, and where less, and how do clouds, the atmosphere and El Niño change the books? [Handout with exercises (PDF)](tutorials/ceres-energy-budget/handout.pdf)
 3. **[Daisyworld with an Ocean](tutorials/daisyworld-ocean/)**
    *Ocean module* · One weather record, land and ocean: how does thermal inertia turn fast weather into slow swings? [Handout with six runs to explore (PDF)](tutorials/daisyworld-ocean/daisyworld_ocean_handout.pdf) · [Part 2, adding life: feedbacks, delays and busts (PDF)](tutorials/daisyworld-ocean/daisyworld_ocean_life_handout.pdf)
+4. **[Three Boxes of Carbon](tutorials/carbon-boxes/)**
+   *Ocean module · O7* · The air, the top of the ocean and the deep ocean, with the ocean's carbonate chemistry: where does our CO₂ go, how fast, and where does it finally settle?
 {: .lectures}
