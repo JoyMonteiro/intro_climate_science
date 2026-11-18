@@ -82,7 +82,7 @@ th{color:var(--muted);font-weight:600}
 <div class="wrap">
 <p class="back"><a href="../../">← Introduction to Climate Science</a></p>
 <h1>Three Boxes of Carbon</h1>
-<p class="lede">The air, the top of the ocean and the deep ocean, joined by two slow exchanges and the ocean's carbonate chemistry. Put carbon into the air and watch where it goes, how fast, and where it finally settles.</p>
+<p class="lede">The air, the top of the ocean and the deep ocean, joined by two slow exchanges and the ocean's carbonate chemistry. Put carbon into the air and watch where it goes, how fast, and where it finally settles. <a href="handout.pdf">The handout (PDF)</a> goes with this app.</p>
 <div class="tabs" role="tablist" aria-label="Page sections">
   <button type="button" role="tab" id="tabbtn-model" aria-controls="tab-model" aria-selected="true">Model</button>
   <button type="button" role="tab" id="tabbtn-how" aria-controls="tab-how" aria-selected="false" tabindex="-1">How it works</button>
@@ -111,7 +111,7 @@ th{color:var(--muted);font-weight:600}
         <div class="row"><label for="ctl-ka">Air–sea exchange time <output id="ctl-ka-o"></output></label><input type="range" id="ctl-ka" min="1" max="20" step="1">
         <p class="hint">How fast the top of the ocean catches up with the air.</p></div>
         <div class="row"><label for="ctl-turn">Deep-ocean turnover time <output id="ctl-turn-o"></output></label><input type="range" id="ctl-turn" min="50" max="2000" step="50">
-        <p class="hint">How long the deep ocean takes to swap its water with the top (O6: about 1,000 years).</p></div>
+        <p class="hint">How long it takes to replace the deep ocean's water by exchange with the top (O6: about 1,000 years).</p></div>
       </fieldset>
       <fieldset>
         <legend>Show</legend>
@@ -154,7 +154,7 @@ th{color:var(--muted);font-weight:600}
 <div class="eq">dM_AT/dt = E(t) − k_a (M_AT − A·B·M_UP)
 dM_UP/dt = k_a (M_AT − A·B·M_UP) − k_d (M_UP − M_LO/δ)
 dM_LO/dt = k_d (M_UP − M_LO/δ)</div>
-<p>Each exchange wears away a difference: carbon moves until the two boxes it joins are in balance. M<sub>UP</sub> − M<sub>LO</sub>/δ is zero when the two parts of the ocean have the same carbon per litre (δ = 50 is the deep ocean's volume over the top's). The time for the deep ocean to swap its water with the top is δ/k<sub>d</sub>: 1,000 years with the paper's k<sub>d</sub> = 0.05 a year.</p>
+<p>Each exchange wears away a difference: carbon moves until the two boxes it joins are in balance. M<sub>UP</sub> − M<sub>LO</sub>/δ is zero when the two parts of the ocean have the same carbon per litre (δ = 50 is the deep ocean's volume over the top's). The deep ocean's turnover time, the time to replace its water by exchange with the top, is δ/k<sub>d</sub>: 1,000 years with the paper's k<sub>d</sub> = 0.05 a year.</p>
 <p><b>The chemistry.</b> A·B is how much carbon the air holds, in balance, for each gigatonne in the top of the ocean. A is Henry's law: CO₂ dissolves in proportion to how much is in the air. B is the catch. Only a small part of the ocean's carbon is dissolved CO₂ gas; the rest is bicarbonate (HCO₃⁻) and carbonate (CO₃²⁻) ions:</p>
 <div class="eq">CO₂ + H₂O  ⇌  HCO₃⁻ + H⁺  ⇌  CO₃²⁻ + 2H⁺
 1/B = 1 + k₁/[H⁺] + k₁k₂/[H⁺]²     (all the carbon, per unit of dissolved CO₂)</div>
@@ -175,7 +175,7 @@ dM_LO/dt = k_d (M_UP − M_LO/δ)</div>
 <p>"Our emissions" are, for each year from 1750 to 2024, the carbon that ended up in the air or the sea: the atmospheric growth plus the ocean sink in the <a href="https://globalcarbonbudget.org/">Global Carbon Budget 2025</a> (Friedlingstein et al. 2025, historical budget). That is our fossil and land-use emissions minus what the land took up. The model has no land, so this is the part it has to deal with: about <span id="sofar2-o"></span> GtC in all. After 2024 the app uses the 2015–2024 average, <span id="rate2-o"></span> GtC a year, until emissions stop. Observed CO₂ is the annual mean at <a href="https://gml.noaa.gov/ccgg/trends/">Mauna Loa</a> (NOAA GML); the observed ocean sink is from the Global Carbon Budget.</p>
 <h2>Testing it</h2>
 <ul>
-<li><b>Today's ocean sink.</b> With the paper's numbers the ocean takes up too little today: about 1.3 GtC a year in 2014–2024 against the Global Carbon Budget's 3.2, so the air ends up with too much CO₂ (478 ppm in 2024). Shorten the deep-ocean turnover to 200 years (k<sub>d</sub> = 0.25 a year) and the model follows Mauna Loa (314, 359 and 423 ppm in 1959, 1994 and 2024, against 316, 359 and 425 measured) and takes up 3.4 GtC a year in 2014–2024 (preset "Faster deep exchange"). Neither is right: one deep box has to stand for both the thermocline, which takes up carbon within decades, and the abyss, which takes a thousand years. Where the carbon finally settles doesn't depend on these exchange times at all, only on the chemistry and the size of the ocean.</li>
+<li><b>Today's ocean sink.</b> With the paper's numbers the ocean takes up too little today: about 1.3 GtC a year in 2014–2024 against the Global Carbon Budget's 3.2, so the air ends up with too much CO₂ (480 ppm in 2024). Shorten the deep-ocean turnover to 200 years (k<sub>d</sub> = 0.25 a year) and the model follows Mauna Loa (313, 359 and 422 ppm in 1959, 1994 and 2024, against 316, 359 and 425 measured) and takes up 3.3 GtC a year in 2014–2024 (preset "Faster deep exchange"). Neither is right: one deep box has to stand for both the thermocline, which takes up carbon within decades, and the abyss, which takes a thousand years. Where the carbon finally settles doesn't depend on these exchange times at all, only on the chemistry and the size of the ocean.</li>
 <li><b>Where it settles.</b> In ocean-only models compared by <a href="https://doi.org/10.1146/annurev.earth.031208.100206">Archer et al. (2009)</a>, about 20% of a 1,000 GtC pulse stays in the air once the ocean has caught up, and about 35% of a 5,000 GtC pulse. This model gives <span id="af1000-o"></span>% and <span id="af5000-o"></span>%.</li>
 <li><b>How fast.</b> Archer et al. (2009): the ocean takes up most of the carbon over 2 to 20 centuries. <a href="https://doi.org/10.5194/acp-13-2793-2013">Joos et al. (2013)</a>, comparing many models with land and ocean: of 100 GtC added to today's air, 25 ± 9% is still there after 1,000 years.</li>
 </ul>
@@ -282,7 +282,7 @@ const PRESETS = [
   { id: "hist", label: "Our emissions, then stop", cfg: { mode: "history", stop: 2025, chem: true, kaTime: 5, turn: 1000, spanI: 1 },
     blurb: "Everything added to the air and sea from 1750 to 2024, then nothing. The paper's ocean. Compare the model with the dots: the measured CO₂ at Mauna Loa and the measured ocean sink. Then follow it on: how far does CO₂ fall, and how long does it take?" },
   { id: "fast", label: "Faster deep exchange", cfg: { mode: "history", stop: 2025, chem: true, kaTime: 5, turn: 200, spanI: 1 },
-    blurb: "The same emissions, with the deep ocean swapping its water in 200 years instead of 1,000. Now the model follows the measured CO₂ and takes up carbon about as fast as the real ocean does today. Does it change where CO₂ settles?" },
+    blurb: "The same emissions, with the deep ocean's water replaced every 200 years instead of every 1,000. Now the model follows the measured CO₂ and takes up carbon about as fast as the real ocean does today. Does it change where CO₂ settles?" },
   { id: "late", label: "Keep going to 2100", cfg: { mode: "history", stop: 2100, chem: true, kaTime: 5, turn: 200, spanI: 1 },
     blurb: "Today's rate of emissions until 2100, then stop. Watch the share left in the air, and the pH." },
   { id: "p1000", label: "A 1,000 GtC pulse", cfg: { mode: "pulse", pulse: 1000, chem: true, kaTime: 5, turn: 1000, spanI: 2 },
@@ -325,7 +325,7 @@ $("ctl-chem").onchange = (e) => { cfg.chem = e.target.checked; changed(); };
 $("ctl-ka").oninput = (e) => { cfg.kaTime = +e.target.value; changed(); };
 $("ctl-turn").oninput = (e) => { cfg.turn = +e.target.value; changed(); };
 $("ctl-log").onchange = (e) => { cfg.log = e.target.checked; draw(); };
-$("keep").onchange = (e) => { kept = e.target.checked && last ? last : null; draw(); };
+$("keep").onchange = (e) => { kept = e.target.checked && last ? { mode: cfg.mode, r: last } : null; draw(); };   // stays until unticked
 
 // tabs
 const tabs = [["tabbtn-model", "tab-model"], ["tabbtn-how", "tab-how"]];
@@ -428,7 +428,6 @@ function draw() {
     hlines: [{ y: phOf(MUP0), color: muted }],
     series: [...(k ? [{ t: k.r.t, v: kp, color: muted, dash: true, width: 1.8 }] : []), ...(cfg.chem ? [{ t: r.t, v: ph, color: place }] : [])] });
   key("k-ph", [["", place, cfg.chem ? "model, surface ocean" : "chemistry off: this run has no pH"], ["dash", muted, `pre-industrial, ${fmt(phOf(MUP0), 2)}`], ...(k ? [["dash", muted, "kept run"]] : [])]);
-  if ($("keep").checked) kept = { mode: cfg.mode, r };
 }
 
 function at(r, t) { let i = r.t.findIndex((x) => x >= t); if (i < 0) i = r.t.length - 1; return i; }
