@@ -36,6 +36,8 @@ footer: |
    *Ocean module* · The salt ledger: what makes seawater heavy, and where deep water comes from.
 5. **[The ocean's ledger · O6](lectures/ocean-ledger-o6/)**
    *Ocean module* · The overturning: where water sinks, how it comes back up, and whether it can switch off.
+6. **[The ocean's ledger · O7](lectures/ocean-ledger-o7/)**
+   *Ocean module* · Slow swings and the ocean's memory for carbon: El Niño's loop, and three boxes of carbon.
 {: .lectures}
 
 ## Tutorials
