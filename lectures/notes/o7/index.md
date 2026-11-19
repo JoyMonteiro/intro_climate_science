@@ -4,7 +4,7 @@ title: "O7 · Slow swings, and the ocean's memory for carbon"
 subtitle: "Lecture notes · EC2113 Ocean module · Lecture 7 · Wednesday 18 November 2026"
 footer: "[← All lectures and tutorials](../../../)"
 ---
-*These notes follow the lecture as it was taught. This was the last lecture of the ocean module. There is no tutorial session for it, but an exercise with the **[Three Boxes of Carbon](../../../tutorials/carbon-boxes/)** app will be sent to you. Read the app's [handout (PDF)](../../../tutorials/carbon-boxes/handout.pdf): understanding the model is part of the course, and it may come up in the exam. The parts of the plan we didn't reach are at the end, under "Read this part". The readings are extracts in the course's shared readings folder, under O7.*
+*These notes follow the lecture as it was taught. This was the last lecture of the ocean module. There is no tutorial session for it, but there is an [exercise (PDF)](../../../tutorials/carbon-boxes/exercise.pdf) with the **[Three Boxes of Carbon](../../../tutorials/carbon-boxes/)** app. Read the app's [handout (PDF)](../../../tutorials/carbon-boxes/handout.pdf): understanding the model is part of the course, and it may come up in the exam. The parts of the plan we didn't reach are at the end, under "Read this part". The readings are extracts in the course's shared readings folder, under O7.*
 
 ## The question
 
@@ -175,7 +175,7 @@ The ocean's slowness delays warming now, because the ocean takes up heat (O3). I
 
 ## Why this matters
 
-This was the last lecture of the ocean module. Look for the exercise with the [Three Boxes of Carbon](../../../tutorials/carbon-boxes/) app, and work through the [handout (PDF)](../../../tutorials/carbon-boxes/handout.pdf): its seven runs go through everything in §§8–10 and the fudge above.
+This was the last lecture of the ocean module. Work through the [handout (PDF)](../../../tutorials/carbon-boxes/handout.pdf) for the [Three Boxes of Carbon](../../../tutorials/carbon-boxes/) app first: its seven runs go through everything in §§8–10 and the fudge above. Then do the [exercise (PDF)](../../../tutorials/carbon-boxes/exercise.pdf), which builds on them.
 
 ## Key terms
 
@@ -204,7 +204,7 @@ All extracts are in the shared readings folder, under O7. The core readings add 
 - Katz, "Sir Gilbert Walker and a connection between El Niño and statistics" (2002): how Walker, working in India after the famines, found the Southern Oscillation in the statistics, and how it was received. Sections 1–3 can be read without the equations. A historian's account is [Adamson (2020)](https://doi.org/10.2307/j.ctv10h9g13.6) (link only).
 - Zebiak & Cane, "A model El Niño–Southern Oscillation" (1987): the original model paper, for the curious. Read the abstract, the introduction and the figures; skip the equations.
 - Monteiro (2024), the source of §2's figure, is [open access](https://doi.org/10.1038/s43247-024-01445-0).
-- The app's [handout](../../../tutorials/carbon-boxes/handout.pdf) is on the course site.
+- The app's [handout](../../../tutorials/carbon-boxes/handout.pdf) and [exercise](../../../tutorials/carbon-boxes/exercise.pdf) are on the course site.
 
 ## Works cited
 
