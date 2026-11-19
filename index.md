@@ -28,15 +28,17 @@ footer: |
 
 1. **[The ocean's ledger · Week 1](lectures/ocean-ledger/)**
    *Ocean module* · Space to advance, O for an overview.
-2. **[The ocean's ledger · Week 2](lectures/ocean-ledger-w2/)**
-   *Ocean module* · How much of the surface feels the weather, and the ponderous ocean.
-3. **[The ocean's ledger · O4](lectures/ocean-ledger-o4/)**
+2. **[The ocean's ledger · O2](lectures/ocean-ledger-w2/)**
+   *Ocean module* · How much of the surface feels the weather: where sunlight goes, the surface budget, land against ocean. O2 and O3 share one deck.
+3. **[The ocean's ledger · O3](lectures/ocean-ledger-w2/#the-mixed-layer)**
+   *Ocean module* · A slow ocean that has to move: the mixed layer, slabs and weather noise, who carries the heat, what pushes the ocean. Opens the shared deck where O3 begins.
+4. **[The ocean's ledger · O4](lectures/ocean-ledger-o4/)**
    *Ocean module* · What the wind does to a rotating ocean: Ekman transport, upwelling, gyres.
-4. **[The ocean's ledger · O5](lectures/ocean-ledger-o5/)**
+5. **[The ocean's ledger · O5](lectures/ocean-ledger-o5/)**
    *Ocean module* · The salt ledger: what makes seawater heavy, and where deep water comes from.
-5. **[The ocean's ledger · O6](lectures/ocean-ledger-o6/)**
+6. **[The ocean's ledger · O6](lectures/ocean-ledger-o6/)**
    *Ocean module* · The overturning: where water sinks, how it comes back up, and whether it can switch off.
-6. **[The ocean's ledger · O7](lectures/ocean-ledger-o7/)**
+7. **[The ocean's ledger · O7](lectures/ocean-ledger-o7/)**
    *Ocean module* · Slow swings and the ocean's memory for carbon: El Niño's loop, and three boxes of carbon.
 {: .lectures}
 
