@@ -20,6 +20,8 @@ footer: |
    *12 November 2026* · Why the sea is salty in some places and fresh in others, why the Bay of Bengal and the Arabian Sea differ, what makes seawater dense enough to sink, and how to read water masses.
 6. **[O6 · The overturning: the slow ocean, and can it switch off?](lectures/notes/o6/)**
    *13 November 2026* · Why deep water forms in the North Atlantic but not the North Pacific, how the Southern Ocean's winds bring it back up, why the round trip takes a thousand years, and how Stommel's two boxes show that the overturning could switch off.
+7. **[O7 · Slow swings, and the ocean's memory for carbon](lectures/notes/o7/)**
+   *18 November 2026* · How the tropical Pacific makes El Niño, why it grows and why it turns around, and how three boxes of air and ocean show where our carbon goes, how long it takes, and why CO₂ wouldn't fall back to 280 ppm if we stopped.
 {: .lectures}
 
 ## Slides
